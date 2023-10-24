@@ -192,6 +192,8 @@ The following strings are those used in DBTC and should not be used in file or f
 # Citation
 Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, MetaBarcode Analysis Method using Dada2 and BLAST. Biodiversity Data Journal (In progress)
 
+([Back to Top](#table-of-contents))
+
 # Package Function Details
 
 ## Dada Implement

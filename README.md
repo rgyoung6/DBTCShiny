@@ -80,7 +80,7 @@ In addition to the NCBI resources, DBTC can also use custom databases. To establ
 
 [MACER CRAN](https://cran.r-project.org/web/packages/MACER/index.html)
 
-[MACER GitHub](https://github.com/rgyoung6/MACER)(will have the most recent version and development versions)
+[MACER GitHub](https://github.com/rgyoung6/MACER) (will have the most recent version and development versions)
 
 ### Create a local NCBI taxonomy database to assign taxonomic identifications to BLAST results
 In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html), use the instructions and the prepareDatabase('accessionTaxa.sql') taxonomizr command to establish a local taxonomy database.

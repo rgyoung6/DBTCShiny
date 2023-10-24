@@ -1,0 +1,41 @@
+Package: DBTCShiny
+Type: Package
+Title: Dada-BLAST R implemented metabarcode taxonomic assignment in Shiny
+Version: 0.1.0
+Author: c(person(given = "Robert G",
+             family = "Young",
+             role = c("aut", "cre", "cph"),
+             email = "rgyoung6@gmail.com",
+             comment = c("ORCID" = "0000-0002-6731-2506"))
+          )
+Maintainer: Robert G Young <rgyoung6@gmail.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-2 | GPL-3
+Encoding: UTF-8
+URL: <https://github.com/rgyoung6/DBTCShiny>
+Depends: 
+Imports:
+  dplyr,
+  ggplot2,
+  htmltools,
+  leaflet,
+  leaflet.extras,
+  shiny,
+  shinyalert,
+  shinydashboard,
+  shinyjs,
+  shinyWidgets,
+  stats,
+  utils,
+  shinycssloaders,
+  shinyFiles,
+  dada2,
+  plyr,
+  ShortRead,
+  taxonomizr,
+  pbapply,
+  magrittr
+Language: en-GB
+LazyData: true
+RoxygenNote: 7.2.3

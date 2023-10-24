@@ -25,6 +25,11 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
   * [Combine Assignment Output](#combine-assignment-output)
   * [Reduce Taxa](#reduce-taxa)
   * [Combine Reduced Output](#combine-reduced-output)
+- [Import GPS and grouping data](#import-gps-and-grouping-data)
+- [Mapping Dashboard](#mapping-dashboard)
+  * [Mapping](#mapping)
+  * [Data Filtering](#data-filtering)
+  * [Mapped Data Table](#mapped-data-table) 
 
 # Installation 
 
@@ -490,6 +495,16 @@ There is no specific unique intrepretation for this file.
 
 ### Dependencies
 NA
+
+# Import GPS and grouping data
+
+# Mapping Dashboard
+## Mapping
+## Data Filtering
+## Mapped Data Table
+
+
+
 
 ([Back to Top](#table-of-contents))
 

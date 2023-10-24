@@ -79,6 +79,7 @@ NCBI preformated databases can be established through two methods.
 In addition to the NCBI resources, DBTC can also use custom databases. To establish these databases you will requre a fasta file with the desired records with MACER formatted headers. The MACER R package and instructions can be found at either of the two locations:
 
 [MACER CRAN](https://cran.r-project.org/web/packages/MACER/index.html)
+
 [MACER GitHub](https://github.com/rgyoung6/MACER)(will have the most recent version and development versions)
 
 ### Create a local NCBI taxonomy database to assign taxonomic identifications to BLAST results

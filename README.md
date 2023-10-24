@@ -179,8 +179,11 @@ This function takes a file selection and then uses all 'taxaReduced' files in th
 
 WARNING - NO WHITESPACE!
 
-When running DBTCShiny functions the paths for the files selected cannot have whitespace! File folder locations should be as short as possible (close to the root directory) as some functions do not process long naming conventions. Also, special characters should be avoided (including question mark, number sign, exclamation mark). It is reccommended that dashes be used for separations in naming conventions while retaining underscores for use as information deliminters (this is how DBTC functions use underscore). There are several key character strings used in the DBTC pipeline, the presence of these strings in file or folder names will cause errors when running DBTC functions. 
+When running DBTCShiny functions the paths for the files selected cannot have whitespace! File folder locations should be as short as possible (close to the root directory) as some functions do not process long naming conventions. 
 
+Also, special characters should be avoided (including question mark, number sign, exclamation mark). It is reccommended that dashes be used for separations in naming conventions while retaining underscores for use as information deliminters (this is how DBTC functions use underscore). 
+
+There are several key character strings used in the DBTC pipeline, the presence of these strings in file or folder names will cause errors when running DBTC functions. 
 The following strings are those used in DBTC and should not be used in file or folder naming:
   - _BLAST
   - _taxaAssign

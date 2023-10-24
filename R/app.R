@@ -5,23 +5,22 @@
 #' @import dada2
 #' @import taxonomizr
 #' @import pbapply
+#' @import utils
 
 # DBTC Functions
 #' @importFrom plyr rbind.fill
 #' @importFrom ShortRead readFastq
 #' @importFrom ShortRead writeFastq
-
-# Shiny Packages
-#' @import leaflet
-#' @import utils
-
-# Shiny Functions
 #' @importFrom stats aggregate
 #' @importFrom stats median
 #' @importFrom stats na.omit
 #' @importFrom ggplot2 ggsave
-#' @importFrom magrittr %>%
 
+# Shiny Packages
+#' @import leaflet
+
+# Shiny Functions
+#' @importFrom magrittr %>%
 #' @importFrom shiny a
 #' @importFrom shiny actionButton
 #' @importFrom shiny br
@@ -555,7 +554,7 @@ dataImport <- function() {
  #############  Mapping Tab ###########################################################
  mappingDashboard <- function() {
    shinydashboard::tabItem(tabName = "mappingDashboard",shiny::h1(shiny::strong("Mapping and Filtering")),
-    shiny::p("Perform geospatial analysis based on collection locations.",
+    shiny::p("COMING SOON!!! Perform geospatial analysis based on collection locations.",
     style = "font-size:16px;"),
     shinydashboard::tabBox(id = "map_filter_table_tabbox",width = 12,
       shiny::tabPanel("Mapping", shinycssloaders::withSpinner(leaflet::leafletOutput("mymap", height = 700))),

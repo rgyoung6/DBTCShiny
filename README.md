@@ -305,8 +305,8 @@ combine_dada_output() - Combine Dada2 ASV tables (YYYY_MM_DD_HHMM_FileName_Merge
 Two or more files to be combined are required as input for this function. These files need to be ASV files as outputted from the dada_inplement() and can include Merge, MergeFwdRev, or TotalTable.tsv files.
 
 ### Arguments
-<strong> fileLoc -</strong> Select a file in the file folder with dada results you would like to combine (YYYY_MM_DD_HHMM_FileName_MergeFwdRev.tsv OR YYYY_MM_DD_HHMM_FileName_Merge.tsv OR 2023_10_16_1511_Run1_TotalTable.tsv files.
-<strong> minLen -</strong> The minimum final desired length of the read (Default minLen = 100).
+- <strong> fileLoc -</strong> Select a file in the file folder with dada results you would like to combine (YYYY_MM_DD_HHMM_FileName_MergeFwdRev.tsv OR YYYY_MM_DD_HHMM_FileName_Merge.tsv OR 2023_10_16_1511_Run1_TotalTable.tsv files.
+- <strong> minLen -</strong> The minimum final desired length of the read (Default minLen = 100).
 
 ### Output
 The output from this function includes three files.
@@ -331,11 +331,11 @@ This function takes a fasta file (in MACER format or NCBI format, but it is advi
 The MACER fasta header format - ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
 
 ### Arguments
-<strong>fileLoc -</strong> The location of a file in a directory where all fasta files will be used to construct a BLASTable database. Default = NULL makeblastdbPath The local path for the blast+ 
-<strong>makeblastdbPath -</strong> program taxaDBLoc The location of the NCBI taxonomic data base (accessionTaxa.sql see the main DBTCShiny page for details).
-<strong>inputFormat -</strong> This will either be NCBI formatted fasta file (header example ```>uniqueID|NCBItaxaID|Genus|species```) or a MACER (header example ```>uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase```) formatted file.
-<strong>dbName -</strong> A short 6-8 alpha character name used when building a database.
-<strong>minLen -</strong> The minimum sequence length used to construct the BLAST database.
+- <strong>fileLoc -</strong> The location of a file in a directory where all fasta files will be used to construct a BLASTable database. Default = NULL makeblastdbPath The local path for the blast+ 
+- <strong>makeblastdbPath -</strong> program taxaDBLoc The location of the NCBI taxonomic data base (accessionTaxa.sql see the main DBTCShiny page for details).
+- <strong>inputFormat -</strong> This will either be NCBI formatted fasta file (header example ```>uniqueID|NCBItaxaID|Genus|species```) or a MACER (header example ```>uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase```) formatted file.
+- <strong>dbName -</strong> A short 6-8 alpha character name used when building a database.
+- <strong>minLen -</strong> The minimum sequence length used to construct the BLAST database.
 
 ### Output
 The output from this function includes a folder with the BLAST database named according to the submitted dbName.

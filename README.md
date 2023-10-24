@@ -227,24 +227,24 @@ Two file types are required as input for the dada_implement() function. The firs
 
 
 ### Arguments
-  - <strong>runFolderLoc -</strong> Select a directory that contains the run folders with the fastq files.
-  - <strong>primerFile -</strong> Select a file with the primers for this analysis.
-  - <strong>fwdIdent </strong> Foward identifier naming substring.
-  - <strong>revIdent </strong> Reverse identifier naming substring.
-  - <strong>nonMergeProcessing </strong> Non-Merge Processing (Default TRUE).
-  - <strong>maxPrimeMis</strong> Maximum number of mismatches allowed when pattern matching trimming the primers from the ends of the reads for the ShortRead trimLRPatterns() function (Default maxPrimeMis = 2).
-  - <strong>fwdTrimLen</strong> Select a forward trim length for the Dada filterAndTrim() function (Default fwdTrimLen = 0).
-  - <strong>revTrimLen</strong> Select a reverse trim length for the Dada filterAndTrim() function (Default revTrimLen = 0).
-  - <strong>maxEEVal</strong> Maximum number of expected errors allowed in a read for the Dada filterAndTrim() function (Default maxEEVal = 2).
-  - <strong>truncQValue</strong> Truncation value use to trim ends of reads, nucleotide with quality values less than this value will be used to trim the remainder of the read for the Dada filterAndTrim() function (Default truncQValue = 2).
-  - <strong>truncLenValueF</strong> Dada forward length trim value for the Dada filterAndTrim() function. This function is set to 0 when the pattern matching trim function is enabled (Default truncLenValueF = 0).
-  - <strong>truncLenValueR</strong> Dada reverse length trim value for the Dada filterAndTrim() function. This function is set to 0 when the pattern matching trim function is enabled (Default truncLenValueR = 0).
-  - <strong>error</strong> Percent of fastq files used to assess error rates for the Dada learnErrors() function (Default error = 0.1).
-  - <strong>nbases</strong> The total number of bases used to assess errors for the Dada learnErrors() function (Default nbases = 1e80) NOTE: this value is set very high to get all nucleotides in the error persent file subset. If the error is to be assessed using total reads and not specific fastq files then set the error to 1 and set this value to the desired number of reads.
-  - <strong>maxMismatchValue</strong> Maximum number of mismatches allowed when merging two reads for the Dada mergePairs() function (Default maxMismatchValue = 2).
-  - <strong>minOverlapValue</strong> Minimum number of overlapping nucleotides for the forward and reverse reads for the Dada mergePairs() function (Default minOverlapValue = 12).
-  - <strong>trimOverhang</strong> Trim merged reads past the start of the complimentary primer regions for the Dada mergePairs() function (Default trimOverhang = FALSE).
-  - <strong>minFinalSeqLen</strong> The minimum final desired length of the read (Default minFinalSeqLen = 100).
+- <strong>runFolderLoc -</strong> Select a directory that contains the run folders with the fastq files.
+- <strong>primerFile -</strong> Select a file with the primers for this analysis.
+- <strong>fwdIdent </strong> Foward identifier naming substring.
+- <strong>revIdent </strong> Reverse identifier naming substring.
+- <strong>nonMergeProcessing </strong> Non-Merge Processing (Default TRUE).
+- <strong>maxPrimeMis</strong> Maximum number of mismatches allowed when pattern matching trimming the primers from the ends of the reads for the ShortRead trimLRPatterns() function (Default maxPrimeMis = 2).
+- <strong>fwdTrimLen</strong> Select a forward trim length for the Dada filterAndTrim() function (Default fwdTrimLen = 0).
+- <strong>revTrimLen</strong> Select a reverse trim length for the Dada filterAndTrim() function (Default revTrimLen = 0).
+- <strong>maxEEVal</strong> Maximum number of expected errors allowed in a read for the Dada filterAndTrim() function (Default maxEEVal = 2).
+- <strong>truncQValue</strong> Truncation value use to trim ends of reads, nucleotide with quality values less than this value will be used to trim the remainder of the read for the Dada filterAndTrim() function (Default truncQValue = 2).
+- <strong>truncLenValueF</strong> Dada forward length trim value for the Dada filterAndTrim() function. This function is set to 0 when the pattern matching trim function is enabled (Default truncLenValueF = 0).
+- <strong>truncLenValueR</strong> Dada reverse length trim value for the Dada filterAndTrim() function. This function is set to 0 when the pattern matching trim function is enabled (Default truncLenValueR = 0).
+- <strong>error</strong> Percent of fastq files used to assess error rates for the Dada learnErrors() function (Default error = 0.1).
+- <strong>nbases</strong> The total number of bases used to assess errors for the Dada learnErrors() function (Default nbases = 1e80) NOTE: this value is set very high to get all nucleotides in the error persent file subset. If the error is to be assessed using total reads and not specific fastq files then set the error to 1 and set this value to the desired number of reads.
+- <strong>maxMismatchValue</strong> Maximum number of mismatches allowed when merging two reads for the Dada mergePairs() function (Default maxMismatchValue = 2).
+- <strong>minOverlapValue</strong> Minimum number of overlapping nucleotides for the forward and reverse reads for the Dada mergePairs() function (Default minOverlapValue = 12).
+- <strong>trimOverhang</strong> Trim merged reads past the start of the complimentary primer regions for the Dada mergePairs() function (Default trimOverhang = FALSE).
+- <strong>minFinalSeqLen</strong> The minimum final desired length of the read (Default minFinalSeqLen = 100).
 
 ### Output
 

@@ -356,12 +356,12 @@ seq_BLAST() - Search fasta files of unknown sequences against a BLAST formatted 
 Provide a location for the BLAST database you would like to use by selecting a file in the target directory. Then provide the location of the query sequence files by indicating a file in a directory that contains the fasta files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 250), and finally the number of cores to process the function (default = 1, Windows implementation will only accept this value as 1).
 
 ### Arguments
-<strong>databasePath -</strong> The location of a file in a directory where the desired BLAST database is located.
-<strong>querySeqPath -</strong> The local path for the directory containing all of the fasta files wishing to be BLASTed
-<strong>blastnPath -</strong> The location of the NCBI blast+ blastn program (default = blastn).
-<strong>minLen -</strong> The minimum length of the sequences that will be BLASTed (default = 100).
-<strong>BLASTResults -</strong> The number of returned results, or the depth of the reported results, saved from the BLAST (default = 250).
-<strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
+- <strong>databasePath -</strong> The location of a file in a directory where the desired BLAST database is located.
+- <strong>querySeqPath -</strong> The local path for the directory containing all of the fasta files wishing to be BLASTed
+- <strong>blastnPath -</strong> The location of the NCBI blast+ blastn program (default = blastn).
+- <strong>minLen -</strong> The minimum length of the sequences that will be BLASTed (default = 100).
+- <strong>BLASTResults -</strong> The number of returned results, or the depth of the reported results, saved from the BLAST (default = 250).
+- <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 
 ### Output
 Two files are produced from this function, a BLAST run file and a BLAST results file for each of the fasta files in the target directory.
@@ -382,15 +382,15 @@ taxon_assign() - Using BLAST results to construct a table with taxonomic assignm
 This function requires a BLAST output file and an associated fasta file. In addition, if present an ASV file will also be used to combine the taxonomic results when present. The BLAST results are reduced to a single result for each read. 
 
 ### Arguments
-<strong>fileLoc -</strong> The location of a file in a directory where all of the paired fasta and BLAST (and potentially ASV) files are located.
-<strong>taxaDBLoc -</strong> The location of the NCBI taxonomic data base (accessionTaxa.sql, see the main DBTCShiny page for details). The local path for the directory containing all of the fasta files wishing to be BLASTed.
-<strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
-<strong>coverage -</strong> The percent coverage used for taxonomic assignment for the above threshold results (Default coverage = 95).
-<strong>ident -</strong> The percent identity used for the taxonomic assignment for above threshold results (Default ident = 95).
-<strong>propThres -</strong> The proportional threshold flags the final result based on the preponderance of the data. So if the threshold is set to 0.95, results will be flagged if the taxa directly below the assigned taxa has fewer than 0.95 percent of the records causing the upward taxonomic placement (Default ident = 0.95).
-<strong>coverReportThresh -</strong> The percent coverage threshold used for reporting flags below this threshold (Default coverReportThresh = 95).
-<strong>identReportThresh -</strong> The percent identity threshold used for reporting flags below this threshold (Default identReportThresh = 95).
-<strong>includeAllDada  -</strong> When paired Dada ASV tables are present, when set to FALSE, this will exclude records without taxonomic assignment (Default includeAllDada = TRUE).
+- <strong>fileLoc -</strong> The location of a file in a directory where all of the paired fasta and BLAST (and potentially ASV) files are located.
+- <strong>taxaDBLoc -</strong> The location of the NCBI taxonomic data base (accessionTaxa.sql, see the main DBTCShiny page for details). The local path for the directory containing all of the fasta files wishing to be BLASTed.
+- <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
+- <strong>coverage -</strong> The percent coverage used for taxonomic assignment for the above threshold results (Default coverage = 95).
+- <strong>ident -</strong> The percent identity used for the taxonomic assignment for above threshold results (Default ident = 95).
+- <strong>propThres -</strong> The proportional threshold flags the final result based on the preponderance of the data. So if the threshold is set to 0.95, results will be flagged if the taxa directly below the assigned taxa has fewer than 0.95 percent of the records causing the upward taxonomic placement (Default ident = 0.95).
+- <strong>coverReportThresh -</strong> The percent coverage threshold used for reporting flags below this threshold (Default coverReportThresh = 95).
+- <strong>identReportThresh -</strong> The percent identity threshold used for reporting flags below this threshold (Default identReportThresh = 95).
+- <strong>includeAllDada  -</strong> When paired Dada ASV tables are present, when set to FALSE, this will exclude records without taxonomic assignment (Default includeAllDada = TRUE).
 
 ### Output
 A single taxonomic assignment file is created contains the string 'taxaAssign_YYYY_MM_DD_HHMM'.
@@ -430,8 +430,8 @@ combine_assign_output() - Using results from the taxon_assign() function, combin
 Select a file in a folder with the taxa assigned files you would like to combine (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv'). NOTE: all '_taxaAssign_' files in the folder location should originate from the same dada output file but have outputs from different BLAST sequence libraries and therefore contain the same ASVs.
 
 ### Arguments
-<strong>fileLoc -</strong> The location of a file in a directory where all of the 'taxaAssign' files are located.
-<strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
+- <strong>fileLoc -</strong> The location of a file in a directory where all of the 'taxaAssign' files are located.
+- <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 
 ### Output
 This function produces a '2023_08_03_0913_taxaAssignCombined.tsv' and a '2023_08_03_0913_taxaAssignCombined.txt' file in the selected target directory.
@@ -452,8 +452,8 @@ reduce_taxa() - Using results from taxon_assign() and/or combine_assign_output()
 This function requires a file in a directory where all 'taxaAssign' and/or 'taxaAssignCombine' files in that directory will be combined. All records with the same taxonomic result will be combined. The BLAST values in parentheses ("Num_Rec", "Coverage", "Identity", "Max_eVal") are combine by the mean number of records, the minimum coverage and identity, and the maximum eValue.
 
 ### Arguments
-<strong>fileLoc -</strong>  The location of a file in a directory where all of the 'taxaAssign' and/or 'taxaAssignCombine' files are located.
-<strong>numCores -</strong>  The number of cores used to run the function (default = 1, Windows systems can only use a single core).
+- <strong>fileLoc -</strong>  The location of a file in a directory where all of the 'taxaAssign' and/or 'taxaAssignCombine' files are located.
+- <strong>numCores -</strong>  The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 
 ### Output
 This function produces a '_CombineTaxaReduced.tsv' file for every 'taxaAssign' or 'taxaAssignCombine' present in the target directory.

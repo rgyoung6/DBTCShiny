@@ -367,7 +367,7 @@ Provide a location for the BLAST database you would like to use by selecting a f
 Two files are produced from this function, a BLAST run file and a BLAST results file for each of the fasta files in the target directory.
 
 ### Intrepretation
-The BLAST run file contains the command used to run the BLAST search. The BLAST results file includes all results in a tab delimited .TSV file format with the columns qseqid, sseqid, staxid, qcovs, pident, ssciname, scomname, qstart, qend, sstart, send, evalue.
+The BLAST run file contains the command used to run the BLAST search. The BLAST results file includes all results in a tab delimited .tsv file format with the columns qseqid, sseqid, staxid, qcovs, pident, ssciname, scomname, qstart, qend, sstart, send, evalue.
 
 ### Dependencies
 - Base R
@@ -459,7 +459,7 @@ This function requires a file in a directory where all 'taxaAssign' and/or 'taxa
 This function produces a '_CombineTaxaReduced.tsv' file for every 'taxaAssign' or 'taxaAssignCombine' present in the target directory.
 
 ### Intrepretation
-Reduced taxonomic assignment files have fewer columns in the main taxa_reduced.TSV file than the taxaAssign files as columns are collapsed. In addition, the values in the taxonomic columns in parentheses represent the average values across all of the results with the same taxonomic assignment (see taxon_assign() intrepretation above).
+Reduced taxonomic assignment files have fewer columns in the main taxa_reduced.tsv file than the taxaAssign files as columns are collapsed. In addition, the values in the taxonomic columns in parentheses represent the average values across all of the results with the same taxonomic assignment (see taxon_assign() intrepretation above).
 
 The columns include, superkingdom, phylum, class, order, family, genus, species, Top_BLAST, Final_Common_Names, Final_Rank, Final_Taxa, Result_Code, RepSequence, Number_ASV, Average_ASV_Length, Number_Occurrences, Average_ASV_Per_Sample, Median_ASV_Per_Sample, Results.
 
@@ -479,7 +479,7 @@ Select a file in a folder with 'taxaReduced' files representing data for the sam
 The only argument necessary for this function is the location of a file in the folder with all of the files that are wanting to be combined.
 
 ### Output
-Two files, a CombineTaxaReduced.TSV result file and a CombineTaxaReduced.txt run summary file are generated from this function. The result file contains presence/absence data in a matrix that associates the data with samples, taxa, and molecular marker. The column headers in the results file includes the following, superkingdom, phylum, class, order, family, genus, species, markers(n number of columns), samples (n number).
+Two files, a CombineTaxaReduced.tsv result file and a CombineTaxaReduced.txt run summary file are generated from this function. The result file contains presence/absence data in a matrix that associates the data with samples, taxa, and molecular marker. The column headers in the results file includes the following, superkingdom, phylum, class, order, family, genus, species, markers(n number of columns), samples (n number).
 
 ### Intrepretation
 There is no specific unique intrepretation for this file.

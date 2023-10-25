@@ -206,7 +206,7 @@ Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, Meta
 # Package Function Details
 
 ## Dada Implement
-dada_implement() - Process metabarcode raw fastq files by run using Dada2
+dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end)
 
 ### Input 
 Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads.
@@ -275,15 +275,15 @@ The output files from this function appear in four folders. See the below diagra
             |                                 |                                 |                                 |  
             |                                 |                                 |                                 |   
 2023_10_16_1511_Run1_A_Qual       2023_10_16_1511_Run1_B_Filt    2023_10_16_1511_Run1_C_FiltQual    2023_10_16_1511_Run1_D_Output
--fwdQual.pdf                      -fwdFilt.fastq                 -filtFwdQual.pdf                   -dadaSummary.txt
--revQual.pdf                      -revFilt.fastq                 -filtRevQual.pdf                   -dadaSummaryTable.tsv
-...                               ...                            ...                                -ErrorForward.pdf
-                                    Primer_Trim                                                     -ErrorReverse.pdf
-                                    -primeTrim.fastq                                                -MergeFwdRev.tsv
-                                    ...                                                             -MergeFwdRev.fas
-                                                                                                    -Merge.tsv
-                                                                                                    -Merge.fas
-                                                                                                    -TotalTable.tsv
+  -fwdQual.pdf                      -fwdFilt.fastq                 -filtFwdQual.pdf                   -dadaSummary.txt
+  -revQual.pdf                      -revFilt.fastq                 -filtRevQual.pdf                   -dadaSummaryTable.tsv
+  ...                               ...                            ...                                -ErrorForward.pdf
+                                    Primer_Trim                                                       -ErrorReverse.pdf
+                                      -primeTrim.fastq                                                -MergeFwdRev.tsv
+                                      ...                                                             -MergeFwdRev.fas
+                                                                                                      -Merge.tsv
+                                                                                                      -Merge.fas
+                                                                                                      -TotalTable.tsv
 ```
 
 ### Intrepretation

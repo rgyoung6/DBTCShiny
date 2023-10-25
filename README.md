@@ -499,16 +499,19 @@ NA
 ([Back to Top](#table-of-contents))
 ***
 
-# Import GPS and grouping data - COMING SOON!
+# Import GPS and grouping data
+COMING SOON!
 
-# Mapping Dashboard - COMING SOON!
-## Mapping - COMING SOON!
-## Data Filtering - COMING SOON!
-## Mapped Data Table - COMING SOON!
+# Mapping Dashboard
+COMING SOON!
 
+## Mapping
+COMING SOON!
 
+## Data Filtering
+COMING SOON!
 
+## Mapped Data Table
+COMING SOON!
 
 ([Back to Top](#table-of-contents))
-
-

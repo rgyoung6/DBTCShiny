@@ -67,7 +67,7 @@ library("DBTCShiny", lib.loc="HERE")
 Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html#blast-executables) executables page to obtain a local version of the BLAST tools.
 
 ### R package taxonomizr to establish a local NCBI taxonomy database
-The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline)
+The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline).
 ```
 install.packages(taxonomizr)
 library(taxonomizr)
@@ -206,7 +206,7 @@ Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, Meta
 # Package Function Details
 
 ## Dada Implement
-dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end)
+dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end).
 
 ### Input 
 Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads.
@@ -496,12 +496,12 @@ There is no specific unique intrepretation for this file.
 ### Dependencies
 NA
 
-# Import GPS and grouping data
+# Import GPS and grouping data - COMING SOON!
 
-# Mapping Dashboard
-## Mapping
-## Data Filtering
-## Mapped Data Table
+# Mapping Dashboard - COMING SOON!
+## Mapping - COMING SOON!
+## Data Filtering - COMING SOON!
+## Mapped Data Table - COMING SOON!
 
 
 

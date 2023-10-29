@@ -405,11 +405,13 @@ dbtcTools <- function() {
                          shiny::fluidRow(
                            shiny::strong("Select a file in the folder with the
                                          BLAST output file(s) and associated
-                                         Dada ASV output file(s), if present.
-                                         NOTE: if no paired ASV is present the
-                                         sequence records will still be processed
-                                         witout combining the results with
-                                         read numbers per sample."),
+                                         fasta file(s). In addition, if present,
+                                         associated Dada ASV output file(s) will
+                                         also be used to combine with the
+                                         taxonomic results. NOTE: if no paired
+                                         ASV file is present, the BLAST results
+                                         and sequence records will still be
+                                         processed."),
                            shiny::br(),
                            shiny::column(1,shiny::actionButton("taxaAssignFileLocButton", "Dada File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shiny::br(),

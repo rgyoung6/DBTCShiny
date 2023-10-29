@@ -220,7 +220,6 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
             write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
 
             #Run the BLAST command in a system command
-#            BLASTOutput<-system(paste0("bash '", blastCommandFile, "'"))
             system(paste0("bash '", blastCommandFile, "'"))
 
           }#Closing off the checking platform if

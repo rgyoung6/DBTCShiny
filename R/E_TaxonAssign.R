@@ -194,7 +194,7 @@ print("In the loop where there are FALSE")
 
         #Create the output dataframe
         condensedOut <- data.frame(uniqueID = character(), superkingdom = character(), phylum = character(), class = character(), order = character(), family = character(), genus = character(), species = character(), Top_BLAST = character(), Lowest_Single_Rank = character(), Lowest_Single_Taxa = character(), Lowest_Single_Rank_Above_Thres = character(), Lowest_Single_Taxa_Above_Thres = character(), Final_Common_Names = character(), Final_Rank = character(), Final_Taxa = character(), Final_Rank_Taxa_Thres = character(), Result_Code = character())
-        write.table(as.data.frame(condensedOut), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names = TRUE, append = FALSE, sep = "\t", quote = FALSE)
+        write.table(as.data.frame(condensedOut), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names = TRUE, append = FALSE, sep = "\t", quote = FALSE)
 
         #Make a list of the ranks
         taxaRank <- c("superkingdom", "phylum", "class", "order", "family", "genus", "species")
@@ -506,7 +506,7 @@ print("In the loop where there are FALSE")
 
           } #Closing the if nrow condensedOut !=0
 
-            write.table(as.data.frame(condensedOut), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names = FALSE, append = TRUE, sep = "\t", quote = FALSE)
+            write.table(as.data.frame(condensedOut), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names = FALSE, append = TRUE, sep = "\t", quote = FALSE)
 
             return(as.data.frame(condensedOut))
 
@@ -525,7 +525,7 @@ print("In the loop where there are FALSE")
 
         #Print the results fo the condensed taxa assign to a file
         colnames(finalCondensedOut)<-gsub("\\.","-",colnames(finalCondensedOut))
-        write.table(as.data.frame(finalCondensedOut, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
+        write.table(as.data.frame(finalCondensedOut, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
 
         #Check to see if the BLAST results has an accompanying dada output file
         if(file.exists(filesList[fileCounter,4])){
@@ -533,7 +533,7 @@ print("In the loop where there are FALSE")
           dadaOutputTable <- read.delim(filesList[fileCounter,4], header = TRUE, check.names=FALSE)
 
           #Read in the taxa condense output file.
-          taxaTotalFile <- read.delim(file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), header = TRUE, check.names=FALSE)
+          taxaTotalFile <- read.delim(file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), header = TRUE, check.names=FALSE)
 
           #Merge the taxa with the records per sample
           if(includeAllDada==TRUE){
@@ -543,7 +543,7 @@ print("In the loop where there are FALSE")
           }
           #Change the .(which were forced to change from the original naming convention of -) to - for output
           colnames(totalDataset)<-gsub("\\.","-",colnames(totalDataset))
-          write.table(as.data.frame(totalDataset, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
+          write.table(as.data.frame(totalDataset, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
         }else if(file.exists(filesList[fileCounter,7])){ #if no dada asv file check for a fasta file
 
           #Read in the data from the target file
@@ -570,7 +570,7 @@ print("In the loop where there are FALSE")
             seqTable$uniqueID <- gsub(">", "", seqTable$uniqueID)
 
             #Read in the taxa condense output file.
-            taxaTotalFile <- read.delim(file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), header = TRUE, check.names=FALSE)
+            taxaTotalFile <- read.delim(file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), header = TRUE, check.names=FALSE)
 
             #Merge the taxa with the records per sample
             if(includeAllDada==TRUE){
@@ -580,7 +580,7 @@ print("In the loop where there are FALSE")
             }
             #Change the .(which were forced to change from the original naming convention of -) to - for output
             colnames(totalDataset)<-gsub("\\.","-",colnames(totalDataset))
-            write.table(as.data.frame(totalDataset, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,6], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
+            write.table(as.data.frame(totalDataset, check.names=FALSE), file = paste0(fileLoc, "/", as.vector(filesList[fileCounter,1]), "_", filesList[fileCounter,10], "_taxaAssign_", dateStamp, ".tsv"), row.names = FALSE, col.names=TRUE, append = FALSE, sep="\t", quote = FALSE)
 
           }
 

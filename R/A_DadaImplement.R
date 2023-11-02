@@ -324,7 +324,7 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
         #Write files into a folder in the A_folder
         ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", fwdFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
       }
-      #For loop for each file in the forward direction in the submitted set
+      #For loop for each file in the reverse direction in the submitted set
       for (listCounter in 1:length(revFile$fileNamesNoDir)){
         #Read in the fastqfile in to a ShortreadQ format file
         readInFile<-readFastq(revFile[listCounter,1])
@@ -859,7 +859,7 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
 
       }else{
 
-        #Add the values to the reporting track dataqframe for a single sample, first get the values
+        #Add the values to the reporting track dataframe for a single sample, first get the values
         trackTemp <- as.data.frame(c(getN(dadaF1), getSeqQual(dadaF1), getMeanSeqLen(dadaF1), getSeqLength(dadaF1), getN(dadaR1), getSeqQual(dadaR1), getMeanSeqLen(dadaR1), getSeqLength(dadaR1)))
 
         #Add rownames to the temp data frame

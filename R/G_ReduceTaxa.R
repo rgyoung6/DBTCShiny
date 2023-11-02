@@ -99,7 +99,7 @@ reduce_taxa<- function(fileLoc = NULL,   numCores = 1){
   # Get the local paths
   files[,2] <- list.files(path = fileLoc, pattern = "*[.]*")
   #Get all files with the '_taxaAssign' string
-  files <- files[grepl("_taxaAssign_.*", files[,2]),]
+  files <- files[grepl("_taxaAssign.*", files[,2]),]
   #Remove files with _taxaAssignCombine.txt
   files <- files[!grepl("_taxaAssignCombined.txt", files[,2]),]
   # Get the names of the files

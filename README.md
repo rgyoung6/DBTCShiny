@@ -42,7 +42,7 @@ Coming Soon.... install.packages('DBTCShiny’)
 ## 2. Install via GitHub
 Run the following commands in your R terminal...<br/>
 ```
-install.packages("devtools")
+if(!require(devtools)) install.packages("devtools")
 library(devtools)
 devtools::install_github("rgyoung6/DBTCShiny")
 library(DBTCShiny)

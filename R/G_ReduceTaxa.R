@@ -77,10 +77,7 @@ reduce_taxa<- function(fileLoc = NULL,   numCores = 1){
 
   #load in the files list
   if (is.null(fileLoc)){
-    print(paste0("Select a file in the file folder with taxon assign files or
-                 the taxon assign combined files you would like to reduce
-                 (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv' or
-                 '_YYYY_MM_DD_HHMM_taxaAssignCombine.tsv' )."))
+    print(paste0("Select a file in the file folder with taxon assign files or the taxon assign combined files you would like to reduce (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv' or '_YYYY_MM_DD_HHMM_taxaAssignCombine.tsv' )."))
     fileLoc <- file.choose()
   }
 
@@ -152,86 +149,98 @@ reduce_taxa<- function(fileLoc = NULL,   numCores = 1){
       colIndex <- which(names(uniqueTotalResults) %in% c("Final_Rank_Taxa_Thres"))
       uniqueTotalResults <- uniqueTotalResults[ , -c(colIndex)]
 
-      if(nrow(uniqueTotalResults) > 0){
+      #kingdom
+      uniqueTotalResultsTemp<-data.frame(superkingdom = combine_row(uniqueTotalResults$superkingdom), check.names=FALSE)
+      #phylum
+      uniqueTotalResultsTemp["phylum"] <- combine_row(uniqueTotalResults$phylum)
+      #class
+      uniqueTotalResultsTemp["class"] <- combine_row(uniqueTotalResults$class)
+      #Order
+      uniqueTotalResultsTemp["order"] <- combine_row(uniqueTotalResults$order)
+      #Family
+      uniqueTotalResultsTemp["family"] <- combine_row(uniqueTotalResults$family)
+      #Genus
+      uniqueTotalResultsTemp["genus"] <- combine_row(uniqueTotalResults$genus)
+      #species
+      uniqueTotalResultsTemp["species"] <- combine_row(uniqueTotalResults$species)
+      #top BLAST hit
+      if(length(unique(uniqueTotalResults$Top_BLAST)) < 21){
+        uniqueTotalResultsTemp["Top_BLAST"] <- paste0(unique(uniqueTotalResults$Top_BLAST), collapse = ", ")
+      }else{
+        uniqueTotalResultsTemp["Top_BLAST"] <- "Greater than 20"
+      }
 
-        #kingdom
-        uniqueTotalResultsTemp<-data.frame(superkingdom = combine_row(uniqueTotalResults$superkingdom), check.names=FALSE)
-        #phylum
-        uniqueTotalResultsTemp["phylum"] <- combine_row(uniqueTotalResults$phylum)
-        #class
-        uniqueTotalResultsTemp["class"] <- combine_row(uniqueTotalResults$class)
-        #Order
-        uniqueTotalResultsTemp["order"] <- combine_row(uniqueTotalResults$order)
-        #Family
-        uniqueTotalResultsTemp["family"] <- combine_row(uniqueTotalResults$family)
-        #Genus
-        uniqueTotalResultsTemp["genus"] <- combine_row(uniqueTotalResults$genus)
-        #species
-        uniqueTotalResultsTemp["species"] <- combine_row(uniqueTotalResults$species)
-        #top BLAST hit
-        if(length(unique(uniqueTotalResults$Top_BLAST)) < 21){
-          uniqueTotalResultsTemp["Top_BLAST"] <- paste0(unique(uniqueTotalResults$Top_BLAST), collapse = ", ")
-        }else{
-          uniqueTotalResultsTemp["Top_BLAST"] <- "Greater than 20"
-        }
+      #Final_Common_Names
+      if(length(unique(uniqueTotalResults$Final_Common_Names)) == 1){
+        uniqueTotalResultsTemp["Final_Common_Names"] <-uniqueTotalResults[1,"Final_Common_Names"]
+      }else if(length(unique(uniqueTotalResults$Final_Common_Names)) < 21){
+        uniqueTotalResultsTemp["Final_Common_Names"] <- paste0(unique(uniqueTotalResults$Final_Common_Names), collapse = ", ")
+      } else{
+        uniqueTotalResultsTemp["Final_Common_Names"] <- "Greater than 20"
+      }
 
-        #Final_Common_Names
-        if(length(unique(uniqueTotalResults$Final_Common_Names)) == 1){
-          uniqueTotalResultsTemp["Final_Common_Names"] <-uniqueTotalResults[1,"Final_Common_Names"]
-        }else if(length(unique(uniqueTotalResults$Final_Common_Names)) < 21){
-          uniqueTotalResultsTemp["Final_Common_Names"] <- paste0(unique(uniqueTotalResults$Final_Common_Names), collapse = ", ")
-        } else{
-          uniqueTotalResultsTemp["Final_Common_Names"] <- "Greater than 20"
-        }
+      #Final_Rank
+      if(unique(uniqueTotalResults$Final_Rank)==1){
+      uniqueTotalResultsTemp["Final_Rank"] <- unique(uniqueTotalResults$Final_Rank)
+      }else{
+        uniqueTotalResultsTemp["Final_Rank"] <- paste0(unique(uniqueTotalResults$Final_Rank), collapse = ", ")
+      }
 
-        #Final_Rank
-        if(unique(uniqueTotalResults$Final_Rank)==1){
-        uniqueTotalResultsTemp["Final_Rank"] <- unique(uniqueTotalResults$Final_Rank)
-        }else{
-          uniqueTotalResultsTemp["Final_Rank"] <- paste0(unique(uniqueTotalResults$Final_Rank), collapse = ", ")
-        }
+      #Final_Taxa
+      uniqueTotalResultsTemp["Final_Taxa"] <- combine_row(uniqueTotalResults$Final_Taxa)
 
-        #Final_Taxa
-        uniqueTotalResultsTemp["Final_Taxa"] <- combine_row(uniqueTotalResults$Final_Taxa)
+      #Get all results in the Result_Code column and place into a vector
+      result_code_list <- unique(unlist(strsplit(uniqueTotalResults$Result_Code, split = ", ")))
+#        result_code_list <- gsub(" ","",result_code_list)
+#        result_code_list <- sort(unique(unlist(strsplit(result_code_list, split = ","))))
+#        result_code_list<- paste(result_code_list, collapse=",")
+#        result_code_list <- gsub("-,","",result_code_list)
+#        uniqueTotalResultsTemp["Result_Code"] <- result_code_list
 
-        #Get all results in the Result_Code column and place into a vector
-        result_code_list <- unique(unlist(strsplit(uniqueTotalResults$Result_Code, split = ",")))
-        result_code_list <- gsub(" ","",result_code_list)
-        result_code_list <- sort(unique(unlist(strsplit(result_code_list, split = ","))))
-        result_code_list<- paste(result_code_list, collapse=",")
-        result_code_list <- gsub("-,","",result_code_list)
+      #Get all results in the Result_Code column and place into a vector
+      result_code_list <- unique(unlist(strsplit(result_code_list, split = ", ")))
+      # Use grep to identify elements containing a dash
+      elements_with_dash <- grep("-", result_code_list, value = TRUE)
+      # Filter out elements with dashes
+      result_code_list <- result_code_list[!result_code_list %in% elements_with_dash]
+      # Combine the elements into a comma-separated single variable
+      result_code_list <- paste(result_code_list, collapse = ", ")
+
+      #Add - back into the empty rows.
+      if(result_code_list==""){
+        uniqueTotalResultsTemp["Result_Code"] <- "-"
+      }else{
         uniqueTotalResultsTemp["Result_Code"] <- result_code_list
+      }
 
-        #Use the dereplicate_sequences function to get the longest dereplicated sequence
-        reducedSeq<-dereplicate_sequences(uniqueTotalResults$Sequence[!is.na(uniqueTotalResults$Sequence)])
-        uniqueTotalResultsTemp["RepSequence"]<-reducedSeq[1]
-        #Get the number of unique sequences for the taxa
-        uniqueTotalResultsTemp["Number_ASV"]<-length(unique(uniqueTotalResults$Sequence[!is.na(uniqueTotalResults$Sequence)]))
-        #Get the average length of the sequence
-        uniqueTotalResultsTemp["Average_ASV_Length"]<- mean(nchar(uniqueTotalResults$Sequence))
-        # Get the number of occurrences for the taxa
-        uniqueTotalResultsTemp["Number_Occurrences"]<-sum(colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))]) != 0)
-        # Get the average number of reads
-        per_sample_sums<-colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))])
-        uniqueTotalResultsTemp["Average_ASV_Per_Sample"]<-mean(per_sample_sums[per_sample_sums!=0])
-        #Get the median number of reads
-        uniqueTotalResultsTemp["Median_ASV_Per_Sample"]<-stats::median(per_sample_sums[per_sample_sums!=0])
+      #Use the dereplicate_sequences function to get the longest dereplicated sequence
+      reducedSeq<-dereplicate_sequences(uniqueTotalResults$Sequence[!is.na(uniqueTotalResults$Sequence)])
+      uniqueTotalResultsTemp["RepSequence"]<-reducedSeq[1]
+      #Get the number of unique sequences for the taxa
+      uniqueTotalResultsTemp["Number_ASV"]<-length(unique(uniqueTotalResults$Sequence[!is.na(uniqueTotalResults$Sequence)]))
+      #Get the average length of the sequence
+      uniqueTotalResultsTemp["Average_ASV_Length"]<- mean(nchar(uniqueTotalResults$Sequence))
+      # Get the number of occurrences for the taxa
+      uniqueTotalResultsTemp["Number_Occurrences"]<-sum(colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))]) != 0)
+      # Get the average number of reads
+      per_sample_sums<-colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))])
+      uniqueTotalResultsTemp["Average_ASV_Per_Sample"]<-mean(per_sample_sums[per_sample_sums!=0])
+      #Get the median number of reads
+      uniqueTotalResultsTemp["Median_ASV_Per_Sample"]<-stats::median(per_sample_sums[per_sample_sums!=0])
 
-        #Results
-        if(length(unique(uniqueTotalResults$Results))==1){
-          uniqueTotalResultsTemp["Results"] <- unique(uniqueTotalResults$Results)
-        }else{
-          uniqueTotalResultsTemp["Results"] <- paste0(unique(uniqueTotalResults$Results), collapse = ", ")
-        }
+      #Results
+      if(length(unique(uniqueTotalResults$Results))==1){
+        uniqueTotalResultsTemp["Results"] <- unique(uniqueTotalResults$Results)
+      }else{
+        uniqueTotalResultsTemp["Results"] <- paste0(unique(uniqueTotalResults$Results), collapse = ", ")
+      }
 
-        #Add on the sequence reads per sample on to the end of the reporting table
-        sampleSums<-as.data.frame(colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))]), check.names=FALSE)
-        sampleSumNames<-rownames(sampleSums)
-        sampleSums<-t(sampleSums)
-        colnames(sampleSums)<-sampleSumNames
-        uniqueTotalResultsTemp<-cbind(uniqueTotalResultsTemp, sampleSums)
-
-      }#Closing the if there is at least one entry
+      #Add on the sequence reads per sample on to the end of the reporting table
+      sampleSums<-as.data.frame(colSums(uniqueTotalResults[,c(as.numeric(which(colnames(uniqueTotalResults) == "Results")+1):ncol(uniqueTotalResults))]), check.names=FALSE)
+      sampleSumNames<-rownames(sampleSums)
+      sampleSums<-t(sampleSums)
+      colnames(sampleSums)<-sampleSumNames
+      uniqueTotalResultsTemp<-cbind(uniqueTotalResultsTemp, sampleSums)
 
       return(uniqueTotalResultsTemp)
 

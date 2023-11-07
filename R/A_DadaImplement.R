@@ -299,15 +299,6 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
 
       ########################### PATTERN TRIMMING SECTION ############################################
 
-      #Problem here is that this function only trims from the left initiation. It will not trim within the sequence.
-
-      #perhaps place a do while loop with a movement into the middle of the reads one nucleotide at a time
-
-      #Wrap these in apply to make this faster.
-
-      #Or use the TrimDNA function in Decipher package - but I don't know how I will force the results back into a sortReadQ with quality
-      #metrics equal to the length fo the sequences?
-
       #Message quality trimming - Print to screen and log file
       print(paste0("Begin pattern based trimming at time...", Sys.time()))
       suppressWarnings(write(paste0("Begin pattern based trimming at time...", Sys.time()), file = paste0(outFolder, "/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))

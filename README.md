@@ -145,7 +145,7 @@ After installation of the DBTCShiny and all of its dependencies you need to load
 
 ```
 library(DBTCShiny)
-launchDBTC()
+launchDBTCShiny()
 ```
 
 ***

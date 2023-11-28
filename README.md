@@ -496,7 +496,7 @@ Two files, a CombineTaxaReduced.tsv result file and a CombineTaxaReduced.txt run
 There is no specific unique intrepretation for this file.
 
 ### Dependencies
-- plyr() rbind.fill function
+- plyr() rbind.fill
 
 ([Back to Top](#table-of-contents))
 ***

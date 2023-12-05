@@ -42,10 +42,10 @@ Coming Soon.... install.packages('DBTCShiny’)
 ## 2. Install via GitHub
 Run the following commands in your R terminal...<br/>
 ```
-if(!require(devtools)) install.packages("devtools")
-library(devtools)
-devtools::install_github("rgyoung6/DBTCShiny")
-library(DBTCShiny)
+if(!require(devtools)) install.packages('devtools')
+library('devtools')
+devtools::install_github('rgyoung6/DBTCShiny')
+library('DBTCShiny')
 ```
 **Note:** the first command to install the "devtools" may not be necessary if already installed.<br/>
 
@@ -69,12 +69,12 @@ Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/
 ### R package taxonomizr to establish a local NCBI taxonomy database
 The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline).
 ```
-install.packages(taxonomizr)
-library(taxonomizr)
+install.packages('taxonomizr')
+library('taxonomizr')
 ```
 
 ### Establish a local NCBI prepared sequence database
-NCBI preformated databases can be established through two methods.
+NCBI preformatted databases can be established through two methods.
 
 1. Download your desired preformatted NCBI database by using the 'update_blastdb.pl' (found in the NCBI BLAST+ local install folder). NOTE: Perl programming langugage needs to be installed on your local machine. Instructions can be found at [Get NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK569850/).
 
@@ -93,7 +93,7 @@ In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.
 prepareDatabase('accessionTaxa.sql')
 ```
 
-## R Packages Dependancies
+## R Packages Dependencies
 
 ### Bioconductor - ShortRead and Dada2 packages
 

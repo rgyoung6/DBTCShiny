@@ -144,6 +144,7 @@ library(c('ggplot2',
 
 ([Back to Top](#table-of-contents))
 ***
+</details>
 
 # Run DBTCShiny
 

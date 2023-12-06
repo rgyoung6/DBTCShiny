@@ -31,8 +31,7 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
   * [Data Filtering](#data-filtering)
   * [Mapped Data Table](#mapped-data-table) 
 
-# Installation 
-<details>
+# Installation <details><summary></summary>
   
 DBTCShiny can be installed three ways.
 

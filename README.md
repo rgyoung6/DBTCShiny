@@ -63,6 +63,9 @@ library("DBTCShiny", lib.loc="HERE")
 
 # Package Dependencies
 
+<details><summary>Expand</summary>
+<br></br>
+  
 ## External R Element Dependencies
 
 ### NCBI BLAST+ local program to run BLAST on local databases

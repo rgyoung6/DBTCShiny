@@ -34,8 +34,7 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
 # Installation 
 
 <details><summary>Expand</summary>
-
-  
+<br></br>
 DBTCShiny can be installed three ways.
 
 ## 1. Install from CRAN

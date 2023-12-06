@@ -31,8 +31,8 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
   * [Data Filtering](#data-filtering)
   * [Mapped Data Table](#mapped-data-table) 
 
-<DETAILS> # Installation 
-
+# Installation 
+<DETAILS> 
 DBTCShiny can be installed three ways.
 
 ## 1. Install from CRAN
@@ -57,7 +57,7 @@ library("DBTCShiny", lib.loc="HERE")
 
 ([Back to Top](#table-of-contents))
 ***
-
+</DETAILS>
 # Package Dependencies
 
 ## External R Element Dependencies

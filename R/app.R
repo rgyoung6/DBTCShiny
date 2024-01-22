@@ -18,7 +18,8 @@
 
 # Shiny Packages
 #' @import leaflet
-
+#' @import DT
+#'
 # Shiny Functions
 #' @importFrom magrittr %>%
 #' @importFrom shiny a
@@ -218,7 +219,7 @@ welcomePage <- function() {
 
 dbtcTools <- function() {
   shinydashboard::tabItem(tabName = "dbtcTools",shiny::h1(shiny::strong("DBTC Tools")),
-    shinydashboard::tabBox(id = "map_filter_table_tabbox",width = 12,
+    shinydashboard::tabBox(id = "DBTC_Tools_Box",width = 12,
        shiny::tabPanel("Dada",shiny::div(style = 'overflow-y:scroll;height:400px;',
              shiny::column(width = 4,
                            shiny::p(shiny::tags$b(shiny::tags$u("1. General Information", style = "font-size:14px;"))),
@@ -481,7 +482,11 @@ dbtcTools <- function() {
                            shiny::strong("Select a file in the file folder with
                                          taxon assign files you would like to
                                          reduce (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv'
-                                         or 'YYYY_MM_DD_HHMM_taxaAssignCombine.tsv' )."),
+                                         or 'YYYY_MM_DD_HHMM_taxaAssignCombine.tsv' ).
+                                         NOTE: For use in the mapping visualization
+                                         component of the DBTCShiny where read numbers
+                                         are retained the name of the files should be
+                                         'markerName' followed by '_taxaAssign_YYYY_MM_DD_HHMM.tsv'"),
                            shiny::br(),
                            shiny::column(1,shiny::actionButton("reduceTaxaFileLocButton", "Taxa Assign File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shiny::br(),
@@ -501,7 +506,7 @@ dbtcTools <- function() {
                            shiny::strong("Select a file in the folder with
                                          the reduced taxa files you would
                                          like to combine (extension
-                                         '_taxaReduced_YYYY_MM_DD_HHMM.tsv')"),
+                                         '_taxaReduced_YYYY_MM_DD_HHMM.tsv')."),
                            shiny::br(),
                            shiny::column(1,shiny::actionButton("combineReducedTaxaFileLocButton", "Reduced Taxa File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shiny::br(),
@@ -510,6 +515,9 @@ dbtcTools <- function() {
                            shiny::br(),
                            shiny::br()
                          ),
+                         # Get an input to see if the submitted files will be combined by taxa or by taxa
+                         # and sample/marker name and then replaced with 1/0 presence absence
+                         shiny::radioButtons("presenceAbsence", "When combining the ASV tables there are two choices. Change all positive reads to 1 for presence absence data (TRUE) - used when sample names across markers are the same. Or keep read data values (FALSE) - used when sample names contain marker information (Default presenceAbsence = TRUE)", c("TRUE", "FALSE")),
                          #Submit button to run the script
                          shiny::actionButton("combineReduceTaxa","Combine Reduced Taxa Assign", icon = shiny::icon("play-circle"))
                        )
@@ -517,6 +525,7 @@ dbtcTools <- function() {
     )#Closing off the tabBox
   )#Closing the tab item
 }#Closing the function
+
 ################### Data Input Tab ##########################################
 
 dataImport <- function() {
@@ -529,7 +538,7 @@ dataImport <- function() {
       collapsible = FALSE,
       width = 12,
       shiny::column(width = 12,
-        shiny::p("Select the file of interest to view on the map."),
+        shiny::p("Select the files of interest to view on the map."),
         shiny::br(),
         shiny::fluidRow(
           shiny::column(width = 3, shiny::actionButton("ASVFile_button", "ASV Data File", icon = shiny::icon("magnifying-glass"))),
@@ -558,7 +567,7 @@ dataImport <- function() {
    shinydashboard::tabItem(tabName = "mappingDashboard",shiny::h1(shiny::strong("Mapping and Filtering")),
     shiny::p("COMING SOON!!! Perform geospatial analysis based on collection locations.",
     style = "font-size:16px;"),
-    shinydashboard::tabBox(id = "map_filter_table_tabbox",width = 12,
+    shiny::tabsetPanel(id = "map_filter_table_tabbox",
       shiny::tabPanel("Mapping", shinycssloaders::withSpinner(leaflet::leafletOutput("mymap", height = 700))),
       shiny::tabPanel("Data Filtering",
       shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
@@ -566,94 +575,102 @@ dataImport <- function() {
         shiny::p(shiny::tags$b(shiny::tags$u("1. Data Filtering", style = "font-size:14px;"))),
         shiny::wellPanel(
         #Slider number of reads
-        shiny::sliderInput("numReads", "Select the min number of reads per sample per taxa",min = 0,
-        max =200000, value=c(0,200000),step = 1),
+        shiny::sliderInput("abundance", "Select the minimum and maximum number of reads per sample per taxa to be mapped",
+                           min = 0,max =0, value=c(0,0),step = 1),
         #Dropdown menu for SampleID
+        shinyWidgets::pickerInput(inputId = "finalRank","Final Rank",
+          choices = "NA",
+          selected = "NA",
+          options = list('actions-box' = TRUE),
+          multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "kingdomFilterInput","Kingdom",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "phylumFilterInput","Phylum",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "classFilterInput","Class",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "orderFilterInput","Order",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "familyFilterInput","Family",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "genusFilterInput","Genus",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE),
         shinyWidgets::pickerInput(inputId = "speciesFilterInput","Species",
-          choices = "None",
-          selected = "None",
+          choices = "NA",
+          selected = "NA",
           options = list('actions-box' = TRUE),
           multiple = TRUE)
       )),
       shiny::column(width = 6,
         shiny::p(shiny::tags$b(shiny::tags$u("2. Metadata Filtering", style = "font-size:14px;"))),
         shiny::wellPanel(
-          #Dropdown menu for SampleID
-          shinyWidgets::pickerInput(inputId = "sampleIDFilterInput","Sample",
-            choices = "None",
-            selected = "None",
+          #Dropdown menu for Sample
+          shinyWidgets::pickerInput(inputId = "sampleFilterInput","Sample",
+            choices = "NA",
+            selected = "NA",
             options = list('actions-box' = TRUE),
             multiple = TRUE),
-          #Dropdown menu for RunID
-          shinyWidgets::pickerInput(inputId = "runIDFilterInput","Run",
-            choices = "None",
-            selected = "None",
-            options = list('actions-box' = TRUE),
-              multiple = TRUE),
-          #Dropdown menu for LabID
-          shinyWidgets::pickerInput(inputId = "labIDFilterInput","Lab ID",
-            choices = "None",
-            selected = "None",
+          #Dropdown menu for Run
+          shinyWidgets::pickerInput(inputId = "runFilterInput","Run",
+            choices = "NA",
+            selected = "NA",
             options = list('actions-box' = TRUE),
             multiple = TRUE),
-          #Dropdown menu for SiteID
-          shinyWidgets::pickerInput(inputId = "siteIDFilterInput","Site",
-            choices = "None",
-            selected = "None",
+          #Dropdown menu for Lab
+          shinyWidgets::pickerInput(inputId = "labFilterInput","Laboratory",
+            choices = "NA",
+            selected = "NA",
             options = list('actions-box' = TRUE),
             multiple = TRUE),
           #Dropdown menu for Type
           shinyWidgets::pickerInput(inputId = "typeFilterInput","Type",
-            choices = "None",
-            selected = "None",
+            choices = "NA",
+            selected = "NA",
             options = list('actions-box' = TRUE),
             multiple = TRUE),
-          #Dropdown menu for Date
-          shinyWidgets::pickerInput(inputId = "dateFilterInput","Dates",
-            choices = "None",
-            selected = "None",
+
+          #Dropdown menu for the different molecular Markers
+          shinyWidgets::pickerInput(inputId = "markerFilterInput","Molecular Markers",
+            choices = "NA",
+            selected = "NA",
             options = list('actions-box' = TRUE),
             multiple = TRUE),
-          #Dropdown menu for RegionID
-          shinyWidgets::pickerInput(inputId = "regionIDFilterInput","Region",
-            choices = "None",
-            selected = "None",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE)
+          #Slider for date
+          shiny::sliderInput("dateInput","Select Event Date Range",
+                             min =as.Date(Sys.Date(), "%Y-%m-%d"),
+                             max = as.Date(Sys.Date(),"%Y-%m-%d"),
+                             value = range(c(as.Date(Sys.Date(), "%Y-%m-%d"),
+                                             as.Date(Sys.Date(), "%Y-%m-%d"))),
+                             timeFormat = "%Y-%m-%d",step = 1),
+
+          shiny::br(),
+          #Data file upload
+          shiny::fluidRow(shiny::column(6,shiny::actionButton("updateFilterMappingButton", "Update Filtering Options", icon = shiny::icon("play"))),
+                          shiny::column(6,shiny::actionButton("resetFilterMappingButton", "Reset Filtering Options", icon = shiny::icon("refresh")))
+                        ),
+          shiny::br(),
+          shiny::br()
+
           ))
-        )),#End of top box
-        shiny::tabPanel("Mapped Data Table", shiny::dataTableOutput("mapping_data")
-      )#Tab panel
+         ))#End of top box
     )#Tab Box
    )#Tab Item
  }

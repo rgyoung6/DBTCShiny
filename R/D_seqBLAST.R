@@ -228,8 +228,41 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
                 #Run the BLAST command in a system command
                 BLASTOutput<-system(paste0("bash './", blastCommandFile, "'"))
 
-                #After running the command file move the file to the location of the fasta files being BLASTed
-                file.rename(from = blastCommandFile,  to = paste0(querySeqPath, "/", blastCommandFile))
+
+
+
+
+
+
+
+
+
+
+
+
+                tryCatch(
+                  expr = {
+                    #After running the command file move the file to the location of the fasta files being BLASTed
+                    file.rename(from = blastCommandFile,  to = paste0(querySeqPath, "/", blastCommandFile))
+                  },
+                  error = function(e){
+                    print(paste0("Error - unable to move the BLAST run file (", blastCommandFile, " due to persmissions."))
+                  },
+                  warning = function(w){
+                    print(paste0("Warning - unable to move the BLAST run file (", blastCommandFile, " due to persmissions."))
+                  }
+                )
+
+
+
+
+
+
+
+
+
+
+
 
               }#End of if checking for the operating system
             }#Close if where there are no fasta files in the selected folder

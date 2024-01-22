@@ -67,7 +67,7 @@
 #' reduce_taxa()
 #'
 ################ COMBINE TWO REDUCED TAXA FILES INTO A SINGLE FILE #############
-combine_reduced_output <- function(fileLoc = NULL){
+combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
 
   #Get the initial working directory
   start_wd <- getwd()
@@ -127,7 +127,7 @@ combine_reduced_output <- function(fileLoc = NULL){
     if(nrow(files)<2){
 
       print("********************************************************************************")
-      print("There is only one file in the target directory for the file type and so ")
+      print("There are one or fewer files in the target directory for the file type and so ")
       print("the combination of files is not needed.")
       print("********************************************************************************")
 
@@ -162,7 +162,7 @@ combine_reduced_output <- function(fileLoc = NULL){
         #Create two dataframes one with the taxonomic information and the mergeVariable
         #and one with the sample records and the mergeVariable
         loopResultsRecords<-as.data.frame(cbind(mergeVariable, loopResults[,20:ncol(loopResults)]), check.names=FALSE)
-        loopResultsTaxa<-as.data.frame(cbind(mergeVariable, RankTaxa = paste0(loopResults[,10]," - ",loopResults[,11])), check.names=FALSE)
+        loopResultsTaxa<-as.data.frame(cbind(mergeVariable, MarkerResults = paste0(loopResults[,10]," - ",loopResults[,11])), check.names=FALSE)
 
         #Change the name of the mergeVariable column
         colnames(loopResultsRecords)[1]<-"mergeVariable"
@@ -225,12 +225,19 @@ combine_reduced_output <- function(fileLoc = NULL){
   #Only do the replacement for the columns after the taxa names and the files so "superkingdom", "phylum", "class", "order",
   #"family", "genus", "species" is 7 plus one and then add the num of rows in the file variable
 
-  #Subset and get the columns of interest
-  ATempVariable<-totalResults[,as.numeric(8+nrow(files)):ncol(totalResults), drop = FALSE]
-  #Change all positive values to 1
-  ATempVariable[ATempVariable > 0] <- 1
-  #Add the changed values back onto the final data frame to be printed to file
-  totalResults<-cbind(totalResults[,1:as.numeric(7+nrow(files))],ATempVariable)
+  # If the presenceAbsence is TRUE then change all of the read numbers to 1 or 0
+  if (presenceAbsence == TRUE){
+
+    #Subset and get the columns of interest
+    ATempVariable<-totalResults[,as.numeric(8+nrow(files)):ncol(totalResults), drop = FALSE]
+
+    #Change all positive values to 1
+    ATempVariable[ATempVariable > 0] <- 1
+
+    #Add the changed values back onto the final data frame to be printed to file
+    totalResults<-cbind(totalResults[,1:as.numeric(7+nrow(files))],ATempVariable)
+
+  }
 
   #Write the results to the file
   suppressWarnings(write.table(totalResults, file = paste0(dateStamp, "_CombineTaxaReduced.tsv"), append = FALSE, na = "NA", row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t"))

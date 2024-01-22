@@ -33,6 +33,8 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
 
 # Installation 
 
+<details><summary>Expand</summary>
+<br></br>
 DBTCShiny can be installed three ways.
 
 ## 1. Install from CRAN
@@ -42,10 +44,10 @@ Coming Soon.... install.packages('DBTCShiny’)
 ## 2. Install via GitHub
 Run the following commands in your R terminal...<br/>
 ```
-if(!require(devtools)) install.packages("devtools")
-library(devtools)
-devtools::install_github("rgyoung6/DBTCShiny")
-library(DBTCShiny)
+if(!require(devtools)) install.packages('devtools')
+library('devtools')
+devtools::install_github('rgyoung6/DBTCShiny')
+library('DBTCShiny')
 ```
 **Note:** the first command to install the "devtools" may not be necessary if already installed.<br/>
 
@@ -57,9 +59,13 @@ library("DBTCShiny", lib.loc="HERE")
 
 ([Back to Top](#table-of-contents))
 ***
+</details>
 
 # Package Dependencies
 
+<details><summary>Expand</summary>
+<br></br>
+  
 ## External R Element Dependencies
 
 ### NCBI BLAST+ local program to run BLAST on local databases
@@ -69,12 +75,12 @@ Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/
 ### R package taxonomizr to establish a local NCBI taxonomy database
 The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline).
 ```
-install.packages(taxonomizr)
-library(taxonomizr)
+install.packages('taxonomizr')
+library('taxonomizr')
 ```
 
 ### Establish a local NCBI prepared sequence database
-NCBI preformated databases can be established through two methods.
+NCBI preformatted databases can be established through two methods.
 
 1. Download your desired preformatted NCBI database by using the 'update_blastdb.pl' (found in the NCBI BLAST+ local install folder). NOTE: Perl programming langugage needs to be installed on your local machine. Instructions can be found at [Get NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK569850/).
 
@@ -93,7 +99,7 @@ In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.
 prepareDatabase('accessionTaxa.sql')
 ```
 
-## R Packages Dependancies
+## R Packages Dependencies
 
 ### Bioconductor - ShortRead and Dada2 packages
 
@@ -138,6 +144,7 @@ library(c('ggplot2',
 
 ([Back to Top](#table-of-contents))
 ***
+</details>
 
 # Run DBTCShiny
 
@@ -145,7 +152,7 @@ After installation of the DBTCShiny and all of its dependencies you need to load
 
 ```
 library(DBTCShiny)
-launchDBTC()
+launchDBTCShiny()
 ```
 
 ***
@@ -158,12 +165,12 @@ This function requires a main directory containing a folder(s) representing sequ
 This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single ASV table with accompanying fasta file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all ASV tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
 
 ## make_BLAST_DB()
-This function takes a fasta file (in MACER format or NCBI format, but it is advisable to use preformatted NCBI libraries here [NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)) and establishes a database upon which a BLAST search can be completed. The outcome of the function is a folder with an NCBI database.
+This function takes a fasta file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) format or NCBI format (see below)  and establishes a database upon which a BLAST search can be completed. However, if a NCBI sequence database is desired, it is advisable to use, where applicable, NCBI preformatted databases and skip the make_BLAST_DB() function ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database.
 - The MACER fasta header format - ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
 - The NCBI fasta header format - ```>uniqueID|NCBItaxaID|Genus|species```
 
 ## seq_BLAST()
-This function takes fasta files as input along with a user selected NCBI formatted library to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format (Note: there are no headers but the columns are, query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
+This function takes fasta files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
 
 ## taxon_assign()
 This function takes a BLAST result file and associated fasta files (either on their own or with accompanying ASV files generated from the dada_implement function) and collapses the multiple BLAST results into as single result for each query sequence. When an ASV table is present the taxonomic results will be combined with the ASV table.
@@ -209,7 +216,7 @@ Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, Meta
 dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end).
 
 ### Input 
-Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads.
+Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads (tab separated file).
 
 **Fastq File Folder Structure**
 
@@ -485,7 +492,9 @@ combine_reduced_output() - This function takes 'taxaReduced' files generated fro
 Select a file in a folder with 'taxaReduced' files representing data for the same biological samples but representing different amplified molecular markers.
 
 ### Arguments
-The only argument necessary for this function is the location of a file in the folder with all of the files that are wanting to be combined.
+There are only two arguments necessary for this function. The first is the location of a file in the folder with all of the files that are wanting to be combined. The second is the combineReduceTaxa function which will reduce all read count values to binary 1 or 0 entries. 
+- <strong>fileLoc -</strong>  The location of a file in a directory where all of the 'taxaReducedAssign' files are located.
+- <strong>presenceAbsence -</strong>  A TRUE or FALSE value used to indicate if the read values should be replaced with presence/absence (1/0) data. This change is necessary when combining taxa for the same named samples across molecular markers (TRUE) but is not necessary when combining results for taxa with all unique sample names (FALSE). Note: For visulization on the DBTCShiny mapping component displaying read intensity all samples should have unique names and this value should be set to FALSE (default = TRUE to replace values with presence/absence 1/0 values).
 
 ### Output
 Two files, a CombineTaxaReduced.tsv result file and a CombineTaxaReduced.txt run summary file are generated from this function. The result file contains presence/absence data in a matrix that associates the data with samples, taxa, and molecular marker. The column headers in the results file includes the following, superkingdom, phylum, class, order, family, genus, species, markers(n number of columns), samples (n number).
@@ -494,7 +503,7 @@ Two files, a CombineTaxaReduced.tsv result file and a CombineTaxaReduced.txt run
 There is no specific unique intrepretation for this file.
 
 ### Dependencies
-NA
+- plyr() rbind.fill
 
 ([Back to Top](#table-of-contents))
 ***

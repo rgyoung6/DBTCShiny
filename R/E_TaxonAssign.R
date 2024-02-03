@@ -148,6 +148,10 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
     filesList <- cbind(filesList, lapply(filesList[7], file.exists))
     filesList <- cbind(filesList, gsub("_.*", "", gsub(".*(_BLAST_)", "", filesList[,3])))
     colnames(filesList) <- c("fileNames", "blastFilesFullPath", "blastFiles", "asvFilesFullPath", "asvFiles", "asvExists", "fasFilesFullPath", "fasFiles","fasExists", "databaseName" )
+
+    #Remove the rows with FALSE in the fasExists column
+    filesList <- filesList[filesList$fasExists, ]
+
     #Check to see if there are files where there are both no fasta or asv file associated with the BLAST results
     positions <- which(filesList$asvExists == FALSE & filesList$fasExists == FALSE)
 

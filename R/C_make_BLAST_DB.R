@@ -148,6 +148,7 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
 
           print("********************************************************************************")
           print("The submitted fasta file has headers greater than 50 characters.")
+          print("Or the incorrect file format has been selected.")
           print("Please correct the format and rerun this script.")
           print("********************************************************************************")
 

@@ -414,7 +414,7 @@ dbtcTools <- function() {
                                          and sequence records will still be
                                          processed."),
                            shiny::br(),
-                           shiny::column(1,shiny::actionButton("taxaAssignFileLocButton", "Dada File Location(s)", icon = shiny::icon("magnifying-glass"))),
+                           shiny::column(1,shiny::actionButton("taxaAssignFileLocButton", "BLAST file and associated dada table location", icon = shiny::icon("magnifying-glass"))),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("taxaAssignFileLocDisplay")),
@@ -424,7 +424,7 @@ dbtcTools <- function() {
                          shiny::fluidRow(
                            shiny::strong("Please select the NCBI accessionTaxa.sql data base file to use in constructing the custom database."),
                            shiny::br(),
-                           shiny::column(1,shiny::actionButton("taxaAssignDBLocButton", "Taxa Database Location", icon = shiny::icon("magnifying-glass"))),
+                           shiny::column(1,shiny::actionButton("taxaAssignDBLocButton", "Taxa Database Location (i.e. accessionTaxa.sql)", icon = shiny::icon("magnifying-glass"))),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("taxaAssignDBLocDisplay")),

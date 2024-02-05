@@ -188,7 +188,8 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
           }#closing off checking for MACER if
 
           #Write the checked fasta file to the new location to create the DB
-          fileLoc <-paste0(dbLoc,"/",fileName,"_DB_Create_File_",dateStamp,".fas")
+#          fileLoc <-paste0(dbLoc,"/",fileName,"_DB_Create_File_",dateStamp,".fas")
+          fileLoc <-paste0(fileName,"_DB_Create_File_",dateStamp,".fas")
 
           #Save the newly formatted file
           write.table(seqTable, fileLoc , row.names=FALSE, col.names=FALSE, quote = FALSE, sep="\n", append=FALSE)

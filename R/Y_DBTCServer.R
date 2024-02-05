@@ -582,9 +582,13 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$taxaAssignFileLocButton, {
     tryCatch(
       expr = {
+print("1A")
         taxaAssignFileLoc$data <- file.choose()
+print("1B")
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLoc$data)})
+print("1C")
 write.table("A - Taxon Assign Function - taxaAssignFileLocButton ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+print("1D")
       },
       error = function(e){
         print("Error")
@@ -601,9 +605,13 @@ write.table("A - Taxon Assign Function - taxaAssignFileLocButton ", file = A_Var
   shiny::observeEvent(input$taxaAssignDBLocButton, {
     tryCatch(
       expr = {
+print("2A")        
         taxaAssignDBLoc$data <- file.choose()
+print("2B")
         output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLoc$data)})
+print("2C")
 write.table("B - Taxon Assign Function - taxaAssignDBLocButton ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+print("2D")
       },
       error = function(e){
         print("Error")

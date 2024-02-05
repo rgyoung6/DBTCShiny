@@ -303,7 +303,7 @@ There are numerous files in the D_Output folder. These include:
 - ErrorForward.pdf and ErrorReverse.pdf provide visualizations on the assessed sequencing error for the sequencing run.
 - MergeFwdRev.tsv is the ASV table with the data from the sequencing run and the MergeFwdRev.fas is a fasta file with the reads from the samples. The MergeFwdRev files include reads that were able to be merged, as well as reads that were not able to be merged.
   NOTE: The merged, forward, and reverse reads are obtained in parallel analyses and combined into a single file so MergeFwdRev files will represent triplicate molecular processing results. These files are present to see if there are reads that are not represented or poorly represented across merged and unidirectional results, perhaps indicating issues with one of the primers.
-- Merge.tsv is the ASV table with the read data able to be merged from the sequencing run. The companion MergeFwdRev.fas is a fasta file with the reads from the samples in fasta format.
+- Merge.tsv is the ASV table with the read data able to be merged from the sequencing run. The companion Merge.fas is a fasta file with the reads from the samples in fasta format.
 - TotalTable.tsv is an ASV table with all of the merged, forward, and reverse results as well as the retained results for the merged reads removed due to being suspected chimeric combinations.
 
 ### Dependencies

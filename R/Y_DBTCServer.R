@@ -628,9 +628,9 @@ print("2D")
     
 print("As soon as we enter the taxon Assign submit button")
 write.table("C - Taxon Assign Function - taxonAssign ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-textout<-paste0("taxaAssignFileLoc =  ",taxaAssignFileLoc)
+textout<-paste0("taxaAssignFileLoc =  ",taxaAssignFileLoc$data)
 write.table( textout, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-textout<-paste0("taxaAssignDBLoc =  ",taxaAssignDBLoc)
+textout<-paste0("taxaAssignDBLoc =  ",taxaAssignDBLoc$data)
 write.table(textout, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
 
 #    suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
@@ -655,16 +655,16 @@ write.table("D - Taxon Assign Function - if there are values section ", file = "
        
        
        
-       
-       fileLoc = "force(taxaAssignFileLoc$data)"
-       taxaDBLoc = "force(taxaAssignDBLoc$data)"
-       numCores = "force(input$taxaAssignNumCores)"
-       coverage = "force(input$coverage)"
-       ident = "force(input$ident)"
-       propThres = "force(input$propThres)"
-       coverReportThresh = "force(input$coverReportThresh)"
-       identReportThresh = "force(input$identReportThresh)"
-       includeAllDada = "force(input$includeAllDada)"
+       # 
+       # fileLoc = "force(taxaAssignFileLoc$data)"
+       # taxaDBLoc = "force(taxaAssignDBLoc$data)"
+       # numCores = "force(input$taxaAssignNumCores)"
+       # coverage = "force(input$coverage)"
+       # ident = "force(input$ident)"
+       # propThres = "force(input$propThres)"
+       # coverReportThresh = "force(input$coverReportThresh)"
+       # identReportThresh = "force(input$identReportThresh)"
+       # includeAllDada = "force(input$includeAllDada)"
        
        timeStamp<-as.character(Sys.time())
        Variables <- c(timeStamp,fileLoc,taxaDBLoc,numCores,coverage,ident,propThres,coverReportThresh,identReportThresh,includeAllDada)

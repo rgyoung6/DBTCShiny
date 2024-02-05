@@ -105,7 +105,7 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
   #Set the location of the BLAST taxonomic database
   if(is.null(taxaDBLoc)){
-    print(paste0("Select the data base file with the NCBI taxonomic database"))
+    print(paste0("Select the data base file with the NCBI taxonomic database (i.e. accessionTaxa.sql)"))
     taxaDBLoc <- file.choose()
   }
 
@@ -157,7 +157,7 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
     if(length(positions)==0){
 
-print("In the loop where there are FALSE")
+print("In the loop checking if there is an associated .fas or .asv file to accompany the BLAST output file.")
 
       #initialize the output variable
       finalCondensedOut<-NULL
@@ -228,7 +228,8 @@ print("In the loop where there are FALSE")
             numBLASTResults<-nrow(blastResultsTarget)
 
             #This is if we are using a NCBI database
-            suppressWarnings(taxa <- getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql'))
+            suppressWarnings(taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql'))
+#            taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql')
             taxa <- as.data.frame(taxa)
 
             if(nrow(taxa) == 1){
@@ -519,9 +520,9 @@ print("In the loop where there are FALSE")
         }#End of the taxaResults function
 
         if(numCores==1){
-          finalCondensedOut <- pblapply(seq_len(length(blastResultsuniqueID)), taxaResults)
+          finalCondensedOut <- pbapply::pblapply(seq_len(length(blastResultsuniqueID)), taxaResults)
         }else{
-          finalCondensedOut <- pblapply(seq_len(length(blastResultsuniqueID)), taxaResults, cl = numCores)
+          finalCondensedOut <- pbapply::pblapply(seq_len(length(blastResultsuniqueID)), taxaResults, cl = numCores)
         }
 
         #Take the list from the pblapply and place it in to a data frame
@@ -610,7 +611,7 @@ print("In the loop where there are FALSE")
 ######################## extract_Number ###################################
 
 #extract number of hits for designated taxa
-extract_Number <- function(numHits){
-  numHits <- gsub(".*[(]", "", numHits)
-  numHits <-  as.numeric(gsub(",.*", "", numHits))
-}
+#extract_Number <- function(numHits){
+#  numHits <- gsub(".*[(]", "", numHits)
+#  numHits <-  as.numeric(gsub(",.*", "", numHits))
+#}

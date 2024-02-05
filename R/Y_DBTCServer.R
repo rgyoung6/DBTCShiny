@@ -617,6 +617,8 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$taxonAssign, {
     suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
 
+print("Made it into the submission buttion past the no NA values if")
+
       # Create local variables to avoid conflicts with shiny and multithread
        fileLoc = force(taxaAssignFileLoc$data)
        taxaDBLoc = force(taxaAssignDBLoc$data)
@@ -628,16 +630,20 @@ shinyAppServer <- function(input, output, session) {
        identReportThresh = force(input$identReportThresh)
        includeAllDada = force(input$includeAllDada)
 
+print("Made it into the sumbission buttion section after assiging values to local variables")
+
        tryCatch(
          expr = {
            #Run the function here.
+
+print("Right before the modal processing message")
 
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is underway.",
              "Processing, please stand by...", footer=""
 
            ))
-
+print("Right after the modal processing modal and right before running the function")
            #Run the function
            taxon_assign(fileLoc = fileLoc,
                         taxaDBLoc = taxaDBLoc,
@@ -649,7 +655,12 @@ shinyAppServer <- function(input, output, session) {
                         identReportThresh = identReportThresh,
                         includeAllDada = includeAllDada)
 
-           removeModal()
+print("Right after running the function")
+
+            removeModal()
+
+print("Right after the removal of the modal and right before the next modal")
+
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is complete",
              "Please see output files in the target directory."

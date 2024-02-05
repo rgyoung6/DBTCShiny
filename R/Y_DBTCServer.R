@@ -615,6 +615,9 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$taxonAssign, {
+    
+print("As soon as we enter the taxon Assign submit button")
+    
     suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
 
 print("Made it into the submission buttion past the no NA values if")
@@ -630,6 +633,45 @@ print("Made it into the submission buttion past the no NA values if")
        identReportThresh = force(input$identReportThresh)
        includeAllDada = force(input$includeAllDada)
 
+       
+       
+       
+       
+       
+       
+       
+       fileLoc = "force(taxaAssignFileLoc$data)"
+       taxaDBLoc = "force(taxaAssignDBLoc$data)"
+       numCores = "force(input$taxaAssignNumCores)"
+       coverage = "force(input$coverage)"
+       ident = "force(input$ident)"
+       propThres = "force(input$propThres)"
+       coverReportThresh = "force(input$coverReportThresh)"
+       identReportThresh = "force(input$identReportThresh)"
+       includeAllDada = "force(input$includeAllDada)"
+       
+       timeStamp<-as.character(Sys.time())
+       Variables <- c(timeStamp,fileLoc,taxaDBLoc,numCores,coverage,ident,propThres,coverReportThresh,identReportThresh,includeAllDada)
+       
+       Variables<-data.frame(Variables=Variables)
+       write.table(Variables, file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
 print("Made it into the sumbission buttion section after assiging values to local variables")
 
        tryCatch(

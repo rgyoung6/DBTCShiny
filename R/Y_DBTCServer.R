@@ -634,7 +634,7 @@ textout<-paste0("taxaAssignDBLoc =  ",taxaAssignDBLoc)
 write.table(textout, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
 
 #    suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
-    if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
+    if(!is.na(taxaAssignFileLoc$data) && !is.na(taxaAssignDBLoc$data)){
 print("Made it into the submission buttion past the no NA values if")
 write.table("D - Taxon Assign Function - if there are values section ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
       

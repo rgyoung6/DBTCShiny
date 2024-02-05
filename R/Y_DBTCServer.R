@@ -628,7 +628,9 @@ print("2D")
     
 print("As soon as we enter the taxon Assign submit button")
 write.table("C - Taxon Assign Function - taxonAssign ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-    
+write.table(paste0("taxaAssignFileLoc =  ",taxaAssignFileLoc), file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+write.table(paste0("taxaAssignDBLoc =  ",taxaAssignDBLoc), file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+
     suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
 
 print("Made it into the submission buttion past the no NA values if")

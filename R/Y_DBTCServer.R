@@ -582,13 +582,8 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$taxaAssignFileLocButton, {
     tryCatch(
       expr = {
-print("1A")
         taxaAssignFileLoc$data <- file.choose()
-print("1B")
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLoc$data)})
-print("1C")
-write.table("A - Taxon Assign Function - taxaAssignFileLocButton ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-print("1D")
       },
       error = function(e){
         print("Error")
@@ -605,13 +600,8 @@ print("1D")
   shiny::observeEvent(input$taxaAssignDBLocButton, {
     tryCatch(
       expr = {
-print("2A")        
         taxaAssignDBLoc$data <- file.choose()
-print("2B")
         output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLoc$data)})
-print("2C")
-write.table("B - Taxon Assign Function - taxaAssignDBLocButton ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-print("2D")
       },
       error = function(e){
         print("Error")
@@ -625,19 +615,8 @@ print("2D")
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$taxonAssign, {
-    
-print("As soon as we enter the taxon Assign submit button")
-write.table("C - Taxon Assign Function - taxonAssign ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-textout<-paste0("taxaAssignFileLoc =  ",taxaAssignFileLoc$data)
-write.table( textout, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-textout<-paste0("taxaAssignDBLoc =  ",taxaAssignDBLoc$data)
-write.table(textout, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-
-#    suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
     if(!is.na(taxaAssignFileLoc$data) && !is.na(taxaAssignDBLoc$data)){
-print("Made it into the submission buttion past the no NA values if")
-write.table("D - Taxon Assign Function - if there are values section ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-      
+
       # Create local variables to avoid conflicts with shiny and multithread
        fileLoc = force(taxaAssignFileLoc$data)
        taxaDBLoc = force(taxaAssignDBLoc$data)
@@ -649,59 +628,15 @@ write.table("D - Taxon Assign Function - if there are values section ", file = "
        identReportThresh = force(input$identReportThresh)
        includeAllDada = force(input$includeAllDada)
 
-       
-       
-       
-       
-       
-       
-       # 
-       # fileLoc = "force(taxaAssignFileLoc$data)"
-       # taxaDBLoc = "force(taxaAssignDBLoc$data)"
-       # numCores = "force(input$taxaAssignNumCores)"
-       # coverage = "force(input$coverage)"
-       # ident = "force(input$ident)"
-       # propThres = "force(input$propThres)"
-       # coverReportThresh = "force(input$coverReportThresh)"
-       # identReportThresh = "force(input$identReportThresh)"
-       # includeAllDada = "force(input$includeAllDada)"
-       
-       timeStamp<-as.character(Sys.time())
-       Variables <- c(timeStamp,fileLoc,taxaDBLoc,numCores,coverage,ident,propThres,coverReportThresh,identReportThresh,includeAllDada)
-       
-       Variables<-data.frame(Variables=Variables)
-       write.table(Variables, file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-print("Made it into the sumbission buttion section after assiging values to local variables")
-
        tryCatch(
          expr = {
            #Run the function here.
-
-print("Right before the modal processing message")
-
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is underway.",
              "Processing, please stand by...", footer=""
 
            ))
-print("Right after the modal processing modal and right before running the function")
+
            #Run the function
            taxon_assign(fileLoc = fileLoc,
                         taxaDBLoc = taxaDBLoc,
@@ -713,12 +648,7 @@ print("Right after the modal processing modal and right before running the funct
                         identReportThresh = identReportThresh,
                         includeAllDada = includeAllDada)
 
-print("Right after running the function")
-
             removeModal()
-
-print("Right after the removal of the modal and right before the next modal")
-write.table("E - Taxon Assign Function - After the remove Modal ", file = "A_Variables.txt", row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
 
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is complete",
@@ -746,7 +676,7 @@ write.table("E - Taxon Assign Function - After the remove Modal ", file = "A_Var
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    }#) removing the surpress warnings
+    }
   })
 
   ################## Combine Taxa Assign Function #############################

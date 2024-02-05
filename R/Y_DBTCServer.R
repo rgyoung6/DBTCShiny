@@ -584,6 +584,7 @@ shinyAppServer <- function(input, output, session) {
       expr = {
         taxaAssignFileLoc$data <- file.choose()
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLoc$data)})
+write.table("A - Taxon Assign Function - taxaAssignFileLocButton ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
       },
       error = function(e){
         print("Error")
@@ -602,6 +603,7 @@ shinyAppServer <- function(input, output, session) {
       expr = {
         taxaAssignDBLoc$data <- file.choose()
         output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLoc$data)})
+write.table("B - Taxon Assign Function - taxaAssignDBLocButton ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
       },
       error = function(e){
         print("Error")
@@ -617,11 +619,13 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$taxonAssign, {
     
 print("As soon as we enter the taxon Assign submit button")
+write.table("C - Taxon Assign Function - taxonAssign ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
     
     suppressWarnings(if(!is.na(taxaAssignFileLoc) && !is.na(taxaAssignDBLoc)){
 
 print("Made it into the submission buttion past the no NA values if")
-
+write.table("D - Taxon Assign Function - if there are values section ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
+      
       # Create local variables to avoid conflicts with shiny and multithread
        fileLoc = force(taxaAssignFileLoc$data)
        taxaDBLoc = force(taxaAssignDBLoc$data)
@@ -702,6 +706,7 @@ print("Right after running the function")
             removeModal()
 
 print("Right after the removal of the modal and right before the next modal")
+write.table("E - Taxon Assign Function - After the remove Modal ", file = A_Variables.txt, row.names = FALSE, col.names=FALSE, append = TRUE, sep="\t", quote = FALSE)
 
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is complete",

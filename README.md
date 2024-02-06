@@ -166,9 +166,8 @@ This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName
 
 ## make_BLAST_DB()
 This function takes a fasta file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) and establishes a database upon which a BLAST search can be completed. There are also NCBI preformatted databases available where the make_BLAST_DB() function can then be skipped ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database. Note: The there are three main required elements for MACER formatted records which include a the Unique Identifier 
-- The MACER fasta header format - ```>UniqueID|OtehrInformation|Genus|species|OtehrInformation|Marker```
+- The MACER fasta header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
 - An example of the data included using the MACER program is ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
-
 
 ## seq_BLAST()
 This function takes fasta files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
@@ -344,7 +343,7 @@ Outputted data files will come in the same ASV table format as the output dada_i
 make_BLAST_DB() - Create a local database to BLAST against.
 
 ### Input 
-This function takes a fasta file (in MACER format or NCBI format, but it is advisable to use preformatted NCBI libraries here [NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)) and establishes a database upon which a BLAST search can be completed. The outcome of the function is a folder with an NCBI database.
+This function takes a fasta file (in MACER format) and establishes a database upon which a BLAST search can be completed. The outcome of the function is a folder with an NCBI database.
 The MACER fasta header format - ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
 
 ### Arguments
@@ -370,7 +369,7 @@ The constructed database can then be used with the seq_BLAST() function.
 seq_BLAST() - Search fasta files of unknown sequences against a BLAST formatted database.
 
 ### Input 
-Provide a location for the BLAST database you would like to use by selecting a file in the target directory. Then provide the location of the query sequence files by indicating a file in a directory that contains the fasta files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 250), and finally the number of cores to process the function (default = 1, Windows implementation will only accept this value as 1).
+Provide a location for the BLAST database you would like to use by selecting a file in the target directory (This can be a built database using the make_BLAST_DB() function or a preformatted [NCBI BLAST database](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). Then provide the location of the query sequence files by indicating a file in a directory that contains the fasta files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 200), and finally the number of cores to process the function (default = 1, Windows implementation can only use a single core and will default to this value when running on Windows).
 
 ### Arguments
 - <strong>databasePath -</strong> The location of a file in a directory where the desired BLAST database is located.

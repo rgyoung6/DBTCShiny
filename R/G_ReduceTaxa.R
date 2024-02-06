@@ -197,6 +197,9 @@ reduce_taxa<- function(fileLoc = NULL,   numCores = 1){
 #        result_code_list <- gsub("-,","",result_code_list)
 #        uniqueTotalResultsTemp["Result_Code"] <- result_code_list
 
+      #order the Result_Code vector so that all of the output are in the same format
+      result_code_list <- sort(result_code_list, decreasing = TRUE)
+
       #Get all results in the Result_Code column and place into a vector
       result_code_list <- unique(unlist(strsplit(result_code_list, split = ", ")))
       # Use grep to identify elements containing a dash

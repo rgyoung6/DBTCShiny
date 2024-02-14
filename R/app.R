@@ -248,7 +248,7 @@ dbtcTools <- function() {
                              ),
                              shiny::br(),
                              #General Processing values
-                             shiny::radioButtons("uniOrbidirectional", "Directional processing: Process the samples unidirectionally, bidirectionally, or both (Note: If bidirectinoal is selected the function will not run if only unidirectional data is present).", c("BiDirectional", "Unidirectional", "Both")),
+                             shiny::radioButtons("uniOrbidirectional", "Directional processing: Process the samples unidirectionally, bidirectionally, or both (Note: If bidirectinoal is selected the function will not run if only unidirectional data is present).", c("Bidirectional", "Unidirectional", "Both")),
                              shiny::conditionalPanel(
                                condition = "input.uniOrbidirectional != 'Unidirectional'",
                                shiny::textInput("fwdIdent", "Foward identifier naming substring", value = "_R1_001"),

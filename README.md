@@ -476,6 +476,11 @@ Reduced taxonomic assignment files have fewer columns in the main taxa_reduced.t
 
 The columns include, superkingdom, phylum, class, order, family, genus, species, Top_BLAST, Final_Common_Names, Final_Rank, Final_Taxa, Result_Code, RepSequence, Number_ASV, Average_ASV_Length, Number_Occurrences, Average_ASV_Per_Sample, Median_ASV_Per_Sample, Results.
 
+
+Add in a note about the representative sequence for the taxa and how I got it.
+
+
+
 ### Dependencies
 - pbapply()
 

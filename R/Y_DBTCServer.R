@@ -145,7 +145,8 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$dadaDirectoryButton, {
     tryCatch(
       expr = {
-        dadaLocation$data <- dirname(dirname(file.choose()))
+#        dadaLocation$data <- dirname(dirname(file.choose()))
+        dadaLocation$data <- file.choose()
         output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaLocation$data)})
       },
       error = function(e){
@@ -178,7 +179,7 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
-    suppressWarnings(if(!is.na(dadaLocation$data) && !is.na(primerFile$data)){
+    if(!is.na(dadaLocation$data) && !is.na(primerFile$data)){
 
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
@@ -187,7 +188,19 @@ shinyAppServer <- function(input, output, session) {
        primerFile <- force(as.character(primerFile$data))
        fwdIdent <- force(input$fwdIdent)
        revIdent <- force(input$revIdent)
-       nonMergeProcessing <- force(input$nonMergeProcessing)
+
+
+       if (force(input$uniOrbidirectional) == "Unidirectional"){
+         unidirectional = TRUE
+         bidirectional = FALSE
+       }else if(force(input$uniOrbidirectional) == "BiDirectional"){
+         unidirectional = FALSE
+         bidirectional = TRUE
+       }else{
+         unidirectional = TRUE
+         bidirectional = TRUE
+       }
+       printQualityPdf <- force(input$printQualityPdf)
        maxPrimeMis <- force(input$maxPrimeMis)
        fwdTrimLen <- force(input$fwdTrimLen)
        revTrimLen <- force(input$revTrimLen)
@@ -216,7 +229,9 @@ shinyAppServer <- function(input, output, session) {
                      primerFile = primerFile,
                      fwdIdent = fwdIdent,
                      revIdent = revIdent,
-                     nonMergeProcessing = nonMergeProcessing,
+                     unidirectional = unidirectional,
+                     bidirectional = bidirectional,
+                     printQualityPdf = printQualityPdf,
                      maxPrimeMis = maxPrimeMis,
                      fwdTrimLen = fwdTrimLen,
                      revTrimLen = revTrimLen,
@@ -263,7 +278,7 @@ shinyAppServer <- function(input, output, session) {
         title = "Missing Data",
         "Please select a primer file and try submitting again!"
       ))
-    })
+    }
   },ignoreInit = TRUE)
 
   ################## Dada Combine Function ####################################

@@ -153,7 +153,10 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
                            truncLenValueF = 0, truncLenValueR = 0,
                            error = 0.1, nbases = 1e80,
                            maxMismatchValue = 0, minOverlapValue = 12,
-                           trimOverhang = FALSE, minFinalSeqLen = 100, auditScript=0){
+                           trimOverhang = FALSE, minFinalSeqLen = 100){
+
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
 
   if(unidirectional == FALSE & bidirectional == FALSE){
     print("One or both of the unidirectional or bidirectional selections need to be TRUE!")

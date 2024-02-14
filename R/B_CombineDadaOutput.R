@@ -77,7 +77,10 @@
 
 ################################ COMBINE TWO REDUCED TAXA FILES INTO A SINGLE FILE ##################
 
-combine_dada_output <- function(fileLoc = NULL, minLen = 100, auditScript=0){
+combine_dada_output <- function(fileLoc = NULL, minLen = 100){
+
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
 
   #Get the initial working directory
   start_wd <- getwd()

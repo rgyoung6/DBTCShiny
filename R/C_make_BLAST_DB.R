@@ -75,7 +75,10 @@
 #' combine_reduced_output()
 
 ##################################### make_BLAST_DB FUNCTION ##############################################################
-make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaDBLoc = NULL, dbName = NULL, minLen = 100, auditScript=0 ){
+make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaDBLoc = NULL, dbName = NULL, minLen = 100){
+
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
 
   #Get the initial working directory
   start_wd <- getwd()

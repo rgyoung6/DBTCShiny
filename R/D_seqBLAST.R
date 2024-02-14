@@ -82,7 +82,10 @@
 #' combine_reduced_output()
 
 ##################################### BLAST FUNCTION ##############################################################
-seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blastn", minLen = 100, BLASTResults=200, numCores=1, auditScript=0){
+seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blastn", minLen = 100, BLASTResults=200, numCores=1){
+
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
 
   #Get the initial working directory
   start_wd <- getwd()

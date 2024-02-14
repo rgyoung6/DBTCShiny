@@ -186,19 +186,22 @@ shinyAppServer <- function(input, output, session) {
 
        runFolderLoc <- force(as.character(dadaLocation$data))
        primerFile <- force(as.character(primerFile$data))
-       fwdIdent <- force(input$fwdIdent)
-       revIdent <- force(input$revIdent)
-
 
        if (force(input$uniOrbidirectional) == "Unidirectional"){
          unidirectional = TRUE
          bidirectional = FALSE
-       }else if(force(input$uniOrbidirectional) == "BiDirectional"){
+         fwdIdent <- ""
+         revIdent <- ""
+       }else if(force(input$uniOrbidirectional) == "Bidirectional"){
          unidirectional = FALSE
          bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
        }else{
          unidirectional = TRUE
          bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
        }
        printQualityPdf <- force(input$printQualityPdf)
        maxPrimeMis <- force(input$maxPrimeMis)

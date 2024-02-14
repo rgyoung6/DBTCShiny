@@ -49,7 +49,7 @@
 #' \dontrun{
 #' dada_implement()
 #' dada_implement(runFolderLoc = NULL, primerFile = NULL,fwdIdent = "_R1_001",
-#' revIdent = "_R2_001",unidirectional = FALSE, bidirectional = TRUE
+#' revIdent = "_R2_001",unidirectional = FALSE, bidirectional = TRUE, printQualityPdf = TRUE,
 #' maxPrimeMis = 2, fwdTrimLen = 0, revTrimLen = 0,maxEEVal=2, truncQValue = 2,
 #' truncLenValueF = 0, truncLenValueR = 0,error = 0.1, nbases = 1e80,
 #' maxMismatchValue = 0, minOverlapValue = 12,trimOverhang = FALSE,
@@ -63,7 +63,8 @@
 #' @param revIdent Reverse identifier naming substring.
 #' @param bidirectinoal Selection to process paired forward and reverse sequence
 #' for analysis (Default TRUE).
-#' @param unidirectional Seection to process files independently (Default FALSE).
+#' @param unidirectional Selection to process files independently (Default FALSE).
+#' @param printQualityPdf Selection to process save image files showing quality metrics (Default TRUE).
 #' @param maxPrimeMis Maximum number of mismatches allowed when pattern matching
 #' trimming the primers from the ends of the reads for the ShortRead trimLRPatterns()
 #' function (Default maxPrimeMis = 2).
@@ -288,15 +289,6 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
         #Audit line
         if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5"), file = auditFile, append = TRUE))}
 
-
-
-
-
-
-
-
-
-
         #writing the start time to the log file here
         suppressWarnings(write(paste0(dateStamp, "Start"), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = FALSE))
         suppressWarnings(write(paste0(""), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
@@ -317,14 +309,6 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
         suppressWarnings(write(paste0("Minimum read length for the final results (minFinalSeqLen): ", minFinalSeqLen), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0("********************************************************************************"), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0(""), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
-
-
-
-
-
-
-
-
 
         ############################ FILTER & TRIM ##########################################
 

@@ -77,8 +77,7 @@
 
 ################################ COMBINE TWO REDUCED TAXA FILES INTO A SINGLE FILE ##################
 
-combine_dada_output <- function(fileLoc = NULL, minLen = 100){
-
+combine_dada_output <- function(fileLoc = NULL, minLen = 100, auditScript=0){
 
   #Get the initial working directory
   start_wd <- getwd()
@@ -86,8 +85,8 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
 
   #load in the files list
   if (is.null(fileLoc)){
-    print(paste0("Select a file in the file folder with dada files you would like to combine (extension '_taxa_reduced_YYYY_MM_DD_HHMM.tsv')."))
-    print("********** NOTE: all files being combined should have used the exact same protocols (database, dada arguments, etc.) **********")
+    print(paste0("Select a file in the file folder with dada files you would like to combine (extension '_Merge.tsv' OR '_MergeFwdRev.tsv' OR '_Forward.tsv')."))
+    print("********** NOTE: all files being combined should have used the same protocols (molecular marker, dada arguments, etc.) **********")
     fileLoc <- dirname(file.choose())
   }
   if (is.null(fileLoc)){
@@ -102,6 +101,14 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
     print("********************************************************************************")
 
   }else{
+
+    #Audit line
+    if(auditScript>0){
+      auditFile <- paste0(fileLoc,"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")
+      print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"))
+      suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE))
+    }
+
 
     #Printing the start time
     print(paste0("Start time...", Sys.time()))
@@ -118,14 +125,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
     files <- as.data.frame(list.files(path = fileLoc, pattern = "*[.]*", full.names = TRUE))
     # Get the local paths
     files[,2] <- list.files(path = fileLoc, pattern = "*[.]*")
-    #Get all files without the '_BLAST_', '_taxa_assign', '_taxa_reduced_', '_Analysis_Summary_', '_TotalTable', 'Combine_Taxa_Assign_Summary' '_Analysis_Summary_Table'
-    files <- files[!grepl("_BLAST_.*", files[,2]),]
-    files <- files[!grepl("_taxa_assign_.*", files[,2]),]
-    files <- files[!grepl("_taxa_reduced_.*", files[,2]),]
-    files <- files[!grepl("_TotalTable.*", files[,2]),]
-    files <- files[!grepl("Combine_Taxa_Assign_Summary.*", files[,2]),]
-    files <- files[!grepl("_Analysis_Summary_Table.*", files[,2]),]
-    files <- files[grepl("*.tsv", files[,2]),]
+    #Get all files with extension '_Merge.tsv' OR '_MergeFwdRev.tsv' OR '_Forward.tsv'
+    files <- rbind(files[grepl("_Merge.tsv", files[,2]),],files[grepl("_MergeFwdRev.tsv", files[,2]),],files[grepl("_Forward.tsv", files[,2]),])
+
     # Get the names of the files
     files[,3] <- gsub("*.tsv","",files[,2])
     # Get a unique number for each file to associate with the combined output results
@@ -137,6 +139,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
     #Write the files being combined
     suppressWarnings(write(paste0("The files being combined with an associated unique identifying number (File_Unique_ID column) used in the uniqueID column of the output file..."), file = paste0(dateStamp, "_combinedDada.txt"), append = TRUE))
     suppressWarnings(write.table(files, file = paste0(dateStamp, "_combinedDada.txt"), append = TRUE, na = "NA", row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t"))
+
+    #Audit line
+    if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
 
     if(nrow(files)<2){
 
@@ -152,6 +157,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
 
       for(records in 1:nrow(files)){
 
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3"), file = auditFile, append = TRUE))}
+
         print(paste0("Starting file ", files[records,3], " at time...", Sys.time()))
         suppressWarnings(write(paste0("Starting file ", files[records,3], " at time...", Sys.time()), file = paste0(dateStamp, "_combinedDada.txt"), append = TRUE))
 
@@ -163,6 +171,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
 
         #Remove the unique ID variable
         loopResults<-loopResults[,-1]
+
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4"), file = auditFile, append = TRUE))}
 
         #Using the dataframe without quality metrics collapse all columns up to
         #the sample columns into a single variable
@@ -185,7 +196,13 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
         #update the unique sample names to add on the file name
         colnames(loopResults)[2:ncol(loopResults)] <- paste0(files[records, 3], "_SEP_", colnames(loopResults[2:ncol(loopResults)]))
 
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5"), file = auditFile, append = TRUE))}
+
         if (flag == TRUE){
+
+          #Audit line
+          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6"), file = auditFile, append = TRUE))}
 
           #Make the total results equal the loop results
           totalResults <- loopResults
@@ -196,7 +213,13 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
           #Reset the flag to add to the total results for the next loop
           flag = FALSE
 
+          #Audit line
+          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7"), file = auditFile, append = TRUE))}
+
         }else{
+
+          #Audit line
+          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8"), file = auditFile, append = TRUE))}
 
           #Merge the total and loop data
           totalResults <- merge(totalResults[,c(1:ncol(totalResults))], loopResults[,c(1:ncol(loopResults))], by = "mergeVariable", all=TRUE )
@@ -204,10 +227,16 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
           #Createa a totalResultsData data frame
           totalResultsData<-rbind(totalResultsData, loopResultsData)
 
+          #Audit line
+          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9"), file = auditFile, append = TRUE))}
+
         }#End of the if/else flag
       }#Closing off the loop going through the records loop
     }#End of the check if there are more than one file so combo makes sense
   }#End of the if checking that a file location value was submitted or chosen from the pop up
+
+  #Audit line
+  if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 10")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 10"), file = auditFile, append = TRUE))}
 
   #Change all NA to 0 in the sample section
   totalResults[,c(2:ncol(totalResults))][is.na(totalResults[,c(2:ncol(totalResults))])] <- 0
@@ -227,6 +256,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
   #Add uniqueID back onto the dataframe before printing to file
   totalResults <- data.frame(uniqueID = paste0("C",c(1:nrow(totalResults))), totalResults, check.names=FALSE)
 
+  #Audit line
+  if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11"), file = auditFile, append = TRUE))}
+
   #Change the .(which were forced to change from the original naming convention of -) to - for output
   colnames(totalResults)<-gsub("\\.","-",colnames(totalResults))
 
@@ -240,5 +272,8 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
 
   print(paste0(startTime, " end time ", Sys.time()))
   suppressWarnings(write(paste0(startTime, " end time ", Sys.time()), file = paste0(dateStamp, "_combinedDada.txt"), append = TRUE))
+
+  #Audit line
+  if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12"), file = auditFile, append = TRUE))}
 
 }#End of function

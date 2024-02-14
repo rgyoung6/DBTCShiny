@@ -93,7 +93,7 @@ In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.
 ```
 prepareDatabase('accessionTaxa.sql', getAccessions = FALSE)
 ```
-Note: Along with the accessionTaxa.sql 
+Note: Along with the accessionTaxa.sql two other files nodes.dmp and names.dmp files are downloaded. These two files are not necessary for downstream analyses and can be deleted.
 
 ## R Packages Dependencies
 

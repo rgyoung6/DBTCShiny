@@ -75,7 +75,7 @@
 #' combine_reduced_output()
 
 ##################################### make_BLAST_DB FUNCTION ##############################################################
-make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaDBLoc = NULL, inputFormat = NULL, dbName = NULL, minLen = 100 ){
+make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaDBLoc = NULL, dbName = NULL, minLen = 100, auditScript=0 ){
 
   #Get the initial working directory
   start_wd <- getwd()
@@ -86,23 +86,14 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
   startTime <- paste0("Start time...", Sys.time())
   dateStamp <- paste0(format(Sys.time(), "%Y_%m_%d_%H%M"))
 
-  if(is.null(inputFormat)){
-    print("********************************************************************************")
-    print("An input format (inputFormat) is required. Please ensure either a MACER ")
-    print("(inputFormat='MACER') or a BLAST make database (inputFormat='MBDB')")
-    print("format is selected")
-    print("NOTE: see MACER for output format and for MBDB format the header should be")
-    print(">uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase")
-    print(paste0("Current file input format (inputFormat) is: ", inputFormat))
-    print("********************************************************************************")
-  } else if(is.null(dbName)){
+  if(is.null(dbName)){
     print("********************************************************************************")
     print("Please rerun the function and provide a name for the outgoing database. This ")
     print("should be descriptive but short (less than 20 characters) with no special ")
     print("characters.")
     print(paste0("Current database name (dbName) is: ", dbName))
     print("********************************************************************************")
-  } else if (inputFormat == "MACER" | inputFormat == "MBDB"){
+  } else {
 
     #load in the location of the accessionTaxa.sql
     if (is.null(taxaDBLoc)){
@@ -116,17 +107,37 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
       fileLoc <- file.choose()
     }
 
+    #Audit line
+    if(auditScript>0){
+      auditFile <- paste0(dirname(fileLoc),"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")
+      print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"))
+      suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE))
+    }
+
     if(grepl(" ",fileLoc) && grepl(" ",makeblastdbPath) && grepl(" ",taxaDBLoc)){
 
       print("Error: One or more of the file paths contains a space in the naming convention. Please change the naming and try again.")
 
     } else {
 
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
+
       #Get the file name of the target file
       fileName <- sub("\\..*","", as.vector(basename(fileLoc)))
 
       #Read in the data from the target file
       seqTable <- read.delim(fileLoc, header = FALSE)
+
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3"), file = auditFile, append = TRUE))}
+
+      #taking the read in file and changing from Fasta to tab delimited
+      seqTableTemp <- data.frame(Header = (seqTable[seq(from = 1, to = nrow(seqTable), by = 2), 1]))
+      seqTableTemp["Sequence"] <- seqTable[seq(from = 2, to = nrow(seqTable), by = 2), 1]
+      seqTable<-seqTableTemp
+      #Remove the seqTableTemp to free memory
+      rm(seqTableTemp)
 
       if(!grepl(">", seqTable[3,1], fixed = TRUE)){
 
@@ -135,98 +146,101 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
         print("needed for this script. Please correct the format and rerun this script.")
         print("********************************************************************************")
 
+      }else if (mean(sapply(seqTable[,1], function(x) sum(gregexpr("\\|", x)[[1]] >= 0))) != 5){
+
+        print("********************************************************************************")
+        print("The submitted fasta file is not in the MACER file format which is ")
+        print("needed for this script. Please correct the format and rerun this script.")
+        print("********************************************************************************")
+
       }else{
 
-        #taking the read in file and changing from Fasta to tab delimited
-        seqTableTemp <- data.frame(Header = (seqTable[seq(from = 1, to = nrow(seqTable), by = 2), 1]))
-        seqTableTemp["Sequence"] <- seqTable[seq(from = 2, to = nrow(seqTable), by = 2), 1]
-        seqTable<-seqTableTemp
-        #Remove the seqTableTemp to free memory
-        rm(seqTableTemp)
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4"), file = auditFile, append = TRUE))}
 
-        if(max(nchar(seqTable[,1]))>50 && inputFormat != "MACER"){
+        #Create file folder to hold the database in the same location as the fasta file
+        dbLoc <- paste0(dirname(fileLoc), "/", dateStamp, "_", dbName,"_Database")
+        dir.create(dbLoc)
 
-          print("********************************************************************************")
-          print("The submitted fasta file has headers greater than 50 characters.")
-          print("Or the incorrect file format has been selected.")
-          print("Please correct the format and rerun this script.")
-          print("********************************************************************************")
+        #Set the working directory to the newly created output directory
+        setwd(dbLoc)
 
-        }else {
+        #Load in the MACER formatted data
+        seqTable<-cbind(data.frame(do.call("rbind", strsplit(as.character(seqTable[,1]), "|", fixed = TRUE))),seqTable[,2])
 
-          #Create file folder to hold the database in the same location as the fasta file
-          dbLoc <- paste0(dirname(fileLoc), "/", dateStamp, "_", dbName,"_Database")
-          dir.create(dbLoc)
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5"), file = auditFile, append = TRUE))}
 
-          #Set the working directory to the newly created output directory
-          setwd(dbLoc)
+        #Get the taxonomy id's from the species names and place them into the table
+        suppressWarnings(taxaIDResults<-getId(paste0(seqTable[,3], " ",seqTable[,4]),taxaDBLoc))
 
-          if (inputFormat == "MACER"){
+        #build the output format for the makedb
+        seqTable<-cbind(paste(seqTable[,1],taxaIDResults, seqTable[,3],seqTable[,4],sep="|"),seqTable[,7])
 
-            #Load in the MACER formatted data
-            seqTable<-cbind(data.frame(do.call("rbind", strsplit(as.character(seqTable[,1]), "|", fixed = TRUE))),seqTable[,2])
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6"), file = auditFile, append = TRUE))}
 
-            #Get the taxonomy id's from the species names and place them into the table
-            suppressWarnings(taxaIDResults<-getId(paste0(seqTable[,3], " ",seqTable[,4]),taxaDBLoc))
+        if(max(nchar(seqTable[,1]))>50){
 
-            #build the output format for the makedb
-            seqTable<-cbind(paste(seqTable[,1],taxaIDResults, seqTable[,3],seqTable[,4],sep="|"),seqTable[,7])
+          #Reduce the first column if more than 50 characters
+          seqTable<-cbind(substr(seqTable[,1], 1, 50),seqTable[,2])
 
-            if(max(nchar(seqTable[,1]))>50){
+        }
 
-              #Reduce the first column if more than 50 characters
-              seqTable<-cbind(substr(seqTable[,1], 1, 50),seqTable[,2])
+        #Remove records if the sequences are less than the supplied minimum
+        seqTable<-seqTable[nchar(seqTable[,2]) > minLen,]
 
-            }
+        #Remove duplicated records.
+        seqTable<-seqTable[!duplicated(seqTable[,1]),]
 
-            #Remove records if the sequences are less than the supplied minimum
-            seqTable<-seqTable[nchar(seqTable[,2]) > minLen,]
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7"), file = auditFile, append = TRUE))}
 
-            #Remove duplicated records.
-            seqTable<-seqTable[!duplicated(seqTable[,1]),]
+        #Write the checked fasta file to the new location to create the DB
+        fileLoc <-paste0(fileName,"_DB_Create_File_",dateStamp,".fas")
 
-          }#closing off checking for MACER if
+        #Save the newly formatted file
+        write.table(seqTable, fileLoc , row.names=FALSE, col.names=FALSE, quote = FALSE, sep="\n", append=FALSE)
 
-          #Write the checked fasta file to the new location to create the DB
-#          fileLoc <-paste0(dbLoc,"/",fileName,"_DB_Create_File_",dateStamp,".fas")
-          fileLoc <-paste0(fileName,"_DB_Create_File_",dateStamp,".fas")
+        #Build the BLAST command
+        BLASTMakeDBCmdString<- paste0(makeblastdbPath, " -in ", fileLoc, "  -parse_seqids -dbtype nucl -out ", dbName)
 
-          #Save the newly formatted file
-          write.table(seqTable, fileLoc , row.names=FALSE, col.names=FALSE, quote = FALSE, sep="\n", append=FALSE)
+        print("********************************************************************************")
+        print(paste0("Begin makeblastdb at time: ", Sys.time()))
+        print("********************************************************************************")
 
-          #Build the BLAST command
-          BLASTMakeDBCmdString<- paste0(makeblastdbPath, " -in ", fileLoc, "  -parse_seqids -dbtype nucl -out ", dbName)
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8"), file = auditFile, append = TRUE))}
 
-          print("********************************************************************************")
-          print(paste0("Begin makeblastdb at time: ", Sys.time()))
-          print("********************************************************************************")
+        #Build the file to run based on the operating system
+        if (.Platform$OS.type == "windows"){
 
-          #Build the file to run based on the operating system
-          if (.Platform$OS.type == "windows"){
+          #Windows command file
+          blastCommandFile <- paste0(dbLoc,"/", fileName, "_MAKE_DB_BLAST_", dateStamp, ".bat")
+          write(BLASTMakeDBCmdString, file = blastCommandFile, append = FALSE)
 
-            #Windows command file
-            blastCommandFile <- paste0(dbLoc,"/", fileName, "_MAKE_DB_BLAST_", dateStamp, ".bat")
-            write(BLASTMakeDBCmdString, file = blastCommandFile, append = FALSE)
+          #Run the BLAST command in a system command
+          system(blastCommandFile)
 
-            #Run the BLAST command in a system command
-            system(blastCommandFile)
+        } else{
 
-          } else{
+          #linux and Mac OS command file
+          blastCommandFile <- paste0(dbLoc,"/", fileName, "_MAKE_DB_BLAST_", dateStamp, ".sh")
 
-            #linux and Mac OS command file
-            blastCommandFile <- paste0(dbLoc,"/", fileName, "_MAKE_DB_BLAST_", dateStamp, ".sh")
+          #Initialize the file that will be run for the BLAST
+          write("#!/bin/sh", file = blastCommandFile, append = FALSE)
+          write("\n", file = blastCommandFile, append = TRUE)
+          write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
 
-            #Initialize the file that will be run for the BLAST
-            write("#!/bin/sh", file = blastCommandFile, append = FALSE)
-            write("\n", file = blastCommandFile, append = TRUE)
-            write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
+          #Run the BLAST command in a system command
+          system(paste0("bash '", blastCommandFile, "'"))
 
-            #Run the BLAST command in a system command
-            system(paste0("bash '", blastCommandFile, "'"))
+        }#Closing off the checking platform if
 
-          }#Closing off the checking platform if
-        }#Closing the if else if MACER or length of headers check
-      }#End of if checking to see if the submitted fasta is in the proper format
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9"), file = auditFile, append = TRUE))}
+
+      }#Closing the if - else if - else the format of the file is correct
     }#Closing off the check to see if the file names had spaces
   }#Closing the if checking to see if user supplied arguments were included
 

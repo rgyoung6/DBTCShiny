@@ -185,10 +185,11 @@ dada_implement <- function(runFolderLoc = NULL,
     if(is.null(runFolderLoc)){
       # prompting to choose the file of interest with the tab delimited primer info
       n <- substr(readline(prompt="Select a fastq file in one of the run folders in the directory of interest (NOTE: all run folders with fastq data in the parent directory will be processed by DBTC. If this is not what you want please rearrange your folder structure)."),1,1)
+      #Set the target folder.
+      runFolderLoc <- file.choose()
     }
 
-    #Set the target folder.
-    runFolderLoc <- dirname(dirname(file.choose()))
+    runFolderLoc <- dirname(dirname(runFolderLoc))
 
     #Audit line
     if(auditScript>0){

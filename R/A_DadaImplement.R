@@ -144,17 +144,26 @@
 #' combine_reduced_output()
 
 ##################################### dada implementation FUNCTION ##############################################################
-dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
-                           fwdIdent = "_R1_001", revIdent = "_R2_001",
+dada_implement <- function(runFolderLoc = NULL,
+                           primerFile = NULL,
+                           fwdIdent = "_R1_001",
+                           revIdent = "_R2_001",
                            unidirectional = FALSE,
                            bidirectional = TRUE,
                            printQualityPdf = TRUE,
-                           maxPrimeMis = 2, fwdTrimLen = 0, revTrimLen = 0,
-                           maxEEVal=2, truncQValue = 2,
-                           truncLenValueF = 0, truncLenValueR = 0,
-                           error = 0.1, nbases = 1e80,
-                           maxMismatchValue = 0, minOverlapValue = 12,
-                           trimOverhang = FALSE, minFinalSeqLen = 100){
+                           maxPrimeMis = 2,
+                           fwdTrimLen = 0,
+                           revTrimLen = 0,
+                           maxEEVal=2,
+                           truncQValue = 2,
+                           truncLenValueF = 0,
+                           truncLenValueR = 0,
+                           error = 0.1,
+                           nbases = 1e80,
+                           maxMismatchValue = 0,
+                           minOverlapValue = 12,
+                           trimOverhang = FALSE,
+                           minFinalSeqLen = 100){
 
   #If there are issues and I need to audit the script make this 1
   auditScript=0
@@ -176,8 +185,10 @@ dada_implement <- function(runFolderLoc = NULL, primerFile = NULL,
     if(is.null(runFolderLoc)){
       # prompting to choose the file of interest with the tab delimited primer info
       n <- substr(readline(prompt="Select a fastq file in one of the run folders in the directory of interest (NOTE: all run folders with fastq data in the parent directory will be processed by DBTC. If this is not what you want please rearrange your folder structure)."),1,1)
-      runFolderLoc <- dirname(dirname(file.choose()))
     }
+
+    #Set the target folder.
+    runFolderLoc <- dirname(dirname(file.choose()))
 
     #Audit line
     if(auditScript>0){

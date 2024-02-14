@@ -33,6 +33,9 @@
 #' @importFrom shiny h4
 #' @importFrom shiny HTML
 #' @importFrom shiny icon
+#' @importFrom shinyjs useShinyjs
+#' @importFrom shinyjs disable
+#' @importFrom shinyjs enable
 #' @importFrom shiny modalDialog
 #' @importFrom shiny numericInput
 #' @importFrom shiny observe
@@ -245,9 +248,13 @@ dbtcTools <- function() {
                              ),
                              shiny::br(),
                              #General Processing values
-                             shiny::textInput("fwdIdent", "Foward identifier naming substring", value = "_R1_001"),
-                             shiny::textInput("revIdent", "Reverse identifier naming substring", value = "_R2_001"),
-                             shiny::radioButtons("nonMergeProcessing", "Non-Merge Processing (Default TRUE)", c("TRUE","FALSE")),
+                             shiny::radioButtons("uniOrbidirectional", "Directional processing: Process the samples unidirectionally, bidirectionally, or both (Note: If bidirectinoal is selected the function will not run if only unidirectional data is present).", c("BiDirectional", "Unidirectional", "Both")),
+                             shiny::conditionalPanel(
+                               condition = "input.uniOrbidirectional != 'Unidirectional'",
+                               shiny::textInput("fwdIdent", "Foward identifier naming substring", value = "_R1_001"),
+                               shiny::textInput("revIdent", "Reverse identifier naming substring", value = "_R2_001")
+                             ),
+                             shiny::radioButtons("printQualityPdf", "Print quality plots to pdf:", c("Yes", "No"))
                            ),
                            shiny::p(shiny::tags$b(shiny::tags$u("2. Pattern Trim", style = "font-size:14px;"))),
                            shiny::wellPanel(

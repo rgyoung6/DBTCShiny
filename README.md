@@ -33,8 +33,6 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
 
 # Installation 
 
-<details><summary>Expand</summary>
-<br></br>
 DBTCShiny can be installed three ways.
 
 ## 1. Install from CRAN
@@ -62,10 +60,7 @@ library("DBTCShiny", lib.loc="HERE")
 </details>
 
 # Package Dependencies
-
-<details><summary>Expand</summary>
-<br></br>
-  
+ 
 ## External R Element Dependencies
 
 ### NCBI BLAST+ local program to run BLAST on local databases
@@ -98,6 +93,7 @@ In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.
 ```
 prepareDatabase('accessionTaxa.sql', getAccessions = FALSE)
 ```
+Note: Along with the accessionTaxa.sql 
 
 ## R Packages Dependencies
 

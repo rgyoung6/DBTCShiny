@@ -67,16 +67,7 @@ library("DBTCShiny", lib.loc="HERE")
 
 Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html#blast-executables) executables page to obtain a local version of the BLAST tools. The list of the latest installation files can be found [here](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/).
 
-
-
-
-Add in a section here describing where I have downloaded the most recent executable versions of blastn and makeblastdb
-
-
-
-
-
-
+Note: It is best to download and install the most recent versions of the blast+ suit to your computer and place the programs in your computers path so you can access the program from any folder. However, the program files for both blastn and makeblastdb have been included in the DBTCShinyTutorial GitHub page for ease of use (please note that these may not be the most recent versions).
 
 ### R package taxonomizr to establish a local NCBI taxonomy database
 The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline).

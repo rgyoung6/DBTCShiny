@@ -110,6 +110,12 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
       fileLoc <- file.choose()
     }
 
+    #load in the location of the makeBLASTdb file
+    if (is.null(makeblastdbPath)){
+      print(paste0("Select the location of the makeBLASTdb program."))
+      makeblastdbPath <- file.choose()
+    }
+
     #Audit line
     if(auditScript>0){
       auditFile <- paste0(dirname(fileLoc),"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")

@@ -64,16 +64,16 @@ shinyAppServer <- function(input, output, session) {
                                                   "#9d02d7",
                                                   "#0000ff",
                                                   "#00008b"),
-                                      domain = c("10", "100", "1000", "10000", "100000", "1000000"))
+                                         domain = c("10", "100", "1000", "10000", "100000", "1000000"))
 
   output$mymap <- leaflet::renderLeaflet({
     leaflet::leaflet() %>%
       leaflet::addTiles() %>%
       leaflet::addLegend(position = "topright",
-                         pal = palette_map,
-                         values = c("10", "100", "1000", "10000", "100000", "1000000"),
-                         title = 'Reads',
-                         opacity = 0.6) %>%
+                pal = palette_map,
+                values = c("10", "100", "1000", "10000", "100000", "1000000"),
+                title = 'Reads',
+                opacity = 0.6) %>%
 
       #View map full screen (note: only works in web browser)
       leaflet.extras::addFullscreenControl() %>%
@@ -98,7 +98,7 @@ shinyAppServer <- function(input, output, session) {
         ))
       }else{
 
-        # Place an update here to get the data points on the map based on the information contained in the Mapped Data Table tab
+# Place an update here to get the data points on the map based on the information contained in the Mapped Data Table tab
 
         mergedTableGlobal <<- mergedTable$data
         workMergedTable <- mergedTable$data
@@ -145,7 +145,7 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$dadaDirectoryButton, {
     tryCatch(
       expr = {
-        #        dadaLocation$data <- dirname(dirname(file.choose()))
+#        dadaLocation$data <- dirname(dirname(file.choose()))
         dadaLocation$data <- file.choose()
         output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaLocation$data)})
       },
@@ -184,98 +184,98 @@ shinyAppServer <- function(input, output, session) {
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
 
-      runFolderLoc <- force(as.character(dadaLocation$data))
-      primerFile <- force(as.character(primerFile$data))
+       runFolderLoc <- force(as.character(dadaLocation$data))
+       primerFile <- force(as.character(primerFile$data))
 
-      if (force(input$uniOrbidirectional) == "Unidirectional"){
-        unidirectional = TRUE
-        bidirectional = FALSE
-        fwdIdent <- ""
-        revIdent <- ""
-      }else if(force(input$uniOrbidirectional) == "Bidirectional"){
-        unidirectional = FALSE
-        bidirectional = TRUE
-        fwdIdent <- force(input$fwdIdent)
-        revIdent <- force(input$revIdent)
-      }else{
-        unidirectional = TRUE
-        bidirectional = TRUE
-        fwdIdent <- force(input$fwdIdent)
-        revIdent <- force(input$revIdent)
-      }
-      printQualityPdf <- force(input$printQualityPdf)
-      maxPrimeMis <- force(input$maxPrimeMis)
-      fwdTrimLen <- force(input$fwdTrimLen)
-      revTrimLen <- force(input$revTrimLen)
-      maxEEVal <- force(input$maxEEVal)
-      truncQValue <- force(input$truncQValue)
-      truncLenValueF <- force(input$truncLenValueF)
-      truncLenValueR <- force(input$truncLenValueR)
-      error <- force(input$error)
-      nbases <- force(input$nbases)
-      maxMismatchValue <- force(input$maxMismatchValue)
-      minOverlapValue <- force(input$minOverlapValue)
-      trimOverhang <- force(input$trimOverhang)
-      minFinalSeqLen <- force(input$minFinalSeqLen)
+       if (force(input$uniOrbidirectional) == "Unidirectional"){
+         unidirectional = TRUE
+         bidirectional = FALSE
+         fwdIdent <- ""
+         revIdent <- ""
+       }else if(force(input$uniOrbidirectional) == "Bidirectional"){
+         unidirectional = FALSE
+         bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
+       }else{
+         unidirectional = TRUE
+         bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
+       }
+       printQualityPdf <- force(input$printQualityPdf)
+       maxPrimeMis <- force(input$maxPrimeMis)
+       fwdTrimLen <- force(input$fwdTrimLen)
+       revTrimLen <- force(input$revTrimLen)
+       maxEEVal <- force(input$maxEEVal)
+       truncQValue <- force(input$truncQValue)
+       truncLenValueF <- force(input$truncLenValueF)
+       truncLenValueR <- force(input$truncLenValueR)
+       error <- force(input$error)
+       nbases <- force(input$nbases)
+       maxMismatchValue <- force(input$maxMismatchValue)
+       minOverlapValue <- force(input$minOverlapValue)
+       trimOverhang <- force(input$trimOverhang)
+       minFinalSeqLen <- force(input$minFinalSeqLen)
 
-      tryCatch(
-        expr = {
-          #Run the Dada function here.
+       tryCatch(
+       expr = {
+        #Run the Dada function here.
 
-          shiny::showModal(shiny::modalDialog(
-            title = "Dada analysis is underway.",
-            "Processing, please stand by...", footer=""
+        shiny::showModal(shiny::modalDialog(
+         title = "Dada analysis is underway.",
+         "Processing, please stand by...", footer=""
 
-          ))
+        ))
 
-          dada_implement(runFolderLoc = runFolderLoc,
-                         primerFile = primerFile,
-                         fwdIdent = fwdIdent,
-                         revIdent = revIdent,
-                         unidirectional = unidirectional,
-                         bidirectional = bidirectional,
-                         printQualityPdf = printQualityPdf,
-                         maxPrimeMis = maxPrimeMis,
-                         fwdTrimLen = fwdTrimLen,
-                         revTrimLen = revTrimLen,
-                         maxEEVal = maxEEVal,
-                         truncQValue = truncQValue,
-                         truncLenValueF = truncLenValueF,
-                         truncLenValueR = truncLenValueR,
-                         error = error,
-                         nbases = nbases,
-                         maxMismatchValue = maxMismatchValue,
-                         minOverlapValue = minOverlapValue,
-                         trimOverhang = trimOverhang,
-                         minFinalSeqLen = minFinalSeqLen)
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "Dada analysis is complete",
-            "Please see output files in the target
+        dada_implement(runFolderLoc = runFolderLoc,
+                     primerFile = primerFile,
+                     fwdIdent = fwdIdent,
+                     revIdent = revIdent,
+                     unidirectional = unidirectional,
+                     bidirectional = bidirectional,
+                     printQualityPdf = printQualityPdf,
+                     maxPrimeMis = maxPrimeMis,
+                     fwdTrimLen = fwdTrimLen,
+                     revTrimLen = revTrimLen,
+                     maxEEVal = maxEEVal,
+                     truncQValue = truncQValue,
+                     truncLenValueF = truncLenValueF,
+                     truncLenValueR = truncLenValueR,
+                     error = error,
+                     nbases = nbases,
+                     maxMismatchValue = maxMismatchValue,
+                     minOverlapValue = minOverlapValue,
+                     trimOverhang = trimOverhang,
+                     minFinalSeqLen = minFinalSeqLen)
+         removeModal()
+         shiny::showModal(shiny::modalDialog(
+           title = "Dada analysis is complete",
+           "Please see output files in the target
            directory."
-          ))
-        },
-        error = function(e){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Dada Location Button choose file cancelled. Please refer to the R
+         ))
+       },
+       error = function(e){
+         removeModal()
+         shiny::showModal(shiny::modalDialog(
+           title = "ERROR",
+           "Dada Location Button choose file cancelled. Please refer to the R
            consol for more information."
-          ))
-          print("Error - Dada Location Button choose file cancelled")
-          dadaLocation$data <- NA
-        },
-        warning = function(w){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Dada Location Button choose file cancelled. Please refer to the R
+         ))
+         print("Error - Dada Location Button choose file cancelled")
+         dadaLocation$data <- NA
+       },
+       warning = function(w){
+         removeModal()
+         shiny::showModal(shiny::modalDialog(
+           title = "ERROR",
+           "Dada Location Button choose file cancelled. Please refer to the R
            consol for more information."
-          ))
-          print("Warning - Dada Location Button choose file cancelled")
-          dadaLocation$data <- NA
-        }
-      )
+         ))
+         print("Warning - Dada Location Button choose file cancelled")
+         dadaLocation$data <- NA
+       }
+       )
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
@@ -322,15 +322,15 @@ shinyAppServer <- function(input, output, session) {
 
           ))
 
-          #Run the Dada combine function here.
-          combine_dada_output(fileLoc = fileLoc,
-                              minLen = minLen)
+        #Run the Dada combine function here.
+        combine_dada_output(fileLoc = fileLoc,
+                            minLen = minLen)
 
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "Dada combine analysis results is complete",
-            "Please see output files in the target directory."
-          ))
+        removeModal()
+        shiny::showModal(shiny::modalDialog(
+          title = "Dada combine analysis results is complete",
+          "Please see output files in the target directory."
+        ))
         },
         error = function(e){
           removeModal()
@@ -541,52 +541,52 @@ shinyAppServer <- function(input, output, session) {
       }
 
       # Create local variables to avoid conflicts with shiny and multithread
-      databasePath = force(BLASTDatabasePath$data)
-      blastnPath = force(blastnPath$data)
-      querySeqPath = force(querySeqPath$data)
-      minLen = force(input$BLASTminLen)
-      BLASTResults = force(input$BLASTResults)
-      numCores = force(input$blastSeqNumCores)
+        databasePath = force(BLASTDatabasePath$data)
+        blastnPath = force(blastnPath$data)
+        querySeqPath = force(querySeqPath$data)
+        minLen = force(input$BLASTminLen)
+        BLASTResults = force(input$BLASTResults)
+        numCores = force(input$blastSeqNumCores)
 
-      tryCatch(
-        expr = {
-          #Run the Dada function here.
+        tryCatch(
+          expr = {
+            #Run the Dada function here.
 
-          shiny::showModal(shiny::modalDialog(
-            title = "Sequence BLAST is underway.",
-            "Processing, please stand by...", footer=""
+            shiny::showModal(shiny::modalDialog(
+              title = "Sequence BLAST is underway.",
+              "Processing, please stand by...", footer=""
 
-          ))
+            ))
 
-          #Run the function
-          seq_BLAST(databasePath = databasePath,
-                    blastnPath = blastnPath,
-                    querySeqPath = querySeqPath,
-                    minLen = minLen,
-                    BLASTResults = BLASTResults,
-                    numCores = numCores)
+            #Run the function
+            seq_BLAST(databasePath = databasePath,
+                      blastnPath = blastnPath,
+                      querySeqPath = querySeqPath,
+                      minLen = minLen,
+                      BLASTResults = BLASTResults,
+                      numCores = numCores)
 
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "Sequence BLAST is complete",
-            "Please see output files in the target directory."
-          ))
-        },
-        error = function(e){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Please refer to the R consol for more information."
-          ))
-        },
-        warning = function(w){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Please refer to the R consol for more information."
-          ))
-        }
-      )
+            removeModal()
+            shiny::showModal(shiny::modalDialog(
+              title = "Sequence BLAST is complete",
+              "Please see output files in the target directory."
+            ))
+          },
+          error = function(e){
+            removeModal()
+            shiny::showModal(shiny::modalDialog(
+              title = "ERROR",
+              "Please refer to the R consol for more information."
+            ))
+          },
+          warning = function(w){
+            removeModal()
+            shiny::showModal(shiny::modalDialog(
+              title = "ERROR",
+              "Please refer to the R consol for more information."
+            ))
+          }
+        )
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
@@ -636,58 +636,58 @@ shinyAppServer <- function(input, output, session) {
     if(!is.na(taxaAssignFileLoc$data) && !is.na(taxaAssignDBLoc$data)){
 
       # Create local variables to avoid conflicts with shiny and multithread
-      fileLoc = force(taxaAssignFileLoc$data)
-      taxaDBLoc = force(taxaAssignDBLoc$data)
-      numCores = force(input$taxaAssignNumCores)
-      coverage = force(input$coverage)
-      ident = force(input$ident)
-      propThres = force(input$propThres)
-      coverReportThresh = force(input$coverReportThresh)
-      identReportThresh = force(input$identReportThresh)
-      includeAllDada = force(input$includeAllDada)
+       fileLoc = force(taxaAssignFileLoc$data)
+       taxaDBLoc = force(taxaAssignDBLoc$data)
+       numCores = force(input$taxaAssignNumCores)
+       coverage = force(input$coverage)
+       ident = force(input$ident)
+       propThres = force(input$propThres)
+       coverReportThresh = force(input$coverReportThresh)
+       identReportThresh = force(input$identReportThresh)
+       includeAllDada = force(input$includeAllDada)
 
-      tryCatch(
-        expr = {
-          #Run the function here.
-          shiny::showModal(shiny::modalDialog(
-            title = "Taxonomic assingment is underway.",
-            "Processing, please stand by...", footer=""
+       tryCatch(
+         expr = {
+           #Run the function here.
+           shiny::showModal(shiny::modalDialog(
+             title = "Taxonomic assingment is underway.",
+             "Processing, please stand by...", footer=""
 
-          ))
+           ))
 
-          #Run the function
-          taxon_assign(fileLoc = fileLoc,
-                       taxaDBLoc = taxaDBLoc,
-                       numCores = numCores,
-                       coverage = coverage,
-                       ident = ident,
-                       propThres = propThres,
-                       coverReportThresh = coverReportThresh,
-                       identReportThresh = identReportThresh,
-                       includeAllDada = includeAllDada)
+           #Run the function
+           taxon_assign(fileLoc = fileLoc,
+                        taxaDBLoc = taxaDBLoc,
+                        numCores = numCores,
+                        coverage = coverage,
+                        ident = ident,
+                        propThres = propThres,
+                        coverReportThresh = coverReportThresh,
+                        identReportThresh = identReportThresh,
+                        includeAllDada = includeAllDada)
 
-          removeModal()
+            removeModal()
 
-          shiny::showModal(shiny::modalDialog(
-            title = "Taxonomic assingment is complete",
-            "Please see output files in the target directory."
-          ))
-        },
-        error = function(e){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Please refer to the R consol for more information."
-          ))
-        },
-        warning = function(w){
-          removeModal()
-          shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
-            "Please refer to the R consol for more information."
-          ))
-        }
-      )
+           shiny::showModal(shiny::modalDialog(
+             title = "Taxonomic assingment is complete",
+             "Please see output files in the target directory."
+           ))
+         },
+         error = function(e){
+           removeModal()
+           shiny::showModal(shiny::modalDialog(
+             title = "ERROR",
+             "Please refer to the R consol for more information."
+           ))
+         },
+         warning = function(w){
+           removeModal()
+           shiny::showModal(shiny::modalDialog(
+             title = "ERROR",
+             "Please refer to the R consol for more information."
+           ))
+         }
+       )
 
     }else{
       shiny::showModal(shiny::modalDialog(
@@ -723,8 +723,8 @@ shinyAppServer <- function(input, output, session) {
       fileLoc = force(combineTaxaFileLoc$data)
       numCores = force(input$combineTaxaNumCores)
 
-      print(paste0("Here is the value of the combine_assign_output fileLoc...", fileLoc))
-      print(paste0("Here is the value of the combine_assign_output numCores...", numCores))
+print(paste0("Here is the value of the combine_assign_output fileLoc...", fileLoc))
+print(paste0("Here is the value of the combine_assign_output numCores...", numCores))
 
       tryCatch(
         expr = {
@@ -794,8 +794,8 @@ shinyAppServer <- function(input, output, session) {
       fileLoc = force(reduceTaxaFileLoc$data)
       numCores = force(input$reduceTaxaNumCores)
 
-      print(paste0("Here is the value of the reduceTaxa fileLoc...", fileLoc))
-      print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
+print(paste0("Here is the value of the reduceTaxa fileLoc...", fileLoc))
+print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
 
       tryCatch(
         expr = {
@@ -1021,24 +1021,24 @@ shinyAppServer <- function(input, output, session) {
 
             #Load in the data to the formatted_metadata variable
             ASVFileTable$data<-read.table(ASVFile$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
-            print("Here loading data 1")
+print("Here loading data 1")
             metaDataFileTable$data<-read.table(metaDataFile$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
-            print("Here loading data 2")
+print("Here loading data 2")
             ########################Process the submitted data files###################
 
             #Get the columns with the '_MarkerResults' string which indicates that it was a combined marker file
             # from the combined reduced taxa assign function
             markerColumns <- grep("_MarkerResults", names(ASVFileTable$data), value = TRUE)
-            print(paste0("Here loading data 3 and the columns with _MarkerResults are...", markerColumns))
+print(paste0("Here loading data 3 and the columns with _MarkerResults are...", markerColumns))
 
             if(length(markerColumns)>0){
-              print("Here loading data 4")
+print("Here loading data 4")
               #Get the last column number with the '_MarkerResults' in the title
               maxColNum <- max(which(names(ASVFileTable$data) %in% markerColumns))
-              print("Here loading data 5")
+print("Here loading data 5")
               #Get the names of the samples
               sampleNames <- names(ASVFileTable$data)[c((maxColNum+1):ncol(ASVFileTable$data))]
-              print("Here loading data 6")
+print("Here loading data 6")
               #Flatten the data.frame
               flatTable <- reshape(
                 ASVFileTable$data,
@@ -1049,16 +1049,16 @@ shinyAppServer <- function(input, output, session) {
                 timevar = "Sample",
                 sep = ""
               )
-              print("Here loading data 7")
+print("Here loading data 7")
               #Remove all entries with 0 in the Abundance column
               flatTable <- flatTable[flatTable$Abundance != 0, ]
-              print("Here loading data 8")
+print("Here loading data 8")
               #Merge the flattened file with the GPS file.
               mergedTable$data <- merge(flatTable, metaDataFileTable$data, by = "Sample")
-              print("Here loading data 9")
+print("Here loading data 9")
               #Initialize the finalMergedTable with the first marker.
               finalMergedTable <- NULL
-              print("Here loading data 10")
+print("Here loading data 10")
               #Loop through the markers to add them on to the finalMergedTable
               for (numMarkerCol in 1:length(markerColumns)){
 
@@ -1087,7 +1087,7 @@ shinyAppServer <- function(input, output, session) {
                 #Add the data back onto a dataframe with each molecular Marker data in a marker column
                 finalMergedTable <- rbind(finalMergedTable,tempMergedTable)
 
-                print(paste0("Here loading data 11 - ", numMarkerCol))
+print(paste0("Here loading data 11 - ", numMarkerCol))
               }
 
               #Add a category column to place the data points on the map
@@ -1097,7 +1097,7 @@ shinyAppServer <- function(input, output, session) {
                 labels = c("10", "100", "1000", "10000", "100000", "1000000"),
                 include.lowest = TRUE
               )
-              print("Here loading data 12")
+print("Here loading data 12")
               #Remove unnecessary variables
               mergedTable$data <- finalMergedTable
               remove(finalMergedTable)
@@ -1149,9 +1149,9 @@ shinyAppServer <- function(input, output, session) {
               remove(tempMergedTable)
 
             }
-            print("Here loading data 13")
-            mergedTableGlobal <<- mergedTable
-            print("Here loading data 14")
+print("Here loading data 13")
+mergedTableGlobal <<- mergedTable
+print("Here loading data 14")
             #################### update the filters based on submitted ASV data ############
 
             shiny::updateSliderInput(session = session, inputId = "abundance",
@@ -1231,7 +1231,7 @@ shinyAppServer <- function(input, output, session) {
                                      min = as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                                      max = as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                                      value=c(as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                                             as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
+                                              as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
 
             #Remove the processing files modal
             removeModal()

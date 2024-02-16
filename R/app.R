@@ -248,7 +248,7 @@ dbtcTools <- function() {
                              ),
                              shiny::br(),
                              #General Processing values
-                             shiny::radioButtons("uniOrbidirectional", "Directional processing: Process the samples unidirectionally, bidirectionally, or both (Note: If bidirectinoal is selected the function will not run if only unidirectional data is present).", c("BiDirectional", "Unidirectional", "Both")),
+                             shiny::radioButtons("uniOrbidirectional", "Directional processing: Process the samples unidirectionally, bidirectionally, or both (Note: If bidirectinoal is selected the function will not run if only unidirectional data is present).", c("Bidirectional", "Unidirectional", "Both")),
                              shiny::conditionalPanel(
                                condition = "input.uniOrbidirectional != 'Unidirectional'",
                                shiny::textInput("fwdIdent", "Foward identifier naming substring", value = "_R1_001"),
@@ -265,8 +265,8 @@ dbtcTools <- function() {
                              shiny::p(shiny::tags$b(shiny::tags$u("3. Dada filterAndTrim", style = "font-size:14px;"))),
                              shiny::wellPanel(
                                #Dada filterAndTrim values
-                               shiny::numericInput("fwdTrimLen", "Select a forward trim length for the Dada filterAndTrim() function (Default fwdTrimLen = 0).", value = 2, min = 0, max = 50),
-                               shiny::numericInput("revTrimLen", "Select a reverse trim length for the Dada filterAndTrim() function (Default revTrimLen = 0).", value = 2, min = 0, max = 50),
+                               shiny::numericInput("fwdTrimLen", "Select a forward trim length for the Dada filterAndTrim() function (Default fwdTrimLen = 0).", value = 0, min = 0, max = 50),
+                               shiny::numericInput("revTrimLen", "Select a reverse trim length for the Dada filterAndTrim() function (Default revTrimLen = 0).", value = 0, min = 0, max = 50),
                                shiny::numericInput("maxEEVal", "Maximum number of expected errors allowed in a read for the Dada filterAndTrim() function (Default maxEEVal = 2)", value = 2, min = 0, max = 250),
                                shiny::numericInput("truncQValue", "Truncation value use to trim ends of reads, nucleotides with quality values less than this value will be used to trim the remainder of the read for the Dada filterAndTrim() function (Default truncQValue = 2).", value = 2, min = 0, max = 42),
                                shiny::numericInput("truncLenValueF", "Dada forward length trim value for the Dada filterAndTrim() function. This function is set to 0 when the pattern matching trim function is enabled (Default truncLenValueF = 0).", value = 0, min = 0, max = 250),
@@ -351,8 +351,6 @@ dbtcTools <- function() {
              shiny::column(5,shiny::textOutput("makeBlastTaxaDBLocDisplay")),
              shiny::br()
            ),
-
-           shiny::radioButtons("inputFormat", "Input format for fasta file. Make BLAST DataBase (MBDB) and MACER program formatted sequence file to make a BLAST database (MACER)", c("MBDB","MACER")),
 
            #Final length filtering
            shiny::numericInput("makeBLASTDBMinLen", "The minimum length of reads in the fasta file to be included in the BLAST database (Default minLen = 100).", value = 100, min = 0, max = 1000),

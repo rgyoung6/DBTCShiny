@@ -145,7 +145,6 @@ shinyAppServer <- function(input, output, session) {
   shiny::observeEvent(input$dadaDirectoryButton, {
     tryCatch(
       expr = {
-#        dadaLocation$data <- dirname(dirname(file.choose()))
         dadaLocation$data <- file.choose()
         output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaLocation$data)})
       },
@@ -193,7 +192,7 @@ shinyAppServer <- function(input, output, session) {
        if (force(input$uniOrbidirectional) == "Unidirectional"){
          unidirectional = TRUE
          bidirectional = FALSE
-       }else if(force(input$uniOrbidirectional) == "BiDirectional"){
+       }else if(force(input$uniOrbidirectional) == "Bidirectional"){
          unidirectional = FALSE
          bidirectional = TRUE
        }else{
@@ -413,15 +412,15 @@ shinyAppServer <- function(input, output, session) {
   # Run the making BLAST db code.
   shiny::observeEvent(input$makeBlastDB, {
 
-    suppressWarnings(if(!is.na(makeBlastDBFileLoc$data) && !is.na(makeBlastTaxaDBLoc$data) && !is.na(input$inputFormat) && !is.na(input$dbName) && !is.na(input$makeBLASTDBMinLen)){
-      if(is.na(makeblastdbPath$data)){
+#    suppressWarnings(if(!is.na(makeBlastDBFileLoc$data) && !is.na(makeBlastTaxaDBLoc$data) && !is.na(input$inputFormat) && !is.na(input$dbName) && !is.na(input$makeBLASTDBMinLen)){
+    if(!is.na(makeBlastDBFileLoc$data) && !is.na(makeBlastTaxaDBLoc$data) && !is.na(input$dbName) && !is.na(input$makeBLASTDBMinLen)){
+        if(is.na(makeblastdbPath$data)){
         makeblastdbPath$data <- "makeblastdb"
       }
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(makeBlastDBFileLoc$data)
       makeblastdbPath = force(makeblastdbPath$data)
       taxaDBLoc = force(makeBlastTaxaDBLoc$data)
-      inputFormat = force(input$inputFormat)
       dbName = force(input$dbName)
       minLen = force(input$makeBLASTDBMinLen)
 
@@ -439,7 +438,6 @@ shinyAppServer <- function(input, output, session) {
           make_BLAST_DB(fileLoc = fileLoc,
                         makeblastdbPath = makeblastdbPath,
                         taxaDBLoc = taxaDBLoc,
-                        inputFormat = inputFormat,
                         dbName = dbName,
                         minLen = minLen)
 
@@ -471,7 +469,7 @@ shinyAppServer <- function(input, output, session) {
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    } #) End of the suppress warnings
   },ignoreInit = TRUE)
 
   ################## BLAST sequences Function #################################

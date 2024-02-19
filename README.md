@@ -211,10 +211,10 @@ Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, Meta
 # Package Function Details
 
 ## Dada Implement
-dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end).
+dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end of the analysis pipeline using the reduce_taxa() function).
 
 ### Input 
-Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads (tab separated file).
+Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads (tab separated file). To select all of the fastq files simply select one file in one of the Run directories to point to the desired data files, as long as the file and folder structure is correct.
 
 **Fastq File Folder Structure**
 

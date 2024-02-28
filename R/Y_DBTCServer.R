@@ -167,7 +167,7 @@ shinyAppServer <- function(input, output, session) {
 
       }
     }
-  },ignoreInit = TRUE)
+  })
 
   ################## Dada Submit Function #####################################
   # Get the path where all of the folders containing the fastq files are located

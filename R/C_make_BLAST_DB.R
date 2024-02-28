@@ -212,7 +212,7 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
         write.table(seqTable, fileLoc , row.names=FALSE, col.names=FALSE, quote = FALSE, sep="\n", append=FALSE)
 
         #Build the BLAST command
-        BLASTMakeDBCmdString<- paste0(makeblastdbPath, " -in ", fileLoc, "  -parse_seqids -dbtype nucl -out ", dbName)
+        BLASTMakeDBCmdString<- paste0(makeblastdbPath, " -in ", fileLoc, "  -parse_seqids -title '", dbName, "' -dbtype nucl -out ", dbName)
 
         print("********************************************************************************")
         print(paste0("Begin makeblastdb at time: ", Sys.time()))

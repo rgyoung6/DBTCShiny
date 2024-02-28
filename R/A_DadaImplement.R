@@ -61,7 +61,7 @@
 #' @param primerFile Select a file with the primers for this analysis.
 #' @param fwdIdent Forward identifier naming substring.
 #' @param revIdent Reverse identifier naming substring.
-#' @param bidirectinoal Selection to process paired forward and reverse sequence
+#' @param bidirectional Selection to process paired forward and reverse sequence
 #' for analysis (Default TRUE).
 #' @param unidirectional Selection to process files independently (Default FALSE).
 #' @param printQualityPdf Selection to process save image files showing quality metrics (Default TRUE).

@@ -123,10 +123,16 @@ shinyAppServer <- function(input, output, session) {
 
 # Place an update here to get the data points on the map based on the information contained in the Mapped Data Table tab
 
-        mergedTableGlobal <<- mergedTable$data
+
+
+
+
+
+
         workMergedTable <- mergedTable$data
         workMergedTable <- workMergedTable[workMergedTable$Abundance >= input$abundance[1] & workMergedTable$Abundance <= input$abundance[2],]
         workMergedTable <- workMergedTable[workMergedTable$Final_Rank %in% input$finalRank,]
+        workMergedTable <- workMergedTable[workMergedTable$Final_Taxa %in% input$finalTaxa,]
         workMergedTable <- workMergedTable[workMergedTable$superkingdom %in% input$kingdomFilterInput,]
         workMergedTable <- workMergedTable[workMergedTable$phylum %in% input$phylumFilterInput,]
         workMergedTable <- workMergedTable[workMergedTable$class %in% input$classFilterInput,]
@@ -161,7 +167,7 @@ shinyAppServer <- function(input, output, session) {
 
       }
     }
-  })
+  },ignoreInit = TRUE)
 
   ################## Dada Submit Function #####################################
   # Get the path where all of the folders containing the fastq files are located
@@ -191,7 +197,7 @@ shinyAppServer <- function(input, output, session) {
          }
        )
       }
-    })
+    },ignoreInit = TRUE)
 
     #Connect this to the shinyChooseButton
     shinyFiles::shinyFileChoose(input, "primerFile", roots = volumes, session = session)
@@ -217,7 +223,7 @@ shinyAppServer <- function(input, output, session) {
           }
         )
       }
-    })
+    },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
 
@@ -1307,8 +1313,7 @@ print("Here loading data 12")
 
             }
 print("Here loading data 13")
-mergedTableGlobal <<- mergedTable
-print("Here loading data 14")
+
             #################### update the filters based on submitted ASV data ############
 
             shiny::updateSliderInput(session = session, inputId = "abundance",

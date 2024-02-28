@@ -157,8 +157,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
     if(length(positions)==0){
 
-print("In the loop checking if there is an associated .fas or .asv file to accompany the BLAST output file.")
-
       #initialize the output variable
       finalCondensedOut<-NULL
 

@@ -14,11 +14,12 @@
 #' @importFrom stats aggregate
 #' @importFrom stats median
 #' @importFrom stats na.omit
+#' @importFrom stats reshape
 #' @importFrom ggplot2 ggsave
 
 # Shiny Packages
 #' @import leaflet
-#' @import DT
+# #' @import DT
 #'
 # Shiny Functions
 #' @importFrom magrittr %>%
@@ -69,12 +70,11 @@
 #' @importFrom shinyWidgets pickerInput
 #' @importFrom shinyWidgets updatePickerInput
 #' @importFrom shinyFiles shinyFileChoose
-#' @importFrom shinyFiles getvolumes
+#' @importFrom shinyFiles getVolumes
 #' @importFrom shinyFiles parseFilePaths
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom leaflet.extras addFullscreenControl
-
 
 #################### Dash Board Body ########################################
 dashBoardBodyComponent <- function() {

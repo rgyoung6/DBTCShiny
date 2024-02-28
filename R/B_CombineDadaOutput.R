@@ -90,8 +90,12 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
   if (is.null(fileLoc)){
     print(paste0("Select a file in the file folder with dada files you would like to combine (extension '_Merge.tsv' OR '_MergeFwdRev.tsv' OR '_Forward.tsv')."))
     print("********** NOTE: all files being combined should have used the same protocols (molecular marker, dada arguments, etc.) **********")
-    fileLoc <- dirname(file.choose())
+    fileLoc <- file.choose()
   }
+
+  #Get the directory
+  fileLoc <- dirname(fileLoc)
+
   if (is.null(fileLoc)){
 
     print("********************************************************************************")

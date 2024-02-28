@@ -274,6 +274,9 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
                 write("\n", file = blastCommandFile, append = TRUE)
                 write(BLASTCmdString, file = blastCommandFile, append = TRUE)
 
+                #Set the permissions for the newly created file.
+                Sys.chmod(blastCommandFile, mode = "0777")
+
                 #Run the BLAST command in a system command
                 BLASTOutput<-system(paste0("bash './", blastCommandFile, "'"))
 

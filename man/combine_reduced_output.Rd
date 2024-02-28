@@ -4,11 +4,14 @@
 \alias{combine_reduced_output}
 \title{Combine Reduce Taxa Files for the Same Biological Samples using Different Markers}
 \usage{
-combine_reduced_output(fileLoc = NULL)
+combine_reduced_output(fileLoc = NULL, presenceAbsence = TRUE)
 }
 \arguments{
 \item{fileLoc}{The location of a file in a directory where all of the 'taxa_assign'
 and/or 'combined_taxa_assign' files are located.}
+
+\item{presenceAbsence}{This setting is a TRUE or FASLE value that insdicates
+if the results will include read counts or be reduced to 0/1 presence absence values}
 }
 \value{
 This function produces a single 'YYYY_MM_DD_HHMM_CombineTaxaReduced' file and
@@ -49,7 +52,7 @@ or folder naming:
 \examples{
 \dontrun{
 combine_reduced_output()
-combine_reduced_output(fileLoc = NULL)
+combine_reduced_output(fileLoc = NULL, presenceAbsence = TRUE)
 }
 
 }

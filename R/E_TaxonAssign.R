@@ -157,8 +157,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
     if(length(positions)==0){
 
-print("In the loop checking if there is an associated .fas or .asv file to accompany the BLAST output file.")
-
       #initialize the output variable
       finalCondensedOut<-NULL
 
@@ -227,9 +225,9 @@ print("In the loop checking if there is an associated .fas or .asv file to accom
             #Get the total number of returned results for the current unique query ID
             numBLASTResults<-nrow(blastResultsTarget)
 
-            #This is if we are using a NCBI database
+            #Run the taxonomizr taxonomy function
             suppressWarnings(taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql'))
-#            taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql')
+#            taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, taxaDBLoc)
             taxa <- as.data.frame(taxa)
 
             if(nrow(taxa) == 1){
@@ -589,7 +587,6 @@ print("In the loop checking if there is an associated .fas or .asv file to accom
 
           }
 
-
         }
 
         print(paste0("End of this loop ", fileCounter, " of ", nrow(filesList), " at ", Sys.time()))
@@ -605,13 +602,3 @@ print("In the loop checking if there is an associated .fas or .asv file to accom
 
   }
 }#end of the function
-
-
-
-######################## extract_Number ###################################
-
-#extract number of hits for designated taxa
-#extract_Number <- function(numHits){
-#  numHits <- gsub(".*[(]", "", numHits)
-#  numHits <-  as.numeric(gsub(",.*", "", numHits))
-#}

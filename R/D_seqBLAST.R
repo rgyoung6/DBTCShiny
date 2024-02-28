@@ -84,6 +84,9 @@
 ##################################### BLAST FUNCTION ##############################################################
 seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blastn", minLen = 100, BLASTResults=200, numCores=1){
 
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
+
   #Get the initial working directory
   start_wd <- getwd()
   on.exit(setwd(start_wd))
@@ -104,6 +107,7 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
     querySeqPath<-file.choose()
   }
 
+
   if(is.null(blastnPath)){
     print(paste0("Select the path for the blastn command."))
     blastnPath<-file.choose()
@@ -123,15 +127,36 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
     print("Please rerun the function and provide a value for the BLASTResults argument.")
     print(paste0("Current database name (BLASTResults) is: ", BLASTResults))
     print("********************************************************************************")
-  } else{
+  } else if (is.null(querySeqPath)){
+    print("********************************************************************************")
+    print("The query sequence path was not provided. Please select a file and run the function again.")
+    print("********************************************************************************")
+  } else if (grepl(" ",querySeqPath) | grepl(" ",databasePath) | grepl(" ",blastnPath)){
+    print("********************************************************************************")
+    print("Error: One or more of the file paths contains a space in the naming convention. Please change the naming and try again.")
+    print("********************************************************************************")
+  }else{
 
-    setwd(dirname(databasePath))
     querySeqPath<-dirname(querySeqPath)
 
+    #Set the working directory to the location of the BLAST database
+    setwd(dirname(databasePath))
+
+    #Audit line
+    if(auditScript>0){
+      auditFile <- paste0(querySeqPath,"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")
+      write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE)
+      print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"))
+    }
 
     #Setting up the database name
     databaseName <- list.files(path=dirname(databasePath), pattern = "*[.]nto$")
+
+    if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1A")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1A"), file = auditFile, append = TRUE))}
+
     databaseName <- sub("\\..*","", databaseName)
+
+    if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1B")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1B"), file = auditFile, append = TRUE))}
 
     if(length(databaseName) == 0 ){
       print("********************************************************************************")
@@ -143,8 +168,12 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
 
     }else {
 
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
+
       #Get the list of files in the target directory to loop through
       pathList <- list.files(path=querySeqPath, pattern = "*[.]([Ff][Aa][Ss]$)|([Ff][Aa][Ss][Tt][Aa]$)", full.names = TRUE)
+
       fileList <- list.files(path=querySeqPath, pattern = "*[.]([Ff][Aa][Ss]$)|([Ff][Aa][Ss][Tt][Aa]$)")
       fileNames <- sub("\\..*","", as.vector(fileList))
 
@@ -153,15 +182,22 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
         print("********************************************************************************")
         print("There are no fasta (*.FAS or *.FASTA) files in the target directory.")
         print("Please rerun the function and provide a folder with fasta files.")
+        print(paste0("The current path is... ",querySeqPath ))
         print("********************************************************************************")
 
       }else{
+
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3"), file = auditFile, append = TRUE))}
 
         #Create a temp file to hold the reduced dataset after filtering
         temp_file <- tempfile(fileext = ".fas")
 
         #Build the run file.
         for(filesInFolder in 1:length(pathList)){
+
+          #Audit line
+          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4"), file = auditFile, append = TRUE))}
 
           print(paste0("Beginning the BLASTing of file ",pathList[filesInFolder], " at - ", Sys.time()))
 
@@ -177,6 +213,9 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
             print("********************************************************************************")
 
           }else{
+
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 5"), file = auditFile, append = TRUE))}
 
             #taking the read in file and changing from Fasta to tab delimited
             seqTableTemp <- data.frame(Header = (seqTable[seq(from = 1, to = nrow(seqTable), by = 2), 1]))
@@ -196,6 +235,10 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
               print("********************************************************************************")
 
             }else{
+
+              #Audit line
+              if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 6"), file = auditFile, append = TRUE))}
+
               #save the reduced fasta to a temp file
               write.table(seqTable, file = temp_file, append = FALSE, na = "", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\n")
 
@@ -204,6 +247,9 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
 
               #Build the file to run based on the operating system
               if (.Platform$OS.type == "windows"){
+
+                #Audit line
+                if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 7"), file = auditFile, append = TRUE))}
 
                 #Windows command file
                 blastCommandFile <- paste0(fileNames[filesInFolder], "_BLAST_", databaseName,"_", dateStamp, ".bat")
@@ -217,6 +263,9 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
 
               } else{
 
+                #Audit line
+                if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 8"), file = auditFile, append = TRUE))}
+
                 #linux and Mac OS command file
                 blastCommandFile <- paste0(fileNames[filesInFolder], "_BLAST_", databaseName,"_", dateStamp, ".sh")
 
@@ -225,20 +274,11 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
                 write("\n", file = blastCommandFile, append = TRUE)
                 write(BLASTCmdString, file = blastCommandFile, append = TRUE)
 
+                #Set the permissions for the newly created file.
+                Sys.chmod(blastCommandFile, mode = "0777")
+
                 #Run the BLAST command in a system command
                 BLASTOutput<-system(paste0("bash './", blastCommandFile, "'"))
-
-
-
-
-
-
-
-
-
-
-
-
 
                 tryCatch(
                   expr = {
@@ -253,23 +293,15 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
                   }
                 )
 
-
-
-
-
-
-
-
-
-
-
+                #Audit line
+                if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 9"), file = auditFile, append = TRUE))}
 
               }#End of if checking for the operating system
             }#Close if where there are no fasta files in the selected folder
           }#Close the check if there are records in the file after length filter
         }#End of the checking the format of the file
       }#End of the loop going through the fasta files to be BLASTed
-    }#End of the check for the length of the databaseName as otained from the database location.
+    }#End of the check for the length of the databaseName as obtained from the database location.
   }#Closing the if checking for the submitting arguments
 
   print(paste0("BLAST Complete - Started at ", startTime, " Ended at ", Sys.time()))

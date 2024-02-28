@@ -33,8 +33,6 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
 
 # Installation 
 
-<details><summary>Expand</summary>
-<br></br>
 DBTCShiny can be installed three ways.
 
 ## 1. Install from CRAN
@@ -62,15 +60,14 @@ library("DBTCShiny", lib.loc="HERE")
 </details>
 
 # Package Dependencies
-
-<details><summary>Expand</summary>
-<br></br>
-  
+ 
 ## External R Element Dependencies
 
 ### NCBI BLAST+ local program to run BLAST on local databases
 
-Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html#blast-executables) executables page to obtain a local version of the BLAST tools.
+Follow the instructions on the NCBI [BLAST+](https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html#blast-executables) executables page to obtain a local version of the BLAST tools. The list of the latest installation files can be found [here](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/).
+
+Note: It is best to download and install the most recent versions of the blast+ suit to your computer and place the programs in your computers path so you can access the program from any folder. However, the program files for both blastn and makeblastdb have been included in the DBTCShinyTutorial GitHub page for ease of use (please note that these may not be the most recent versions).
 
 ### R package taxonomizr to establish a local NCBI taxonomy database
 The R package taxonomizr is used to establish a NCBI taxaID database (NOTE: this package is also required when using the taxon assignment elements in the DBTC pipeline).
@@ -94,10 +91,11 @@ In addition to the NCBI resources, DBTC can also use custom databases. To establ
 [MACER GitHub](https://github.com/rgyoung6/MACER) (will have the most recent version and development versions)
 
 ### Create a local NCBI taxonomy database to assign taxonomic identifications to BLAST results
-In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html), use the instructions and the prepareDatabase('accessionTaxa.sql') taxonomizr command to establish a local taxonomy database.
+In the 'Preparation' section of the [taxonomizr website](https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html), use the instructions and the prepareDatabase('accessionTaxa.sql', getAccessions = FALSE) taxonomizr command to establish a local taxonomy database.
 ```
-prepareDatabase('accessionTaxa.sql')
+prepareDatabase('accessionTaxa.sql', getAccessions = FALSE)
 ```
+Note: Along with the accessionTaxa.sql two other files nodes.dmp and names.dmp files are downloaded. These two files are not necessary for downstream analyses and can be deleted.
 
 ## R Packages Dependencies
 
@@ -159,7 +157,7 @@ launchDBTCShiny()
 # Function Descriptions
 
 ## dada_implement()
-This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contain fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of fasta files and amplicon sequencing variant (ASV) tables. 
+This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contains fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). A run is a group of results processed at the same time on the same machine representing the same molecular methods. All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of fasta files and amplicon sequencing variant (ASV) tables. 
     
 ## combine_dada_output()
 This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single ASV table with accompanying fasta file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all ASV tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
@@ -213,10 +211,10 @@ Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, Meta
 # Package Function Details
 
 ## Dada Implement
-dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end).
+dada_implement() - Process metabarcode raw fastq files by run using Dada2 (Note: molecular markers are independently analysed and combined at the end of the analysis pipeline using the reduce_taxa() function).
 
 ### Input 
-Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads (tab separated file).
+Two file types are required as input for the dada_implement() function. The first are the fastq files in the appropriate folder structure (see below) and the second is a file containing the primers used for the amplification of the sequence reads (tab separated file). To select all of the fastq files simply select one file in one of the Run directories to point to the desired data files, as long as the file and folder structure is correct.
 
 **Fastq File Folder Structure**
 
@@ -479,6 +477,11 @@ This function produces a '_CombineTaxaReduced.tsv' file for every 'taxaAssign' o
 Reduced taxonomic assignment files have fewer columns in the main taxa_reduced.tsv file than the taxaAssign files as columns are collapsed. In addition, the values in the taxonomic columns in parentheses represent the average values across all of the results with the same taxonomic assignment (see taxon_assign() intrepretation above).
 
 The columns include, superkingdom, phylum, class, order, family, genus, species, Top_BLAST, Final_Common_Names, Final_Rank, Final_Taxa, Result_Code, RepSequence, Number_ASV, Average_ASV_Length, Number_Occurrences, Average_ASV_Per_Sample, Median_ASV_Per_Sample, Results.
+
+
+Add in a note about the representative sequence for the taxa and how I got it.
+
+
 
 ### Dependencies
 - pbapply()

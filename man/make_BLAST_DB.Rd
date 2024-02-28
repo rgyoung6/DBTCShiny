@@ -8,7 +8,6 @@ make_BLAST_DB(
   fileLoc = NULL,
   makeblastdbPath = "makeblastdb",
   taxaDBLoc = NULL,
-  inputFormat = NULL,
   dbName = NULL,
   minLen = 100
 )
@@ -21,11 +20,6 @@ will be used to construct a BLASTable database. Default = NULL}
 
 \item{taxaDBLoc}{The location of the NCBI taxonomic data base (accessionTaxa.sql
 see the main DBTCShiny page for details).}
-
-\item{inputFormat}{This will either be NCBI formatted fasta file (header
-example >uniqueID|NCBItaxaID|Genus|species) or a MACER
-(header example >uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase)
-formatted file.}
 
 \item{dbName}{A short 6-8 alpha character name used when building a database.}
 

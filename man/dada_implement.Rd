@@ -9,7 +9,9 @@ dada_implement(
   primerFile = NULL,
   fwdIdent = "_R1_001",
   revIdent = "_R2_001",
-  nonMergeProcessing = TRUE,
+  unidirectional = FALSE,
+  bidirectional = TRUE,
+  printQualityPdf = TRUE,
   maxPrimeMis = 2,
   fwdTrimLen = 0,
   revTrimLen = 0,
@@ -31,11 +33,16 @@ fastq files.}
 
 \item{primerFile}{Select a file with the primers for this analysis.}
 
-\item{fwdIdent}{Foward identifier naming substring.}
+\item{fwdIdent}{Forward identifier naming substring.}
 
 \item{revIdent}{Reverse identifier naming substring.}
 
-\item{nonMergeProcessing}{Non-Merge Processing (Default TRUE).}
+\item{unidirectional}{Selection to process files independently (Default FALSE).}
+
+\item{bidirectional}{Selection to process paired forward and reverse sequence
+for analysis (Default TRUE).}
+
+\item{printQualityPdf}{Selection to process save image files showing quality metrics (Default TRUE).}
 
 \item{maxPrimeMis}{Maximum number of mismatches allowed when pattern matching
 trimming the primers from the ends of the reads for the ShortRead trimLRPatterns()
@@ -153,7 +160,7 @@ or folder naming:
 \dontrun{
 dada_implement()
 dada_implement(runFolderLoc = NULL, primerFile = NULL,fwdIdent = "_R1_001",
-revIdent = "_R2_001",nonMergeProcessing = TRUE, # compressValue = TRUE,
+revIdent = "_R2_001",unidirectional = FALSE, bidirectional = TRUE, printQualityPdf = TRUE,
 maxPrimeMis = 2, fwdTrimLen = 0, revTrimLen = 0,maxEEVal=2, truncQValue = 2,
 truncLenValueF = 0, truncLenValueR = 0,error = 0.1, nbases = 1e80,
 maxMismatchValue = 0, minOverlapValue = 12,trimOverhang = FALSE,

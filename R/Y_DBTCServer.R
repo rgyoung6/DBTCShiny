@@ -52,6 +52,29 @@ shinyAppServer <- function(input, output, session) {
   workingMergedTable <- reactiveValues(data = NA)
   firstLoadFlag <- reactiveValues(data = 0)
 
+  #Dada files
+  dadaDirectoryDisplayString<-reactiveValues(data = NA)
+  primerFileDisplayString<-reactiveValues(data = NA)
+  #Dada Combine
+  dadaCombineFileDisplayString<-reactiveValues(data = NA)
+  #Make DB
+  makeBlastDBFileLocDisplayString<-reactiveValues(data = NA)
+  makeblastdbPathDisplayString<-reactiveValues(data = NA)
+  makeBlastTaxaDBLocDisplayString<-reactiveValues(data = NA)
+  #BLAST
+  BLASTDatabasePathDisplayString<-reactiveValues(data = NA)
+  blastnPathDisplayString<-reactiveValues(data = NA)
+  querySeqPathDisplayString<-reactiveValues(data = NA)
+  #Taxon Assign
+  taxaAssignFileLocDisplayString<-reactiveValues(data = NA)
+  taxaAssignDBLocDisplayString<-reactiveValues(data = NA)
+  #Combine Taxa Assign
+  combineTaxaFileLocDisplayString<-reactiveValues(data = NA)
+  #Reduce taxa assign
+  reduceTaxaFileLocDisplayString<-reactiveValues(data = NA)
+  #Combine Reduced Taxa assign
+  combineReducedTaxaFileLocDisplayString<-reactiveValues(data = NA)
+
   ###################### Initialize the Map ######################################
   #Building the initial map and using the
   #Default static leaflet map before filtering parameters are applied.
@@ -100,10 +123,16 @@ shinyAppServer <- function(input, output, session) {
 
 # Place an update here to get the data points on the map based on the information contained in the Mapped Data Table tab
 
-        mergedTableGlobal <<- mergedTable$data
+
+
+
+
+
+
         workMergedTable <- mergedTable$data
         workMergedTable <- workMergedTable[workMergedTable$Abundance >= input$abundance[1] & workMergedTable$Abundance <= input$abundance[2],]
         workMergedTable <- workMergedTable[workMergedTable$Final_Rank %in% input$finalRank,]
+        workMergedTable <- workMergedTable[workMergedTable$Final_Taxa %in% input$finalTaxa,]
         workMergedTable <- workMergedTable[workMergedTable$superkingdom %in% input$kingdomFilterInput,]
         workMergedTable <- workMergedTable[workMergedTable$phylum %in% input$phylumFilterInput,]
         workMergedTable <- workMergedTable[workMergedTable$class %in% input$classFilterInput,]
@@ -138,56 +167,93 @@ shinyAppServer <- function(input, output, session) {
 
       }
     }
-  })
+  },ignoreInit = TRUE)
 
   ################## Dada Submit Function #####################################
   # Get the path where all of the folders containing the fastq files are located
-  shiny::observeEvent(input$dadaDirectoryButton, {
-    tryCatch(
-      expr = {
-        dadaLocation$data <- dirname(dirname(file.choose()))
-        output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaLocation$data)})
-      },
-      error = function(e){
-        print("Error - Dada Location Button choose file cancelled")
-        dadaLocation$data <- NA
-      },
-      warning = function(w){
-        print("Warning - Dada Location Button choose file cancelled")
-        dadaLocation$data <- NA
-      }
-    )
-  },ignoreInit = TRUE)
+    volumes = shinyFiles::getVolumes()
+    #Connect this to the shinyChooseButton
+    shinyFiles::shinyFileChoose(input, "dadaDirectory", roots = volumes, session = session)
 
-  # Get the file with the primer data for this analysis
-  shiny::observeEvent(input$primerFileButton, {
-    tryCatch(
-      expr = {
-        primerFile$data <- file.choose()
-        output$primerFileDisplay <- shiny::renderText({as.character(primerFile$data)})
-      },
-      error = function(e){
-        print("Error - Primer File Button choose file cancelled")
-        primerFile$data <- NA
-      },
-      warning = function(w){
-        print("Warning - Primer File Button choose file cancelled")
-        primerFile$data <- NA
+    # Get the file with the primer data for this analysis
+    shiny::observeEvent(input$dadaDirectory, {
+
+      if(!is.null(input$dadaDirectory)){
+        tryCatch(
+          expr = {
+
+            dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
+            dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
+            output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
+
+         },
+         error = function(e){
+           print("Error - Dada Location Button choose file cancelled")
+           dadaLocation$data <- NA
+         },
+         warning = function(w){
+           print("Warning - Dada Location Button choose file cancelled")
+           dadaLocation$data <- NA
+         }
+       )
       }
-    )
-  },ignoreInit = TRUE)
+    },ignoreInit = TRUE)
+
+    #Connect this to the shinyChooseButton
+    shinyFiles::shinyFileChoose(input, "primerFile", roots = volumes, session = session)
+
+    # Get the file with the primer data for this analysis
+    shiny::observeEvent(input$primerFile, {
+      if(!is.null(input$primerFile)){
+        tryCatch(
+          expr = {
+
+            primerFile <- shinyFiles::parseFilePaths(volumes, input$primerFile)
+            primerFileDisplayString$data <- as.character(substr(primerFile$datapath, 2, nchar(primerFile$datapath)))
+            output$primerFileDisplay <- shiny::renderText({as.character(primerFileDisplayString$data)})
+
+          },
+          error = function(e){
+            print("Error - Dada Location Button choose file cancelled")
+            dadaLocation$data <- NA
+          },
+          warning = function(w){
+            print("Warning - Dada Location Button choose file cancelled")
+            dadaLocation$data <- NA
+          }
+        )
+      }
+    },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
-    suppressWarnings(if(!is.na(dadaLocation$data) && !is.na(primerFile$data)){
+
+#   if(!is.na(dadaDirectoryDisplayString$data) && !is.na(primerFileDisplayString$data)){
+   if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
+       !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
 
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
 
-       runFolderLoc <- force(as.character(dadaLocation$data))
-       primerFile <- force(as.character(primerFile$data))
-       fwdIdent <- force(input$fwdIdent)
-       revIdent <- force(input$revIdent)
-       nonMergeProcessing <- force(input$nonMergeProcessing)
+      runFolderLoc <- force(dadaDirectoryDisplayString$data)
+      primerFile <- force(primerFileDisplayString$data)
+
+       if (force(input$uniOrbidirectional) == "Unidirectional"){
+         unidirectional = TRUE
+         bidirectional = FALSE
+         fwdIdent <- ""
+         revIdent <- ""
+       }else if(force(input$uniOrbidirectional) == "Bidirectional"){
+         unidirectional = FALSE
+         bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
+       }else{
+         unidirectional = TRUE
+         bidirectional = TRUE
+         fwdIdent <- force(input$fwdIdent)
+         revIdent <- force(input$revIdent)
+       }
+       printQualityPdf <- force(input$printQualityPdf)
        maxPrimeMis <- force(input$maxPrimeMis)
        fwdTrimLen <- force(input$fwdTrimLen)
        revTrimLen <- force(input$revTrimLen)
@@ -216,7 +282,9 @@ shinyAppServer <- function(input, output, session) {
                      primerFile = primerFile,
                      fwdIdent = fwdIdent,
                      revIdent = revIdent,
-                     nonMergeProcessing = nonMergeProcessing,
+                     unidirectional = unidirectional,
+                     bidirectional = bidirectional,
+                     printQualityPdf = printQualityPdf,
                      maxPrimeMis = maxPrimeMis,
                      fwdTrimLen = fwdTrimLen,
                      revTrimLen = revTrimLen,
@@ -256,57 +324,66 @@ shinyAppServer <- function(input, output, session) {
          ))
          print("Warning - Dada Location Button choose file cancelled")
          dadaLocation$data <- NA
-       }
-       )
+       })
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
         "Please select a primer file and try submitting again!"
       ))
-    })
-  },ignoreInit = TRUE)
+    }
+   },ignoreInit = TRUE)
 
   ################## Dada Combine Function ####################################
   #Get the location of the dada output files you would like to combine
-  shiny::observeEvent(input$dadaCombineButton, {
-    tryCatch(
-      expr = {
-        dadaCombineLoc$data <- dirname(file.choose())
-        output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineLoc$data)})
-      },
-      error = function(e){
-        print("Error")
-        dadaCombineLoc$data <- NA
-      },
-      warning = function(w){
-        print("Warning")
-        dadaCombineLoc$data <- NA
+
+    # Get the path where all of the folders containing the fastq files are located
+    volumes = shinyFiles::getVolumes()
+    #Connect this to the shinyChooseButton
+    shinyFiles::shinyFileChoose(input, "dadaCombineFile", roots = volumes, session = session)
+
+    # Get the file with the primer data for this analysis
+    shiny::observeEvent(input$dadaCombineFile, {
+
+      if(!is.null(input$dadaCombineFile)){
+
+        tryCatch(
+          expr = {
+            dadaCombineFile <- shinyFiles::parseFilePaths(volumes, input$dadaCombineFile)
+            dadaCombineFileDisplayString$data <- as.character(substr(dadaCombineFile$datapath, 2, nchar(dadaCombineFile$datapath)))
+            output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
+         },
+         error = function(e){
+           print("Error - Dada Location Button choose file cancelled")
+           dadaLocation$data <- NA
+         },
+         warning = function(w){
+           print("Warning - Dada Location Button choose file cancelled")
+           dadaLocation$data <- NA
+         }
+       )
       }
-    )
-  },ignoreInit = TRUE)
+    })
 
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
 
-    suppressWarnings(if(!is.na(dadaCombineLoc$data)){
+#    if(!is.na(dadaCombineFileDisplayString$data)){
+    if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data) && length(dadaCombineFileDisplayString$data) != 0){
       # Create variables for the arguments to avoid conflicts between the multithreading
       # and the shiny
-      fileLoc= force(dadaCombineLoc$data)
+      fileLoc= force(dadaCombineFileDisplayString$data)
       minLen = force(input$dadaCombineMinLen)
 
       tryCatch(
         expr = {
           #Run the Dada function here.
-
           shiny::showModal(shiny::modalDialog(
             title = "Dada combine analysis results is underway.",
             "Processing, please stand by...", footer=""
-
           ))
 
         #Run the Dada combine function here.
-        combine_dada_output(fileLoc = fileLoc,
-                            minLen = minLen)
+          combine_dada_output(fileLoc = fileLoc, minLen = minLen)
 
         removeModal()
         shiny::showModal(shiny::modalDialog(
@@ -335,17 +412,25 @@ shinyAppServer <- function(input, output, session) {
         title = "Missing Data",
         "Please select the file location where all of the DBTC dada output files are located that you wish to combine!"
       ))
-    })
+    }
   },ignoreInit = TRUE)
 
   ################## Make BLAST DB Function ###################################
 
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "makeBlastDBFileLoc", roots = volumes, session = session)
+
   # Get the fasta file you want to use to build your db
-  shiny::observeEvent(input$makeBlastDBFileLocButton, {
+  shiny::observeEvent(input$makeBlastDBFileLoc, {
     tryCatch(
       expr = {
-        makeBlastDBFileLoc$data <- file.choose()
-        output$makeBlastDBFileLocDisplay <- shiny::renderText({as.character(makeBlastDBFileLoc$data)})
+
+        makeBlastDBFileLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastDBFileLoc)
+        makeBlastDBFileLocDisplayString$data <- as.character(substr(makeBlastDBFileLoc$datapath, 2, nchar(makeBlastDBFileLoc$datapath)))
+        output$makeBlastDBFileLocDisplay <- shiny::renderText({as.character(makeBlastDBFileLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
@@ -358,13 +443,18 @@ shinyAppServer <- function(input, output, session) {
     )
   },ignoreInit = TRUE)
 
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "makeblastdbPath", roots = volumes, session = session)
 
   # Select where the makeblastdb program is on your computer
-  shiny::observeEvent(input$makeblastdbPathButton, {
+  shiny::observeEvent(input$makeblastdbPath, {
     tryCatch(
       expr = {
-        makeblastdbPath$data <- file.choose()
-        output$makeblastdbPathDisplay <- shiny::renderText({as.character(makeblastdbPath$data)})
+
+        makeblastdbPath <- shinyFiles::parseFilePaths(volumes, input$makeblastdbPath)
+        makeblastdbPathDisplayString$data <- as.character(substr(makeblastdbPath$datapath, 2, nchar(makeblastdbPath$datapath)))
+        output$makeblastdbPathDisplay <- shiny::renderText({as.character(makeblastdbPathDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
@@ -377,12 +467,18 @@ shinyAppServer <- function(input, output, session) {
     )
   },ignoreInit = TRUE)
 
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "makeBlastTaxaDBLoc", roots = volumes, session = session)
+
   # Point to the NCBI taxonomic data base
-  shiny::observeEvent(input$makeBlastTaxaDBLocButton, {
+  shiny::observeEvent(input$makeBlastTaxaDBLoc, {
     tryCatch(
       expr = {
-        makeBlastTaxaDBLoc$data <- file.choose()
-        output$makeBlastTaxaDBLocDisplay <- shiny::renderText({as.character(makeBlastTaxaDBLoc$data)})
+
+        makeBlastTaxaDBLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastTaxaDBLoc)
+        makeBlastTaxaDBLocDisplayString$data <- as.character(substr(makeBlastTaxaDBLoc$datapath, 2, nchar(makeBlastTaxaDBLoc$datapath)))
+        output$makeBlastTaxaDBLocDisplay <- shiny::renderText({as.character(makeBlastTaxaDBLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
@@ -397,37 +493,59 @@ shinyAppServer <- function(input, output, session) {
 
   # Run the making BLAST db code.
   shiny::observeEvent(input$makeBlastDB, {
+    if(is.na(makeblastdbPathDisplayString$data)){
+      makeblastdbPathDisplayString$data <- "makeblastdb"
+    }
+    # if(!is.na(makeBlastDBFileLocDisplayString$data) &&
+    #    !is.na(makeblastdbPathDisplayString$data) &&
+    #    !is.na(makeBlastTaxaDBLocDisplayString$data) &&
+    #    !is.na(input$dbName) &&
+    #    !is.na(input$makeBLASTDBMinLen)){
 
-    suppressWarnings(if(!is.na(makeBlastDBFileLoc$data) && !is.na(makeBlastTaxaDBLoc$data) && !is.na(input$inputFormat) && !is.na(input$dbName) && !is.na(input$makeBLASTDBMinLen)){
-      if(is.na(makeblastdbPath$data)){
-        makeblastdbPath$data <- "makeblastdb"
-      }
+print("makeBlastDBFileLocDisplayString$data")
+print(makeBlastDBFileLocDisplayString$data)
+print("makeblastdbPathDisplayString$data")
+print(makeblastdbPathDisplayString$data)
+print("makeBlastTaxaDBLocDisplayString$data")
+print(makeBlastTaxaDBLocDisplayString$data)
+
+
+    if (!is.na(makeBlastDBFileLocDisplayString$data) && is.character(makeBlastDBFileLocDisplayString$data) && length(makeBlastDBFileLocDisplayString$data) != 0 &&
+      !is.na(makeBlastTaxaDBLocDisplayString$data) && is.character(makeBlastTaxaDBLocDisplayString$data) && length(makeBlastTaxaDBLocDisplayString$data)!= 0 ){
+
+print("In the if checking the file locations")
+
       # Create local variables to avoid conflicts with shiny and multithread
-      fileLoc = force(makeBlastDBFileLoc$data)
-      makeblastdbPath = force(makeblastdbPath$data)
-      taxaDBLoc = force(makeBlastTaxaDBLoc$data)
-      inputFormat = force(input$inputFormat)
+      fileLoc = force(makeBlastDBFileLocDisplayString$data)
+
+      if(is.character(makeblastdbPathDisplayString$data) && length(makeblastdbPathDisplayString$data) != 0){
+
+        makeblastdbPath = force(makeblastdbPathDisplayString$data)
+
+      } else {
+
+        makeblastdbPath = "makeblastdb"
+
+      }
+
+      taxaDBLoc = force(makeBlastTaxaDBLocDisplayString$data)
       dbName = force(input$dbName)
       minLen = force(input$makeBLASTDBMinLen)
 
       tryCatch(
         expr = {
           #Run the Dada function here.
-
           shiny::showModal(shiny::modalDialog(
             title = "Make BLAST database is underway.",
             "Processing, please stand by...", footer=""
 
           ))
-
           #Run the function
           make_BLAST_DB(fileLoc = fileLoc,
                         makeblastdbPath = makeblastdbPath,
                         taxaDBLoc = taxaDBLoc,
-                        inputFormat = inputFormat,
                         dbName = dbName,
                         minLen = minLen)
-
           removeModal()
           shiny::showModal(shiny::modalDialog(
             title = "Make BLAST database is complete",
@@ -439,34 +557,40 @@ shinyAppServer <- function(input, output, session) {
           removeModal()
           shiny::showModal(shiny::modalDialog(
             title = "ERROR",
-            ""
+            "There was an error in running the makeBLASTDB function. Make sure you have permissions for the target folder. Please see the R output for further details."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
             title = "ERROR",
-            ""
+            "There was an error in running the makeBLASTDB function. Make sure you have permissions for the target folder. Please see the R output for further details."
           ))
-        }
-      )
+        })
 
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    }
   },ignoreInit = TRUE)
+
 
   ################## BLAST sequences Function #################################
 
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "BLASTDatabasePath", roots = volumes, session = session)
+
   # Point to the NCBI taxonomic data base
-  shiny::observeEvent(input$BLASTDatabasePathButton, {
+  shiny::observeEvent(input$BLASTDatabasePath, {
     tryCatch(
       expr = {
-        BLASTDatabasePath$data <- file.choose()
-        output$BLASTDatabasePathDisplay <- shiny::renderText({as.character(BLASTDatabasePath$data)})
+        BLASTDatabasePath <- shinyFiles::parseFilePaths(volumes, input$BLASTDatabasePath)
+        BLASTDatabasePathDisplayString$data <- as.character(substr(BLASTDatabasePath$datapath, 2, nchar(BLASTDatabasePath$datapath)))
+        output$BLASTDatabasePathDisplay <- shiny::renderText({as.character(BLASTDatabasePathDisplayString$data)})
       },
       error = function(e){
         print("Error")
@@ -478,13 +602,17 @@ shinyAppServer <- function(input, output, session) {
       }
     )
   },ignoreInit = TRUE)
+
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "blastnPath", roots = volumes, session = session)
 
   # Get the path where all of the folders containing the fastq files are located
-  shiny::observeEvent(input$blastnPathButton, {
+  shiny::observeEvent(input$blastnPath, {
     tryCatch(
       expr = {
-        blastnPath$data <- file.choose()
-        output$blastnPathDisplay <- shiny::renderText({as.character(blastnPath$data)})
+        blastnPath <- shinyFiles::parseFilePaths(volumes, input$blastnPath)
+        blastnPathDisplayString$data <- as.character(substr(blastnPath$datapath, 2, nchar(blastnPath$datapath)))
+        output$blastnPathDisplay <- shiny::renderText({as.character(blastnPathDisplayString$data)})
       },
       error = function(e){
         print("Error")
@@ -497,12 +625,16 @@ shinyAppServer <- function(input, output, session) {
     )
   },ignoreInit = TRUE)
 
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "querySeqPath", roots = volumes, session = session)
+
   # Point to the location of the fasta files you want to BLAST
-  shiny::observeEvent(input$querySeqPathButton, {
+  shiny::observeEvent(input$querySeqPath, {
     tryCatch(
       expr = {
-        querySeqPath$data <- file.choose()
-        output$querySeqPathDisplay <- shiny::renderText({as.character(querySeqPath$data)})
+        querySeqPath <- shinyFiles::parseFilePaths(volumes, input$querySeqPath)
+        querySeqPathDisplayString$data <- as.character(substr(querySeqPath$datapath, 2, nchar(querySeqPath$datapath)))
+        output$querySeqPathDisplay <- shiny::renderText({as.character(querySeqPathDisplayString$data)})
       },
       error = function(e){
         print("Error")
@@ -517,91 +649,115 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$blastSequences, {
 
-    suppressWarnings(if(!is.na(BLASTDatabasePath$data) && !is.na(querySeqPath$data)&& !is.na(input$BLASTResults) && !is.na(input$blastSeqNumCores)){
-      if(is.na(blastnPath$data)){
-        blastnPath$data <- "blastn"
-      }
+    if(is.na(blastnPathDisplayString$data) | is.null(blastnPathDisplayString$data)){
+      blastnPathDisplayString$data <- "blastn"
+    }
+
+    print(paste0("BLASTDatabasePathDisplayString$data - ",BLASTDatabasePathDisplayString$data))
+    print(paste0("blastnPathDisplayString$data - ", blastnPathDisplayString$data))
+    print(paste0("querySeqPathDisplayString$data - ", querySeqPathDisplayString$data))
+    print(paste0("input$BLASTminLen - ", input$BLASTminLen))
+    print(paste0("input$BLASTResults - ", input$BLASTResults))
+    print(paste0("input$blastSeqNumCores - ", input$blastSeqNumCores))
+
+    if (!is.na(BLASTDatabasePathDisplayString$data) && is.character(BLASTDatabasePathDisplayString$data) && length(BLASTDatabasePathDisplayString$data) != 0 &&
+        !is.na(blastnPathDisplayString$data) && is.character(blastnPathDisplayString$data) && length(blastnPathDisplayString$data) != 0 &&
+        !is.na(querySeqPathDisplayString$data) && is.character(querySeqPathDisplayString$data) && length(querySeqPathDisplayString$data) != 0) {
 
       # Create local variables to avoid conflicts with shiny and multithread
-        databasePath = force(BLASTDatabasePath$data)
-        blastnPath = force(blastnPath$data)
-        querySeqPath = force(querySeqPath$data)
-        minLen = force(input$BLASTminLen)
-        BLASTResults = force(input$BLASTResults)
-        numCores = force(input$blastSeqNumCores)
+      databasePath = force(BLASTDatabasePathDisplayString$data)
+      blastnPath = force(blastnPathDisplayString$data)
+      querySeqPath = force(querySeqPathDisplayString$data)
+      minLen = force(input$BLASTminLen)
+      BLASTResults = force(input$BLASTResults)
+      numCores = force(input$blastSeqNumCores)
 
-        tryCatch(
-          expr = {
-            #Run the Dada function here.
+      tryCatch(
+        expr = {
+          #Run the Dada function here.
 
-            shiny::showModal(shiny::modalDialog(
-              title = "Sequence BLAST is underway.",
-              "Processing, please stand by...", footer=""
+          shiny::showModal(shiny::modalDialog(
+            title = "Sequence BLAST is underway.",
+            "Processing, please stand by...", footer=""
 
-            ))
+          ))
 
-            #Run the function
-            seq_BLAST(databasePath = databasePath,
-                      blastnPath = blastnPath,
-                      querySeqPath = querySeqPath,
-                      minLen = minLen,
-                      BLASTResults = BLASTResults,
-                      numCores = numCores)
+          #Run the function
+          seq_BLAST(databasePath = databasePath,
+                    blastnPath = blastnPath,
+                    querySeqPath = querySeqPath,
+                    minLen = minLen,
+                    BLASTResults = BLASTResults,
+                    numCores = numCores)
 
-            removeModal()
-            shiny::showModal(shiny::modalDialog(
-              title = "Sequence BLAST is complete",
-              "Please see output files in the target directory."
-            ))
-          },
-          error = function(e){
-            removeModal()
-            shiny::showModal(shiny::modalDialog(
-              title = "ERROR",
-              "Please refer to the R consol for more information."
-            ))
-          },
-          warning = function(w){
-            removeModal()
-            shiny::showModal(shiny::modalDialog(
-              title = "ERROR",
-              "Please refer to the R consol for more information."
-            ))
-          }
-        )
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Sequence BLAST is complete",
+            "Please see output files in the target directory."
+          ))
+        },
+        error = function(e){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "ERROR",
+            "Please refer to the R consol for more information."
+          ))
+        },
+        warning = function(w){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "ERROR",
+            "Please refer to the R consol for more information."
+          ))
+        }
+      )
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    }
   },ignoreInit = TRUE)
 
   ################## Taxon Assign Function ####################################
+
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "taxaAssignFileLoc", roots = volumes, session = session)
+
   # Point to the BLAST output files to get taxonomic assignment
-  shiny::observeEvent(input$taxaAssignFileLocButton, {
+  shiny::observeEvent(input$taxaAssignFileLoc, {
     tryCatch(
       expr = {
-        taxaAssignFileLoc$data <- file.choose()
-        output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLoc$data)})
+        taxaAssignFileLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignFileLoc)
+        taxaAssignFileLocDisplayString$data <- as.character(substr(taxaAssignFileLoc$datapath, 2, nchar(taxaAssignFileLoc$datapath)))
+        output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLocDisplayString$data)})
       },
       error = function(e){
-        print("Error")
+        print("Taxa Assign Error")
         taxaAssignFileLoc$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        print("Taxa Assign Warning")
         taxaAssignFileLoc$data <- NA
       }
     )
   },ignoreInit = TRUE)
 
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "taxaAssignDBLoc", roots = volumes, session = session)
+
   # Point to the NCBI taxonomic data base
-  shiny::observeEvent(input$taxaAssignDBLocButton, {
+  shiny::observeEvent(input$taxaAssignDBLoc, {
     tryCatch(
       expr = {
-        taxaAssignDBLoc$data <- file.choose()
-        output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLoc$data)})
+
+        taxaAssignDBLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignDBLoc)
+        taxaAssignDBLocDisplayString$data <- as.character(substr(taxaAssignDBLoc$datapath, 2, nchar(taxaAssignDBLoc$datapath)))
+        output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
@@ -615,11 +771,12 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$taxonAssign, {
-    if(!is.na(taxaAssignFileLoc$data) && !is.na(taxaAssignDBLoc$data)){
+    if (!is.na(taxaAssignFileLocDisplayString$data) && is.character(taxaAssignFileLocDisplayString$data) && length(taxaAssignFileLocDisplayString$data) != 0 && !is.na(taxaAssignDBLocDisplayString$data) && is.character(taxaAssignDBLocDisplayString$data) && length(taxaAssignDBLocDisplayString$data) != 0) {
 
       # Create local variables to avoid conflicts with shiny and multithread
-       fileLoc = force(taxaAssignFileLoc$data)
-       taxaDBLoc = force(taxaAssignDBLoc$data)
+       fileLoc = force(taxaAssignFileLocDisplayString$data)
+
+       taxaDBLoc = force(taxaAssignDBLocDisplayString$data)
        numCores = force(input$taxaAssignNumCores)
        coverage = force(input$coverage)
        ident = force(input$ident)
@@ -633,10 +790,10 @@ shinyAppServer <- function(input, output, session) {
            #Run the function here.
            shiny::showModal(shiny::modalDialog(
              title = "Taxonomic assingment is underway.",
-             "Processing, please stand by...", footer=""
+             "See the R terminal for estimated time to completion.
+             Processing, please stand by...", footer=""
 
            ))
-
            #Run the function
            taxon_assign(fileLoc = fileLoc,
                         taxaDBLoc = taxaDBLoc,
@@ -647,7 +804,6 @@ shinyAppServer <- function(input, output, session) {
                         coverReportThresh = coverReportThresh,
                         identReportThresh = identReportThresh,
                         includeAllDada = includeAllDada)
-
             removeModal()
 
            shiny::showModal(shiny::modalDialog(
@@ -681,12 +837,21 @@ shinyAppServer <- function(input, output, session) {
 
   ################## Combine Taxa Assign Function #############################
 
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "combineTaxaFileLoc", roots = volumes, session = session)
+
   # Point to the folder with the Taxon Assign records you would like to combine
-  shiny::observeEvent(input$combineTaxaFileLocButton, {
+  shiny::observeEvent(input$combineTaxaFileLoc, {
     tryCatch(
       expr = {
-        combineTaxaFileLoc$data <- file.choose()
-        output$combineTaxaFileLocDisplay <- shiny::renderText({as.character(combineTaxaFileLoc$data)})
+
+        combineTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineTaxaFileLoc)
+        combineTaxaFileLocDisplayString$data <- as.character(substr(combineTaxaFileLoc$datapath, 2, nchar(combineTaxaFileLoc$datapath)))
+        output$combineTaxaFileLocDisplay <- shiny::renderText({as.character(combineTaxaFileLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
@@ -700,9 +865,9 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$combineTaxa, {
-    suppressWarnings(if(!is.na(combineTaxaFileLoc$data)){
+    if (!is.na(combineTaxaFileLocDisplayString$data) && is.character(combineTaxaFileLocDisplayString$data) && length(combineTaxaFileLocDisplayString$data) != 0) {
       # Create local variables to avoid conflicts with shiny and multithread
-      fileLoc = force(combineTaxaFileLoc$data)
+      fileLoc = force(combineTaxaFileLocDisplayString$data)
       numCores = force(input$combineTaxaNumCores)
 
 print(paste0("Here is the value of the combine_assign_output fileLoc...", fileLoc))
@@ -745,35 +910,42 @@ print(paste0("Here is the value of the combine_assign_output numCores...", numCo
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    }
   })
 
   ################## Reduce Taxa Assign Function ##############################
 
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "reduceTaxaFileLoc", roots = volumes, session = session)
+
   # Point to the folder with the Taxon Assign records you would like to combine
-  shiny::observeEvent(input$reduceTaxaFileLocButton, {
+  shiny::observeEvent(input$reduceTaxaFileLoc, {
     tryCatch(
       expr = {
-        reduceTaxaFileLoc$data <- file.choose()
-        output$reduceTaxaFileLocDisplay <- shiny::renderText({as.character(reduceTaxaFileLoc$data)})
+
+        reduceTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$reduceTaxaFileLoc)
+        reduceTaxaFileLocDisplayString$data <- as.character(substr(reduceTaxaFileLoc$datapath, 2, nchar(reduceTaxaFileLoc$datapath)))
+        output$reduceTaxaFileLocDisplay <- shiny::renderText({as.character(reduceTaxaFileLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
-        reduceTaxaFileLoc$data <- NA
+        reduceTaxaFileLocDisplayString$data <- NA
       },
       warning = function(w){
         print("Warning")
-        reduceTaxaFileLoc$data <- NA
+        reduceTaxaFileLocDisplayString$data <- NA
       }
     )
   },ignoreInit = TRUE)
 
-
   shiny::observeEvent(input$reduceTaxa, {
-    suppressWarnings(if(!is.na(reduceTaxaFileLoc$data)){
-
+    if (!is.na(reduceTaxaFileLocDisplayString$data) && is.character(reduceTaxaFileLocDisplayString$data) && length(reduceTaxaFileLocDisplayString$data) != 0) {
       # Create local variables to avoid conflicts with shiny and multithread
-      fileLoc = force(reduceTaxaFileLoc$data)
+      fileLoc = force(reduceTaxaFileLocDisplayString$data)
       numCores = force(input$reduceTaxaNumCores)
 
 print(paste0("Here is the value of the reduceTaxa fileLoc...", fileLoc))
@@ -819,34 +991,43 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    }
   })
 
   ################## Combine Reduce Taxa Assign Function ######################
 
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "combineReducedTaxaFileLoc", roots = volumes, session = session)
+
   # Point to the folder with the Taxon Assign records you would like to combine
-  shiny::observeEvent(input$combineReducedTaxaFileLocButton, {
+  shiny::observeEvent(input$combineReducedTaxaFileLoc, {
     tryCatch(
       expr = {
-        combineReducedTaxaFileLoc$data <- file.choose()
-        output$combineReducedTaxaFileLocDisplay <- shiny::renderText({as.character(combineReducedTaxaFileLoc$data)})
+
+        combineReducedTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineReducedTaxaFileLoc)
+        combineReducedTaxaFileLocDisplayString$data <- as.character(substr(combineReducedTaxaFileLoc$datapath, 2, nchar(combineReducedTaxaFileLoc$datapath)))
+        output$combineReducedTaxaFileLocDisplay <- shiny::renderText({as.character(combineReducedTaxaFileLocDisplayString$data)})
+
       },
       error = function(e){
         print("Error")
-        combineReducedTaxaFileLoc$data <- NA
+        combineReducedTaxaFileLocDisplayString$data <- NA
       },
       warning = function(w){
         print("Warning")
-        combineReducedTaxaFileLoc$data <- NA
+        combineReducedTaxaFileLocDisplayString$data <- NA
       }
     )
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$combineReduceTaxa, {
-    suppressWarnings(if(!is.na(combineReducedTaxaFileLoc$data)){
 
+     if (!is.na(combineReducedTaxaFileLocDisplayString$data) && is.character(combineReducedTaxaFileLocDisplayString$data) && length(combineReducedTaxaFileLocDisplayString$data) != 0) {
       # Create local variables to avoid conflicts with shiny and multithread
-      fileLoc = force(combineReducedTaxaFileLoc$data)
+      fileLoc = force(combineReducedTaxaFileLocDisplayString$data)
       presenceAbsence = force(input$presenceAbsence)
 
       tryCatch(
@@ -888,7 +1069,7 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
         title = "Missing Data",
         "Please fill in all of the necessary fields and submit again!"
       ))
-    })
+    }
   })
 
 
@@ -1132,8 +1313,7 @@ print("Here loading data 12")
 
             }
 print("Here loading data 13")
-mergedTableGlobal <<- mergedTable
-print("Here loading data 14")
+
             #################### update the filters based on submitted ASV data ############
 
             shiny::updateSliderInput(session = session, inputId = "abundance",
@@ -1437,4 +1617,3 @@ print("Here loading data 14")
   },ignoreInit = TRUE)
 
 } # End of Server
-

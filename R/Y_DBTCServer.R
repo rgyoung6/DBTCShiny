@@ -5,7 +5,7 @@
 #server <- function(input, output, session) {
 shinyAppServer <- function(input, output, session) {
 
-  ############## Initialize variables ############################################
+  ############## Initialize variables ##########################################
 
   #dada implement reactive values
   primerFile <- reactiveValues(data = NA)
@@ -167,7 +167,8 @@ shinyAppServer <- function(input, output, session) {
 
       }
     }
-  },ignoreInit = TRUE)
+  })
+#  },ignoreInit = TRUE)
 
   ################## Dada Submit Function #####################################
   # Get the path where all of the folders containing the fastq files are located

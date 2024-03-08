@@ -97,9 +97,6 @@ dashBoardBodyComponent <- function() {
       #DBTC Dashboard
       dbtcTools(),
 
-      #Data Import
-      dataImport(),
-
       #Mapping Dashboard
       mappingDashboard()
 
@@ -329,7 +326,6 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Please select the fasta file you would like to use to construct the database."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("makeBlastDBFileLocButton", "Fasta File", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("makeBlastDBFileLoc", "Fasta File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -340,7 +336,6 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Please select the location of the NCBI BLAST programs makeblastdb. If no file location is selected then the program will try to run in the local directory with the default 'makeblastdb'."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("makeblastdbPathButton", "Make BLAST Location", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("makeblastdbPath", "Make BLAST Location",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -351,7 +346,6 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Please select the NCBI accessionTaxa.sql data base file to use in constructing the custom database."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("makeBlastTaxaDBLocButton", "Taxa Database Location", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("makeBlastTaxaDBLoc", "Select the NCBI Taxon Database File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -376,7 +370,6 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Select a file in the folder with the NCBI database you would like to use."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("BLASTDatabasePathButton", "Database file", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("BLASTDatabasePath", "Database file",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -387,7 +380,6 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Select the blastn command. If no file location is selected then the program will try to run in the local directory with the default 'blastn'."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("blastnPathButton", "Blastn", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("blastnPath", "Blastn",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -399,7 +391,6 @@ dbtcTools <- function() {
              shiny::strong("Select a file in the folder with the fasta files you
                            would like to BLAST."),
              shiny::br(),
-#             shiny::column(1,shiny::actionButton("querySeqPathButton", "Fasta File(s)", icon = shiny::icon("magnifying-glass"))),
              shinyFiles::shinyFilesButton("querySeqPath", "Query Fasta File",title = "Fasta File(s):",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
@@ -429,7 +420,6 @@ dbtcTools <- function() {
                                          and sequence records will still be
                                          processed."),
                            shiny::br(),
-#                           shiny::column(1,shiny::actionButton("taxaAssignFileLocButton", "BLAST file and associated dada table location", icon = shiny::icon("magnifying-glass"))),
                            shinyFiles::shinyFilesButton("taxaAssignFileLoc", "Select a File in the Location of BLAST and Dada ASV Table",title = "BLAST and Fasta File(s):",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
@@ -440,8 +430,6 @@ dbtcTools <- function() {
                          shiny::fluidRow(
                            shiny::strong("Please select the NCBI accessionTaxa.sql data base file to use in constructing the custom database."),
                            shiny::br(),
-#                           shiny::column(1,shiny::actionButton("taxaAssignDBLocButton", "Taxa Database Location (i.e. accessionTaxa.sql)", icon = shiny::icon("magnifying-glass"))),
-                           shinyFiles::shinyFilesButton("taxaAssignDBLoc", "Select the NCBI Taxon Database File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("taxaAssignDBLocDisplay")),
@@ -480,7 +468,6 @@ dbtcTools <- function() {
                                          outputs from different BLAST sequence
                                          libraries and therefore contain the same ASVs."),
                            shiny::br(),
-#                           shiny::column(1,shiny::actionButton("combineTaxaFileLocButton", "Dada File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shinyFiles::shinyFilesButton("combineTaxaFileLoc", "Taxa Assign File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
@@ -506,7 +493,6 @@ dbtcTools <- function() {
                                          are retained the name of the files should be
                                          'markerName' followed by '_taxaAssign_YYYY_MM_DD_HHMM.tsv'"),
                            shiny::br(),
-#                           shiny::column(1,shiny::actionButton("reduceTaxaFileLocButton", "Taxa Assign File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shinyFiles::shinyFilesButton("reduceTaxaFileLoc", "Taxa Assign File Location(s)",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
@@ -527,7 +513,6 @@ dbtcTools <- function() {
                                          like to combine (extension
                                          '_taxaReduced_YYYY_MM_DD_HHMM.tsv')."),
                            shiny::br(),
-#                           shiny::column(1,shiny::actionButton("combineReducedTaxaFileLocButton", "Reduced Taxa File Location(s)", icon = shiny::icon("magnifying-glass"))),
                            shinyFiles::shinyFilesButton("combineReducedTaxaFileLoc", "Reduced Taxa File Location(s)",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
@@ -546,59 +531,44 @@ dbtcTools <- function() {
   )#Closing the tab item
 }#Closing the function
 
-################### Data Input Tab ##########################################
-
-dataImport <- function() {
-  shinydashboard::tabItem(tabName = "dataImport",shiny::h1(shiny::strong("Import GPS and grouping data")),
-    shiny::br(),
-    shinydashboard::box(
-      title = shiny::p("File Selection", style = "font-size:24px;"),
-      status = "primary",
-      solidHeader = TRUE,
-      collapsible = FALSE,
-      width = 12,
-      shiny::column(width = 12,
-        shiny::p("Select the files of interest to view on the map."),
-        shiny::br(),
-        shiny::fluidRow(
-          shiny::column(width = 3, shiny::actionButton("ASVFile_button", "ASV Data File", icon = shiny::icon("magnifying-glass"))),
-          shiny::column(width = 1),
-          shiny::column(width = 8, shiny::textOutput("ASVFile_out")),
-        ),
-        shiny::br(),
-        shiny::fluidRow(
-          shiny::column(width = 3, shiny::actionButton("MetadataFile_button", "Associated MetaData File", icon = shiny::icon("magnifying-glass"))),
-          shiny::column(width = 1),
-          shiny::column(width = 8, shiny::textOutput("metaDataFile_out")),
-        ),
-        shiny::br(),
-        shiny::fluidRow(
-          shiny::column(width = 3, shiny::actionButton("submitDataImport","Submit", icon = shiny::icon("play-circle"))),
-          shiny::column(width = 1),
-          shiny::column(width = 8, shiny::actionButton("resetDataImport","Reset ", icon = shiny::icon("refresh")))
-        )
-      )#Closing the full column width
-    )#closing the full width first box
-  )#Closing the tab item
-}#Closing the function
-
  #############  Mapping Tab ###########################################################
  mappingDashboard <- function() {
    shinydashboard::tabItem(tabName = "mappingDashboard",shiny::h1(shiny::strong("Mapping and Filtering")),
-    shiny::p("COMING SOON!!! Perform geospatial analysis based on collection locations.",
+    shiny::p("Perform geospatial analysis based on collection locations.",
     style = "font-size:16px;"),
     shiny::tabsetPanel(id = "map_filter_table_tabbox",
       shiny::tabPanel("Mapping", shinycssloaders::withSpinner(leaflet::leafletOutput("mymap", height = 700))),
+      shiny::tabPanel("Data Import",
+          shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
+          shiny::column(width = 10,
+            shiny::p("Select a file of interest in the Reduced Taxa Assign output format ('..._taxaAssign_YYYY_MM_DD_HHMM.tsv') as input to view the data on the map. Note: Multiple files can be individually uploaded and will be stored and visible when moving to the Mapping Dashboard"),
+            shiny::br(),
+            shiny::fluidRow(
+              shiny::column(width = 2, shinyFiles::shinyFilesButton("ASVFile", "ASV Data File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL)),
+              shiny::column(width = 1),
+              shiny::column(width = 5, shiny::textOutput("ASVFileOut")),
+            ),
+            shiny::br(),
+            shiny::fluidRow(
+              shiny::column(width = 2, shinyFiles::shinyFilesButton("provenanceDataFile", "Associated Provenance Data File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL)),
+              shiny::column(width = 1),
+              shiny::column(width = 5, shiny::textOutput("provenanceDataFileOut")),
+            ),
+            shiny::br(),
+            shiny::fluidRow(
+              shiny::column(width = 2, shiny::actionButton("submitDataImport","Submit", icon = shiny::icon("play-circle"))),
+              shiny::column(width = 1),
+              shiny::column(width = 5, shiny::actionButton("resetDataImport","Reset", icon = shiny::icon("refresh")))
+            )
+          ))
+      ),
       shiny::tabPanel("Data Filtering",
       shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
         shiny::column(width = 6,
-        shiny::p(shiny::tags$b(shiny::tags$u("1. Data Filtering", style = "font-size:14px;"))),
+        shiny::p(shiny::tags$b(shiny::tags$u("1. Taxonomic Filtering", style = "font-size:14px;"))),
         shiny::wellPanel(
-        #Slider number of reads
-        shiny::sliderInput("abundance", "Select the minimum and maximum number of reads per sample per taxa to be mapped",
-                           min = 0,max =0, value=c(0,0),step = 1),
         #Dropdown menu for SampleID
-        shinyWidgets::pickerInput(inputId = "finalRank","Final Rank",
+        shinyWidgets::pickerInput(inputId = "finalRankInput","Final Rank",
           choices = "NA",
           selected = "NA",
           options = list('actions-box' = TRUE),
@@ -640,7 +610,7 @@ dataImport <- function() {
           multiple = TRUE)
       )),
       shiny::column(width = 6,
-        shiny::p(shiny::tags$b(shiny::tags$u("2. Metadata Filtering", style = "font-size:14px;"))),
+        shiny::p(shiny::tags$b(shiny::tags$u("2. Provenance Data Filtering", style = "font-size:14px;"))),
         shiny::wellPanel(
           #Dropdown menu for Sample
           shinyWidgets::pickerInput(inputId = "sampleFilterInput","Sample",
@@ -680,15 +650,30 @@ dataImport <- function() {
                              value = range(c(as.Date(Sys.Date(), "%Y-%m-%d"),
                                              as.Date(Sys.Date(), "%Y-%m-%d"))),
                              timeFormat = "%Y-%m-%d",step = 1),
-
-          shiny::br(),
-          #Data file upload
-          shiny::fluidRow(shiny::column(6,shiny::actionButton("updateFilterMappingButton", "Update Filtering Options", icon = shiny::icon("play"))),
-                          shiny::column(6,shiny::actionButton("resetFilterMappingButton", "Reset Filtering Options", icon = shiny::icon("refresh")))
-                        ),
-          shiny::br(),
           shiny::br()
-
+          )),
+        shiny::column(width = 12,
+          shiny::p(shiny::tags$b(shiny::tags$u("3. Quality Intrepretation", style = "font-size:14px;"))),
+          shiny::wellPanel(
+            shiny::column(width = 6,
+              #Add in option buttons to include or exclude Result_Code
+              shiny::numericInput("abundanceLow", "Enter a Lower Value:", value = 0, min = 0, max = 0),
+              shiny::radioButtons("SFATButton", "Include saturated filtered taxa above threshold (SFAT):", c("Yes", "No")),
+              shiny::radioButtons("BIRTButton", "Include final taxa below identity reporting threshold (BIRT):", c("Yes", "No")),
+              shiny::radioButtons("TBATButton", "Include results where records from the taxonomic level below the reported taxon may have a questionable data record (TBAT):", c("Yes", "No")),
+            ),
+            shiny::column(width = 6,
+              #Number of reads inputs
+              shiny::numericInput("abundanceHigh", "Enter a Higher Value:", value = 0, min = 0, max = 0),
+              shiny::radioButtons("SANFButton", "Include saturated non-filtered (SANF):", c("Yes", "No")),
+              shiny::radioButtons("BCRTButton", "Include final taxa below nucleotide coverage reporting threshold (BCRT):", c("Yes", "No")),
+              shiny::br(),
+              #Data file upload
+              shiny::fluidRow(shiny::column(6,shiny::actionButton("updateFilterMappingButton", "Update Filtering Options", icon = shiny::icon("play"))),
+                shiny::column(6,shiny::actionButton("resetFilterMappingButton", "Reset Filtering Options", icon = shiny::icon("refresh")))
+              ),
+            ),
+            shiny::br()
           ))
          ))#End of top box
     )#Tab Box
@@ -703,7 +688,6 @@ shinyAppUI <- shinydashboard::dashboardPage(
       id = "tab_being_displayed",
       shinydashboard::menuItem("Welcome", tabName = "welcomePage", icon = shiny::icon("door-open")),
       shinydashboard::menuItem("DBTC Tools", tabName = "dbtcTools", icon = shiny::icon("play-circle")),
-      shinydashboard::menuItem("GPS/Grouping Import", tabName = "dataImport", icon = shiny::icon("database")),
       shinydashboard::menuItem("Mapping Dashboard", tabName = "mappingDashboard", icon = shiny::icon("map"))
     )
   ),

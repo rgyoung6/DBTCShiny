@@ -39,17 +39,17 @@ shinyAppServer <- function(input, output, session) {
 
   #Other Variables
   ASVFile <- reactiveValues(data = NA)
-  metaDataFile <- reactiveValues(data = NA)
-  output$ASVFile_out <- shiny::renderText({as.character("No data file selected")})
-  output$metaDataFile_out <- shiny::renderText({as.character("No data file selected")})
+  provenanceDataFile <- reactiveValues(data = NA)
+  output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
+  output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
   ASVFileTable<-reactiveValues(data = NA)
-  metaDataFileTable<-reactiveValues(data = NA)
+  provenanceDataFileTable<-reactiveValues(data = NA)
 
   #Filtering variables
   markerColumns <- NULL #this is the number of columns for the combine markers output file
   maxReads <- reactiveValues(data = NA)
   mergedTable <- reactiveValues(data = NA)
-  workingMergedTable <- reactiveValues(data = NA)
+  workMergedTable <- reactiveValues(data = NA)
   firstLoadFlag <- reactiveValues(data = 0)
 
   #Dada files
@@ -75,6 +75,13 @@ shinyAppServer <- function(input, output, session) {
   #Combine Reduced Taxa assign
   combineReducedTaxaFileLocDisplayString<-reactiveValues(data = NA)
 
+  #Mapping
+  ASVFileDisplayString<-reactiveValues(data = NA)
+  provenanceDataFileDisplayString<-reactiveValues(data = NA)
+
+  # Get the path where all of the folders containing the fastq files are located
+  volumes = shinyFiles::getVolumes()
+
   ###################### Initialize the Map ######################################
   #Building the initial map and using the
   #Default static leaflet map before filtering parameters are applied.
@@ -95,7 +102,7 @@ shinyAppServer <- function(input, output, session) {
       leaflet::addLegend(position = "topright",
                 pal = palette_map,
                 values = c("10", "100", "1000", "10000", "100000", "1000000"),
-                title = 'Reads',
+                title = "Reads",
                 opacity = 0.6) %>%
 
       #View map full screen (note: only works in web browser)
@@ -113,65 +120,24 @@ shinyAppServer <- function(input, output, session) {
   shiny::observe({
 
     if (input$tab_being_displayed == "mappingDashboard"){
-      if(is.na(ASVFileTable$data) && is.na(metaDataFileTable$data)){
-
+      if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
         shiny::showModal(shiny::modalDialog(
           title = "No Data Loaded",
-          "There are no data loaded in this instance of DBTCShine. Please go to the GPS/Grouping Import page and upload the data first."
+          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-      }else{
-
-# Place an update here to get the data points on the map based on the information contained in the Mapped Data Table tab
-
-
-
-
-
-
-
-        workMergedTable <- mergedTable$data
-        workMergedTable <- workMergedTable[workMergedTable$Abundance >= input$abundance[1] & workMergedTable$Abundance <= input$abundance[2],]
-        workMergedTable <- workMergedTable[workMergedTable$Final_Rank %in% input$finalRank,]
-        workMergedTable <- workMergedTable[workMergedTable$Final_Taxa %in% input$finalTaxa,]
-        workMergedTable <- workMergedTable[workMergedTable$superkingdom %in% input$kingdomFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$phylum %in% input$phylumFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$class %in% input$classFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$order %in% input$orderFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$family %in% input$familyFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$genus %in% input$genusFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$species %in% input$speciesFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Sample %in% input$sampleFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Run %in% input$runFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Lab %in% input$labFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Type %in% input$typeFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Marker %in% input$markerFilterInput,]
-        workMergedTable <- workMergedTable[workMergedTable$Date >= input$dateInput[1] & workMergedTable$Date <= input$dateInput[2],]
-
-        leaflet::leafletProxy("mymap", data = as.data.frame(workMergedTable)) %>%
-          clearMarkers() %>%
-          clearMarkerClusters() %>%
-          clearPopups() %>%
-          #Adding labels to markers on map
-          addCircleMarkers(lng = ~North,
-                           lat = ~West,
-                           color = ~palette_map(workMergedTable$AbundanceCategory),
-                           clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
-                           popup= paste("<strong><h5>Species:", workMergedTable$Final_Taxa, "</strong>",
-                                        "<br><h6>Sample:", workMergedTable$Sample,
-                                        "<br><h6>Marker:", workMergedTable$Marker,
-                                        "<br><h6>Date:", workMergedTable$Date,
-                                        "<br><h6>Run:", workMergedTable$Run,
-                                        "<br><h6>Type:", workMergedTable$Type,
-                                        "<br><h6>Lab:", workMergedTable$Lab,
-                                        "<h6>Coord(Lat, Lon):", workMergedTable$North,",", workMergedTable$West))
-
-      }
-    }
-  })
+      }else if (length(mergedTable$data)==1 && length(workMergedTable$data)==1 ){
+        shiny::showModal(shiny::modalDialog(
+          title = "No Data Loaded",
+          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+        ))
+       }else if (length(mergedTable$data)>1 && length(workMergedTable$data)<1){
+         #Resetting the data mapping points for the first time
+         setMappingDataPoints()
+       }
+     }
+   })
 
   ################## Dada Submit Function #####################################
-  # Get the path where all of the folders containing the fastq files are located
-    volumes = shinyFiles::getVolumes()
     #Connect this to the shinyChooseButton
     shinyFiles::shinyFileChoose(input, "dadaDirectory", roots = volumes, session = session)
 
@@ -183,7 +149,11 @@ shinyAppServer <- function(input, output, session) {
           expr = {
 
             dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
-            dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
+            if (.Platform$OS.type == "windows"){
+              dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
+            } else{
+              dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
+            }
             output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 
          },
@@ -209,7 +179,11 @@ shinyAppServer <- function(input, output, session) {
           expr = {
 
             primerFile <- shinyFiles::parseFilePaths(volumes, input$primerFile)
-            primerFileDisplayString$data <- as.character(substr(primerFile$datapath, 2, nchar(primerFile$datapath)))
+            if (.Platform$OS.type == "windows"){
+              primerFileDisplayString$data <- as.character(primerFile$datapath)
+            } else{
+              primerFileDisplayString$data <- as.character(substr(primerFile$datapath, 2, nchar(primerFile$datapath)))
+            }
             output$primerFileDisplay <- shiny::renderText({as.character(primerFileDisplayString$data)})
 
           },
@@ -227,7 +201,6 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$dadaSubmit, {
 
-#   if(!is.na(dadaDirectoryDisplayString$data) && !is.na(primerFileDisplayString$data)){
    if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
        !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
 
@@ -336,8 +309,6 @@ shinyAppServer <- function(input, output, session) {
   ################## Dada Combine Function ####################################
   #Get the location of the dada output files you would like to combine
 
-    # Get the path where all of the folders containing the fastq files are located
-    volumes = shinyFiles::getVolumes()
     #Connect this to the shinyChooseButton
     shinyFiles::shinyFileChoose(input, "dadaCombineFile", roots = volumes, session = session)
 
@@ -349,7 +320,11 @@ shinyAppServer <- function(input, output, session) {
         tryCatch(
           expr = {
             dadaCombineFile <- shinyFiles::parseFilePaths(volumes, input$dadaCombineFile)
-            dadaCombineFileDisplayString$data <- as.character(substr(dadaCombineFile$datapath, 2, nchar(dadaCombineFile$datapath)))
+            if (.Platform$OS.type == "windows"){
+              dadaCombineFileDisplayString$data <- as.character(ASVFile$dadaCombineFile)
+            } else{
+              dadaCombineFileDisplayString$data <- as.character(substr(ASVFile$dadaCombineFile, 2, nchar(ASVFile$dadaCombineFile)))
+            }
             output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
          },
          error = function(e){
@@ -367,7 +342,6 @@ shinyAppServer <- function(input, output, session) {
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
 
-#    if(!is.na(dadaCombineFileDisplayString$data)){
     if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data) && length(dadaCombineFileDisplayString$data) != 0){
       # Create variables for the arguments to avoid conflicts between the multithreading
       # and the shiny
@@ -417,8 +391,6 @@ shinyAppServer <- function(input, output, session) {
 
   ################## Make BLAST DB Function ###################################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "makeBlastDBFileLoc", roots = volumes, session = session)
 
@@ -428,7 +400,11 @@ shinyAppServer <- function(input, output, session) {
       expr = {
 
         makeBlastDBFileLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastDBFileLoc)
-        makeBlastDBFileLocDisplayString$data <- as.character(substr(makeBlastDBFileLoc$datapath, 2, nchar(makeBlastDBFileLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          makeBlastDBFileLocDisplayString$data <- as.character(makeBlastDBFileLoc$datapath)
+        } else{
+          makeBlastDBFileLocDisplayString$data <- as.character(substr(makeBlastDBFileLoc$datapath, 2, nchar(makeBlastDBFileLoc$datapath)))
+        }
         output$makeBlastDBFileLocDisplay <- shiny::renderText({as.character(makeBlastDBFileLocDisplayString$data)})
 
       },
@@ -452,7 +428,11 @@ shinyAppServer <- function(input, output, session) {
       expr = {
 
         makeblastdbPath <- shinyFiles::parseFilePaths(volumes, input$makeblastdbPath)
-        makeblastdbPathDisplayString$data <- as.character(substr(makeblastdbPath$datapath, 2, nchar(makeblastdbPath$datapath)))
+        if (.Platform$OS.type == "windows"){
+          makeblastdbPathDisplayString$data <- as.character(makeblastdbPath$datapath)
+        } else{
+          makeblastdbPathDisplayString$data <- as.character(substr(makeblastdbPath$datapath, 2, nchar(makeblastdbPath$datapath)))
+        }
         output$makeblastdbPathDisplay <- shiny::renderText({as.character(makeblastdbPathDisplayString$data)})
 
       },
@@ -476,7 +456,11 @@ shinyAppServer <- function(input, output, session) {
       expr = {
 
         makeBlastTaxaDBLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastTaxaDBLoc)
-        makeBlastTaxaDBLocDisplayString$data <- as.character(substr(makeBlastTaxaDBLoc$datapath, 2, nchar(makeBlastTaxaDBLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          makeBlastTaxaDBLocDisplayString$data <- as.character(makeBlastTaxaDBLoc$datapath)
+        } else{
+          makeBlastTaxaDBLocDisplayString$data <- as.character(substr(makeBlastTaxaDBLoc$datapath, 2, nchar(makeBlastTaxaDBLoc$datapath)))
+        }
         output$makeBlastTaxaDBLocDisplay <- shiny::renderText({as.character(makeBlastTaxaDBLocDisplayString$data)})
 
       },
@@ -496,24 +480,9 @@ shinyAppServer <- function(input, output, session) {
     if(is.na(makeblastdbPathDisplayString$data)){
       makeblastdbPathDisplayString$data <- "makeblastdb"
     }
-    # if(!is.na(makeBlastDBFileLocDisplayString$data) &&
-    #    !is.na(makeblastdbPathDisplayString$data) &&
-    #    !is.na(makeBlastTaxaDBLocDisplayString$data) &&
-    #    !is.na(input$dbName) &&
-    #    !is.na(input$makeBLASTDBMinLen)){
-
-print("makeBlastDBFileLocDisplayString$data")
-print(makeBlastDBFileLocDisplayString$data)
-print("makeblastdbPathDisplayString$data")
-print(makeblastdbPathDisplayString$data)
-print("makeBlastTaxaDBLocDisplayString$data")
-print(makeBlastTaxaDBLocDisplayString$data)
-
 
     if (!is.na(makeBlastDBFileLocDisplayString$data) && is.character(makeBlastDBFileLocDisplayString$data) && length(makeBlastDBFileLocDisplayString$data) != 0 &&
       !is.na(makeBlastTaxaDBLocDisplayString$data) && is.character(makeBlastTaxaDBLocDisplayString$data) && length(makeBlastTaxaDBLocDisplayString$data)!= 0 ){
-
-print("In the if checking the file locations")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(makeBlastDBFileLocDisplayString$data)
@@ -579,8 +548,6 @@ print("In the if checking the file locations")
 
   ################## BLAST sequences Function #################################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "BLASTDatabasePath", roots = volumes, session = session)
 
@@ -589,7 +556,11 @@ print("In the if checking the file locations")
     tryCatch(
       expr = {
         BLASTDatabasePath <- shinyFiles::parseFilePaths(volumes, input$BLASTDatabasePath)
-        BLASTDatabasePathDisplayString$data <- as.character(substr(BLASTDatabasePath$datapath, 2, nchar(BLASTDatabasePath$datapath)))
+        if (.Platform$OS.type == "windows"){
+          BLASTDatabasePathDisplayString$data <- as.character(BLASTDatabasePath$datapath)
+        } else{
+          BLASTDatabasePathDisplayString$data <- as.character(substr(BLASTDatabasePath$datapath, 2, nchar(BLASTDatabasePath$datapath)))
+        }
         output$BLASTDatabasePathDisplay <- shiny::renderText({as.character(BLASTDatabasePathDisplayString$data)})
       },
       error = function(e){
@@ -611,7 +582,11 @@ print("In the if checking the file locations")
     tryCatch(
       expr = {
         blastnPath <- shinyFiles::parseFilePaths(volumes, input$blastnPath)
-        blastnPathDisplayString$data <- as.character(substr(blastnPath$datapath, 2, nchar(blastnPath$datapath)))
+        if (.Platform$OS.type == "windows"){
+          blastnPathDisplayString$data <- as.character(blastnPath$datapath)
+        } else{
+          blastnPathDisplayString$data <- as.character(substr(blastnPath$datapath, 2, nchar(blastnPath$datapath)))
+        }
         output$blastnPathDisplay <- shiny::renderText({as.character(blastnPathDisplayString$data)})
       },
       error = function(e){
@@ -633,7 +608,11 @@ print("In the if checking the file locations")
     tryCatch(
       expr = {
         querySeqPath <- shinyFiles::parseFilePaths(volumes, input$querySeqPath)
-        querySeqPathDisplayString$data <- as.character(substr(querySeqPath$datapath, 2, nchar(querySeqPath$datapath)))
+        if (.Platform$OS.type == "windows"){
+          querySeqPathDisplayString$data <- as.character(querySeqPath$datapath)
+        } else{
+          querySeqPathDisplayString$data <- as.character(substr(querySeqPath$datapath, 2, nchar(querySeqPath$datapath)))
+        }
         output$querySeqPathDisplay <- shiny::renderText({as.character(querySeqPathDisplayString$data)})
       },
       error = function(e){
@@ -721,9 +700,6 @@ print("In the if checking the file locations")
 
   ################## Taxon Assign Function ####################################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
-
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "taxaAssignFileLoc", roots = volumes, session = session)
 
@@ -732,7 +708,11 @@ print("In the if checking the file locations")
     tryCatch(
       expr = {
         taxaAssignFileLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignFileLoc)
-        taxaAssignFileLocDisplayString$data <- as.character(substr(taxaAssignFileLoc$datapath, 2, nchar(taxaAssignFileLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          taxaAssignFileLocDisplayString$data <- as.character(taxaAssignFileLoc$datapath)
+        } else{
+          taxaAssignFileLocDisplayString$data <- as.character(substr(taxaAssignFileLoc$datapath, 2, nchar(taxaAssignFileLoc$datapath)))
+        }
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLocDisplayString$data)})
       },
       error = function(e){
@@ -755,7 +735,11 @@ print("In the if checking the file locations")
       expr = {
 
         taxaAssignDBLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignDBLoc)
-        taxaAssignDBLocDisplayString$data <- as.character(substr(taxaAssignDBLoc$datapath, 2, nchar(taxaAssignDBLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          taxaAssignDBLocDisplayString$data <- as.character(taxaAssignDBLoc$datapath)
+        } else{
+          taxaAssignDBLocDisplayString$data <- as.character(substr(taxaAssignDBLoc$datapath, 2, nchar(taxaAssignDBLoc$datapath)))
+        }
         output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLocDisplayString$data)})
 
       },
@@ -837,9 +821,6 @@ print("In the if checking the file locations")
 
   ################## Combine Taxa Assign Function #############################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
-
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "combineTaxaFileLoc", roots = volumes, session = session)
 
@@ -849,7 +830,11 @@ print("In the if checking the file locations")
       expr = {
 
         combineTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineTaxaFileLoc)
-        combineTaxaFileLocDisplayString$data <- as.character(substr(combineTaxaFileLoc$datapath, 2, nchar(combineTaxaFileLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          combineTaxaFileLocDisplayString$data <- as.character(combineTaxaFileLoc$datapath)
+        } else{
+          combineTaxaFileLocDisplayString$data <- as.character(substr(combineTaxaFileLoc$datapath, 2, nchar(combineTaxaFileLoc$datapath)))
+        }
         output$combineTaxaFileLocDisplay <- shiny::renderText({as.character(combineTaxaFileLocDisplayString$data)})
 
       },
@@ -869,9 +854,6 @@ print("In the if checking the file locations")
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(combineTaxaFileLocDisplayString$data)
       numCores = force(input$combineTaxaNumCores)
-
-print(paste0("Here is the value of the combine_assign_output fileLoc...", fileLoc))
-print(paste0("Here is the value of the combine_assign_output numCores...", numCores))
 
       tryCatch(
         expr = {
@@ -915,9 +897,6 @@ print(paste0("Here is the value of the combine_assign_output numCores...", numCo
 
   ################## Reduce Taxa Assign Function ##############################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
-
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "reduceTaxaFileLoc", roots = volumes, session = session)
 
@@ -927,7 +906,11 @@ print(paste0("Here is the value of the combine_assign_output numCores...", numCo
       expr = {
 
         reduceTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$reduceTaxaFileLoc)
-        reduceTaxaFileLocDisplayString$data <- as.character(substr(reduceTaxaFileLoc$datapath, 2, nchar(reduceTaxaFileLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          reduceTaxaFileLocDisplayString$data <- as.character(reduceTaxaFileLoc$datapath)
+        } else{
+          reduceTaxaFileLocDisplayString$data <- as.character(substr(reduceTaxaFileLoc$datapath, 2, nchar(reduceTaxaFileLoc$datapath)))
+        }
         output$reduceTaxaFileLocDisplay <- shiny::renderText({as.character(reduceTaxaFileLocDisplayString$data)})
 
       },
@@ -947,9 +930,6 @@ print(paste0("Here is the value of the combine_assign_output numCores...", numCo
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(reduceTaxaFileLocDisplayString$data)
       numCores = force(input$reduceTaxaNumCores)
-
-print(paste0("Here is the value of the reduceTaxa fileLoc...", fileLoc))
-print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
 
       tryCatch(
         expr = {
@@ -996,9 +976,6 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
 
   ################## Combine Reduce Taxa Assign Function ######################
 
-  # Get the path where all of the folders containing the fastq files are located
-  volumes = shinyFiles::getVolumes()
-
   #Connect this to the shinyChooseButton
   shinyFiles::shinyFileChoose(input, "combineReducedTaxaFileLoc", roots = volumes, session = session)
 
@@ -1008,7 +985,11 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
       expr = {
 
         combineReducedTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineReducedTaxaFileLoc)
-        combineReducedTaxaFileLocDisplayString$data <- as.character(substr(combineReducedTaxaFileLoc$datapath, 2, nchar(combineReducedTaxaFileLoc$datapath)))
+        if (.Platform$OS.type == "windows"){
+          combineReducedTaxaFileLocDisplayString$data <- as.character(combineReducedTaxaFileLoc$datapath)
+        } else{
+          combineReducedTaxaFileLocDisplayString$data <- as.character(substr(combineReducedTaxaFileLoc$datapath, 2, nchar(combineReducedTaxaFileLoc$datapath)))
+        }
         output$combineReducedTaxaFileLocDisplay <- shiny::renderText({as.character(combineReducedTaxaFileLocDisplayString$data)})
 
       },
@@ -1072,57 +1053,59 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
     }
   })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ################## GPS/Grouping Import File Function Buttons ###################
 
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "ASVFile", roots = volumes, session = session)
+
   # Show modal when button is clicked.
-  shiny::observeEvent(input$ASVFile_button, {
+  shiny::observeEvent(input$ASVFile, {
+
     tryCatch(
       expr = {
-        ASVFile$data <- file.choose()
-        output$ASVFile_out <- shiny::renderText({as.character(ASVFile$data)})
+        ASVFile <- shinyFiles::parseFilePaths(volumes, input$ASVFile)
+        if (.Platform$OS.type == "windows"){
+          ASVFileDisplayString$data <- as.character(ASVFile$datapath)
+        } else{
+          ASVFileDisplayString$data <- as.character(substr(ASVFile$datapath, 2, nchar(ASVFile$datapath)))
+        }
+        output$ASVFileOut <- shiny::renderText({as.character(ASVFileDisplayString$data)})
       },
       error = function(e){
         print("Error - Data Input Submit choose file cancelled - 1")
+        output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
       },
       warning = function(w){
         print("Warning - Data Input Submit choose file cancelled - 2")
+        output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
       }
     )
+
   },ignoreInit = TRUE)
 
-  # Show modal when button is clicked.
-  shiny::observeEvent(input$MetadataFile_button, {
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "provenanceDataFile", roots = volumes, session = session)
 
+  # Show modal when button is clicked.
+  shiny::observeEvent(input$provenanceDataFile, {
     tryCatch(
       expr = {
-        metaDataFile$data <- file.choose()
-        output$metaDataFile_out <- shiny::renderText({as.character(metaDataFile$data)})
+        provenanceDataFile <- shinyFiles::parseFilePaths(volumes, input$provenanceDataFile)
+        #Filter and trim
+        if (.Platform$OS.type == "windows"){
+          provenanceDataFileDisplayString$data <- as.character(provenanceDataFile$datapath)
+        } else{
+          provenanceDataFileDisplayString$data <- as.character(substr(provenanceDataFile$datapath, 2, nchar(provenanceDataFile$datapath)))
+        }
+        output$provenanceDataFileOut <- shiny::renderText({as.character(provenanceDataFileDisplayString$data)})
       },
       error = function(e){
         print("Error - Data Input Submit choose file cancelled - 1")
+        output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
       },
       warning = function(w){
         print("Warning - Data Input Submit choose file cancelled - 2")
+        output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
       }
     )
   },ignoreInit = TRUE)
@@ -1131,12 +1114,13 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
 
   #Data reset button
   shiny::observeEvent(input$resetDataImport, {
-    output$ASVFile_out <- shiny::renderText({as.character("No data file selected")})
-    output$metaDataFile_out <- shiny::renderText({as.character("No data file selected")})
+    output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
+    output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
 
     ASVFileTable$data <- NA
-    metaDataFileTable$data <- NA
+    provenanceDataFileTable$data <- NA
     mergedTable$data <- NA
+    workMergedTable <-NA
     markerColumns <- NULL
     firstLoadFlag$data = 0
 
@@ -1150,254 +1134,128 @@ print(paste0("Here is the value of the reduceTaxa numCores...", numCores))
   ################## GPS/Grouping Data Processing Upon Hitting Submit ################
 
   shiny::observeEvent(input$submitDataImport, {
-
-    #The below content is checking the files submitted are .tsv
-    if(is.null(ASVFile$data)){
-      shiny::showModal(shiny::modalDialog(
-        title = "Missing Data",
-        "Either the ASV file or the metadata file are missing. Please select both files and resubmit - 1"
-      ))
-    }else if(is.null(metaDataFile$data)){
-      shiny::showModal(shiny::modalDialog(
-        title = "Missing Data",
-        "Either the ASV file or the metadata file are missing. Please select both files and resubmit - 2"
-      ))
-    }else if(is.na(ASVFile$data)){
-      shiny::showModal(shiny::modalDialog(
-        title = "Missing Data",
-        "Either the ASV file or the metadata file are missing. Please select both files and resubmit - 3"
-      ))
-    }else if(is.na(metaDataFile$data)){
-      shiny::showModal(shiny::modalDialog(
-        title = "Missing Data",
-        "Either the ASV file or the metadata file are missing. Please select both files and resubmit - 4"
-      ))
-    }else if(grepl("\\.[Tt][Ss][Vv]$", ASVFile$data)){
-
-      if(grepl("\\.[Tt][Ss][Vv]$", metaDataFile$data)){
-
+print("Here 1")
+    if(grepl("\\.[Tt][Ss][Vv]$", ASVFileDisplayString$data)){
+print("Here 2")
+      if(grepl("\\.[Tt][Ss][Vv]$", provenanceDataFileDisplayString$data)){
+print("Here 3")
         #Loading in the data files
         tryCatch(
           expr = {
-
+print("Here 4")
             shiny::showModal(shiny::modalDialog("Loading the data files, please wait...",  footer=NULL))
-
-            #Load in the data to the formatted_metadata variable
-            ASVFileTable$data<-read.table(ASVFile$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
-print("Here loading data 1")
-            metaDataFileTable$data<-read.table(metaDataFile$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
-print("Here loading data 2")
-            ########################Process the submitted data files###################
-
-            #Get the columns with the '_MarkerResults' string which indicates that it was a combined marker file
-            # from the combined reduced taxa assign function
-            markerColumns <- grep("_MarkerResults", names(ASVFileTable$data), value = TRUE)
-print(paste0("Here loading data 3 and the columns with _MarkerResults are...", markerColumns))
-
-            if(length(markerColumns)>0){
-print("Here loading data 4")
-              #Get the last column number with the '_MarkerResults' in the title
-              maxColNum <- max(which(names(ASVFileTable$data) %in% markerColumns))
-print("Here loading data 5")
-              #Get the names of the samples
-              sampleNames <- names(ASVFileTable$data)[c((maxColNum+1):ncol(ASVFileTable$data))]
-print("Here loading data 6")
-              #Flatten the data.frame
-              flatTable <- reshape(
-                ASVFileTable$data,
-                varying = list(sampleNames),
-                v.names = "Abundance",
-                direction = "long",
-                times = sampleNames,
-                timevar = "Sample",
-                sep = ""
-              )
-print("Here loading data 7")
-              #Remove all entries with 0 in the Abundance column
-              flatTable <- flatTable[flatTable$Abundance != 0, ]
-print("Here loading data 8")
-              #Merge the flattened file with the GPS file.
-              mergedTable$data <- merge(flatTable, metaDataFileTable$data, by = "Sample")
-print("Here loading data 9")
-              #Initialize the finalMergedTable with the first marker.
-              finalMergedTable <- NULL
-print("Here loading data 10")
-              #Loop through the markers to add them on to the finalMergedTable
-              for (numMarkerCol in 1:length(markerColumns)){
-
-                #Initialize the tempMergedTable
-                tempMergedTable <- mergedTable$data[, -which(names(mergedTable$data) %in% markerColumns)]
-
-                #Add a column for the marker name
-                tempMergedTable$Marker <- gsub("_MarkerResults", "", markerColumns[numMarkerCol])
-
-                #Create a temporary mergedTable variable
-                tempMergedTable <-cbind(tempMergedTable, mergedTable$data[,markerColumns[numMarkerCol]])
-
-                #Rename the last column name to Final_Taxa
-                names(tempMergedTable)[ncol(tempMergedTable)] <- "Final_Taxa"
-
-                #Remove records based on NA in the Marker column
-                tempMergedTable <- subset(tempMergedTable, !is.na(Final_Taxa))
-
-                #Split the final column by ' - '
-                tempMergedTable <- cbind(tempMergedTable[,-ncol(tempMergedTable)],do.call(rbind, strsplit(as.character(tempMergedTable$Final_Taxa), " - ", fixed = TRUE)))
-
-                #Rename the last two columns to Final_Rank and Final_Taxa
-                names(tempMergedTable)[(ncol(tempMergedTable)-1)] <- "Final_Rank"
-                names(tempMergedTable)[ncol(tempMergedTable)] <- "Final_Taxa"
-
-                #Add the data back onto a dataframe with each molecular Marker data in a marker column
-                finalMergedTable <- rbind(finalMergedTable,tempMergedTable)
-
-print(paste0("Here loading data 11 - ", numMarkerCol))
+print("Here 5")
+            #Load in the associated GPS and other provenance data
+            provenanceDataFileTable$data<-read.table(provenanceDataFileDisplayString$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
+print("Here 6")
+            #get the directory of interest
+            fileLoc <- dirname(provenanceDataFileDisplayString$data)
+            #Set the working directory
+            setwd(fileLoc)
+print("Here 7")
+            #Get the all files in the selected file folder with full paths of the files
+            files <- as.data.frame(list.files(path = fileLoc, pattern = "*[.]*", full.names = TRUE))
+            # Get the local paths
+            files[,2] <- list.files(path = fileLoc, pattern = "*[.]*")
+            #Get all files with the '_taxaReduced' string
+            files <- files[grepl("_taxaReduced_.*", files[,2]),]
+            # Get the names of the files
+            files[,3] <- gsub("_taxaReduced_.*","",files[,2])
+print("Here 8")
+            # Define a custom function to read each file with check.names = FALSE
+            read_file <- function(file_path) {
+              read.delim(file_path, check.names = FALSE)
+            }
+print("Here 9")
+            # Read all files and store data frames in a list
+            ASVFileObject <- lapply(files[,1], read_file)  # or read.csv2 if you're working with CSV files using ";" as the separator
+print("Here 10")
+            #For loop flattening and combining all of the elements in the ASVFileObject
+            for(ASVFileObjectRecords in 1:length(ASVFileObject)){
+print("Here 11")
+                #Add a column to the front of the data frame with unique identifiers.
+                ASVFileTableTemp <- cbind(Number = 1:nrow(ASVFileObject[[ASVFileObjectRecords]]), ASVFileObject[[ASVFileObjectRecords]])
+print("Here 12")
+                # Rename the first column to ID
+                names(ASVFileTableTemp)[1] <- "ID"
+print("Here 13")
+                # Reshape the data to long format
+                ASVFileTableTemp <- reshape(ASVFileTableTemp,
+                                             idvar = c("ID"),
+                                             varying = provenanceDataFileTable$data$Sample,
+                                             v.names = "Abundance",
+                                             times = provenanceDataFileTable$data$Sample,
+                                             direction = "long")
+print("Here 14")
+                #Rename column times to sample
+                colnames(ASVFileTableTemp)[colnames(ASVFileTableTemp) == "time"] <- "Sample"
+print("Here 15")
+                #Remove the 0 from the Abundance column
+                ASVFileTableTemp <- ASVFileTableTemp[ASVFileTableTemp$Abundance != 0, ]
+print("Here 16")
+                #Split the Final_Taxa column to keep the quality values in separate columns to use in the mapping
+                #"Num_Rec", "Coverage", "Identity", "Max_eVal"
+print("Here 17")
+                #Split the column by ( and replace the close bracket )
+                entries <- as.data.frame(do.call('rbind', strsplit(as.character(ASVFileTableTemp$Final_Taxa),'(',fixed = TRUE)), check.names=FALSE)
+                entries[,2] <- gsub(")","", as.character(entries[,2]))
+print("Here 18")
+                #Split the values column by ,
+                entries <- cbind(entries[,1],data.frame(do.call('rbind', strsplit(as.character(entries[,2]),',', fixed = TRUE)), check.names=FALSE), row.names = NULL)
+print("Here 19")
+                #Name the total results temp columns
+                colnames(entries) <- c("Final_Taxa", "AvgMinNumRec", "AvgMinCoverage", "AvgMinIdentity", "AvgMaxeVal")
+print("Here 20")
+                #Build the data frame again with the new data columns
+                ASVFileTableTemp <- cbind(
+                  ASVFileTableTemp[,c(1:(which(colnames(ASVFileTableTemp) == "Final_Taxa")-1))],
+                  entries,
+                  ASVFileTableTemp[,c((which(colnames(ASVFileTableTemp) == "Final_Taxa")+1):ncol(ASVFileTableTemp))])
+print("Here 21")
+                  # Remove brackets and contents from all values in the data frame
+                  ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))] <- lapply(ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))], function(x) gsub("\\(.*?\\)", "", x))
+print("Here 22")
+                  #Change all NA values to N/A so that they are easier to deal with in the dropdown menus
+                  ASVFileTableTemp[is.na(ASVFileTableTemp)] <- "N/A"
+print("Here 23")
+                  #Add a category column to place the data points on the map
+                  ASVFileTableTemp$AbundanceCategory <- cut(
+                    ASVFileTableTemp$Abundance,
+                    breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000),
+                    labels = c("10", "100", "1000", "10000", "100000", "1000000"),
+                    include.lowest = TRUE
+                  )
+print("Here 24")
+              if (is.na(ASVFileTable$data)){
+print("Here 25")
+                ASVFileTable$data <-ASVFileTableTemp
+print("Here 26")
+              }else{
+print("Here 27")
+                ASVFileTable$data <- rbind(ASVFileTable$data, ASVFileTableTemp)
+print("Here 28")
               }
 
-              #Add a category column to place the data points on the map
-              finalMergedTable$AbundanceCategory <- cut(
-                finalMergedTable$Abundance,
-                breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000),
-                labels = c("10", "100", "1000", "10000", "100000", "1000000"),
-                include.lowest = TRUE
-              )
-print("Here loading data 12")
-              #Remove unnecessary variables
-              mergedTable$data <- finalMergedTable
-              remove(finalMergedTable)
-              remove(tempMergedTable)
-              remove(flatTable)
-
-            } else{
-
-              #Get the last column number with the 'Results' in the title
-              maxColNum <- max(which(names(ASVFileTable$data) %in% "Results"))
-
-              #Get the names of the samples
-              sampleNames <- names(ASVFileTable$data)[c((maxColNum+1):ncol(ASVFileTable$data))]
-
-              #Flatten the data.frame
-              flatTable <- reshape(
-                ASVFileTable$data,
-                varying = list(sampleNames),
-                v.names = "Abundance",
-                direction = "long",
-                times = sampleNames,
-                timevar = "Sample",
-                sep = ""
-              )
-
-              #Remove all entries with 0 in the Abundance column
-              flatTable <- flatTable[flatTable$Abundance != 0, ]
-
-              #Merge the flattened file with the GPS file.
-              tempMergedTable <- merge(flatTable, metaDataFileTable$data, by = "Sample")
-
-              # Remove brackets and contents from all values in the data frame
-              tempMergedTable[,c(which(names(tempMergedTable) %in% "superkingdom"):which(names(tempMergedTable) %in% "species"))] <- lapply(tempMergedTable[,c(which(names(tempMergedTable) %in% "superkingdom"):which(names(tempMergedTable) %in% "species"))], function(x) gsub("\\(.*?\\)", "", x))
-
-              #Add a column for the marker name
-              tempMergedTable$Marker <- gsub("_MarkerResults", "", markerColumns[numMarkerCol])
-
-              #Add a category column to place the data points on the map
-              tempMergedTable$AbundanceCategory <- cut(
-                tempMergedTable$Abundance,
-                breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000),
-                labels = c("10", "100", "1000", "10000", "100000", "1000000"),
-                include.lowest = TRUE
-              )
-
-              #Remove unnecessary variables
-              mergedTable$data <- tempMergedTable
-              remove(flatTable)
-              remove(tempMergedTable)
-
             }
-print("Here loading data 13")
+print("Here 29")
+              ########################Process the submitted data files###################
 
-            #################### update the filters based on submitted ASV data ############
-
-            shiny::updateSliderInput(session = session, inputId = "abundance",
-                                     min=0,
-                                     max = max(mergedTable$data$Abundance),
-                                     value=c(0,max(mergedTable$data$Abundance))
-            )
-
-            #Dropdown menu for Final_Rank
-            shinyWidgets::updatePickerInput(session, inputId = "finalRank",
-                                            choices = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE))
-
-            #Dropdown menu for superkingdom
-            shinyWidgets::updatePickerInput(session, inputId = "kingdomFilterInput",
-                                            choices = sort(unique(mergedTable$data$superkingdom), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$superkingdom), na.last = TRUE))
-
-            #Dropdown menu for phylum
-            shinyWidgets::updatePickerInput(session, inputId = "phylumFilterInput",
-                                            choices = sort(unique(mergedTable$data$phylum), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$phylum), na.last = TRUE))
-
-            #Dropdown menu for class
-            shinyWidgets::updatePickerInput(session, inputId = "classFilterInput",
-                                            choices = sort(unique(mergedTable$data$class), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$class), na.last = TRUE))
-
-            #Dropdown menu for order
-            shinyWidgets::updatePickerInput(session, inputId = "orderFilterInput",
-                                            choices = sort(unique(mergedTable$data$order), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$order), na.last = TRUE))
-
-            #Dropdown menu for family
-            shinyWidgets::updatePickerInput(session, inputId = "familyFilterInput",
-                                            choices = sort(unique(mergedTable$data$family), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$family), na.last = TRUE))
-
-            #Dropdown menu for genus
-            shinyWidgets::updatePickerInput(session, inputId = "genusFilterInput",
-                                            choices = sort(unique(mergedTable$data$genus), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$genus), na.last = TRUE))
-
-            #Dropdown menu for species
-            shinyWidgets::updatePickerInput(session, inputId = "speciesFilterInput",
-                                            choices = sort(unique(mergedTable$data$species), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$species), na.last = TRUE))
-
-            #################### update the filters based on submitted Meta Data ###########
-
-            #Dropdown menu for Sample
-            shinyWidgets::updatePickerInput(session, inputId = "sampleFilterInput",
-                                            choices = sort(unique(mergedTable$data$Sample), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Sample), na.last = TRUE))
-
-            #Dropdown menu for Run
-            shinyWidgets::updatePickerInput(session, inputId = "runFilterInput",
-                                            choices = sort(unique(mergedTable$data$Run), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Run), na.last = TRUE))
-
-            #Dropdown menu for Lab
-            shinyWidgets::updatePickerInput(session, inputId = "labFilterInput",
-                                            choices = sort(unique(mergedTable$data$Lab), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Lab), na.last = TRUE))
-
-            #Dropdown menu for Type
-            shinyWidgets::updatePickerInput(session, inputId = "typeFilterInput",
-                                            choices = sort(unique(mergedTable$data$Type), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Type), na.last = TRUE))
-
-            #Dropdown menu for Region
-            shinyWidgets::updatePickerInput(session,inputId = "markerFilterInput",
-                                            choices = sort(unique(mergedTable$data$Marker), na.last = TRUE),
-                                            selected = sort(unique(mergedTable$data$Marker), na.last = TRUE))
-
-            shiny::updateSliderInput(session = session, inputId = "dateInput",
-                                     min = as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                                     max = as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                                     value=c(as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                                              as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
-
+             #Merge the flattened file with the GPS file.
+             mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
+print("Here 30")
             #Remove the processing files modal
             removeModal()
 
+print("Here in the submit button right before setting the data points")
+
+            #Setting up the data mapping points for the first time
+            setMappingDataPoints()
+
+print("Here in the submit button right after setting the data points")
+
+            # Change the active tab to mapping Tab
+            updateTabItems(session, "map_filter_table_tabbox", "Mapping")
+print("Here 31")
           },
           error = function(e){
             shiny::showModal(shiny::modalDialog(
@@ -1412,7 +1270,7 @@ print("Here loading data 13")
             ))
           }
         )#Closing trycatch
-      }else{#Closing off the if grep metaDataFile
+      }else{#Closing off the if grep provenanceDataFile
         shiny::showModal(shiny::modalDialog(
           title = "Incorrect File Type - 3",
           "Incorrect file type, please select a properly formatted '.tsv' file and resubmit."
@@ -1425,89 +1283,139 @@ print("Here loading data 13")
       ))
     }#End of if-else right extension
 
-  },ignoreInit = TRUE)# end of the observeEvent Input Submit
+  })# end of the observeEvent Input Submit
 
   ############### Filtering Button ###########################################
 
   shiny::observeEvent(input$updateFilterMappingButton, {
 
-    shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
+    if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
 
-    workMergedTable <- mergedTable$data
-    workMergedTable <- workMergedTable[workMergedTable$Abundance >= input$abundance[1] & workMergedTable$Abundance <= input$abundance[2],]
-    workMergedTable <- workMergedTable[workMergedTable$Final_Rank %in% input$finalRank,]
-    workMergedTable <- workMergedTable[workMergedTable$superkingdom %in% input$kingdomFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$phylum %in% input$phylumFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$class %in% input$classFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$order %in% input$orderFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$family %in% input$familyFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$genus %in% input$genusFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$species %in% input$speciesFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Sample %in% input$sampleFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Run %in% input$runFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Lab %in% input$labFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Type %in% input$typeFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Marker %in% input$markerFilterInput,]
-    workMergedTable <- workMergedTable[workMergedTable$Date >= input$dateInput[1] & workMergedTable$Date <= input$dateInput[2],]
+      shiny::showModal(shiny::modalDialog(
+        title = "No Data Loaded",
+        "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+      ))
 
-    AVal <- input$abundance[1]
-    BVal <- input$abundance[2]
-    CVal <- input$finalRank
-    DVal <- input$kingdomFilterInput
-    EVal <- input$phylumFilterInput
-    FVal <- input$classFilterInput
-    GVal <- input$orderFilterInput
-    HVal <- input$familyFilterInput
-    IVal <- input$genusFilterInput
-    JVal <- input$speciesFilterInput
-    KVal <- input$sampleFilterInput
-    LVal <- input$runFilterInput
-    MVal <- input$labFilterInput
-    NVal <- input$typeFilterInput
-    OVal <- input$markerFilterInput
-    PVal <- input$dateInput[1]
-    QVal <- input$dateInput[2]
+    }else if (length(mergedTable$data)==1){
 
-    shiny::updateSliderInput(session = session, inputId = "abundance",value=c(AVal,BVal),step = 1)
-    shinyWidgets::updatePickerInput(session, "finalRank", choices = sort(unique(workMergedTable$Final_Rank), na.last = TRUE), selected = CVal)
-    shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$superkingdom), na.last = TRUE), selected = DVal)
-    shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$phylum), na.last = TRUE), selected = EVal)
-    shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$class), na.last = TRUE), selected = FVal)
-    shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$order), na.last = TRUE), selected = GVal)
-    shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$family), na.last = TRUE), selected = HVal)
-    shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$genus), na.last = TRUE), selected = IVal)
-    shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$species), na.last = TRUE), selected = JVal)
-    shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$Sample), na.last = TRUE), selected = KVal)
-    shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$Run), na.last = TRUE), selected = LVal)
-    shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$Lab), na.last = TRUE), selected = MVal)
-    shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$Type), na.last = TRUE), selected = NVal)
-    shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$Marker), na.last = TRUE), selected = OVal)
-    shiny::updateSliderInput(session = session, inputId = "dateInput", value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
+      shiny::showModal(shiny::modalDialog(
+        title = "No Data Loaded",
+        "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+      ))
 
+    }else{
 
-    leaflet::leafletProxy("mymap", data = as.data.frame(workMergedTable)) %>%
-      clearMarkers() %>%
-      clearMarkerClusters() %>%
-      clearPopups() %>%
-      #Adding labels to markers on map
-      addCircleMarkers(lng = ~North,
-                       lat = ~West,
-                       color = ~palette_map(workMergedTable$AbundanceCategory),
-                       clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
-                       popup= paste("<strong><h5>Species:", workMergedTable$Final_Taxa, "</strong>",
-                                    "<br><h6>Sample:", workMergedTable$Sample,
-                                    "<br><h6>Marker:", workMergedTable$Marker,
-                                    "<br><h6>Date:", workMergedTable$Date,
-                                    "<br><h6>Run:", workMergedTable$Run,
-                                    "<br><h6>Type:", workMergedTable$Type,
-                                    "<br><h6>Lab:", workMergedTable$Lab,
-                                    "<h6>Coord(Lat, Lon):", workMergedTable$North,",", workMergedTable$West))
+      shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
 
+      #This section is getting the data after applying the filters
+      workMergedTable$data <- mergedTable$data
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance >= input$abundanceLow,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance <= input$abundanceHigh,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Final_Rank %in% input$finalRankInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$superkingdom %in% input$kingdomFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$phylum %in% input$phylumFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$class %in% input$classFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$order %in% input$orderFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$family %in% input$familyFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$genus %in% input$genusFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$species %in% input$speciesFilterInput,,drop=FALSE]
 
+      #Filter the dataset based on the radio button selections
+      if(input$SFATButton == "No"){
+print("In the No for SFATButton")
+        workMergedTable$data <- workMergedTable$data[!grepl("SFAT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$SANFButton == "No"){
+print("In the No for SANFButton")
+        workMergedTable$data <- workMergedTable$data[!grepl("SANF", workMergedTable$data$Result_Code), ]
+      }
+      if(input$BIRTButton == "No"){
+print("In the No for BIRTButton")
+        workMergedTable$data <- workMergedTable$data[!grepl("BIRT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$BCRTButton == "No"){
+print("In the No for BCRTButton")
+        workMergedTable$data <- workMergedTable$data[!grepl("BCRT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$TBATButton == "No"){
+print("In the No for TBATButton")
+        workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
+      }
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Run %in% input$runFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Lab %in% input$labFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Type %in% input$typeFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Marker %in% input$markerFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
 
-    removeModal()
+      #This section is keeping the selected elements to re apply after updating the filters
+      if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
+        AVal<-input$abundanceLow
+      }else{
+        AVal <-min(workMergedTable$data$Abundance)
+      }
+      if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
+        BVal<-input$abundanceHigh
+      }else{
+        BVal <-max(workMergedTable$data$Abundance)
+      }
+      CVal <- input$finalRankInput
+      DVal <- input$kingdomFilterInput
+      EVal <- input$phylumFilterInput
+      FVal <- input$classFilterInput
+      GVal <- input$orderFilterInput
+      HVal <- input$familyFilterInput
+      IVal <- input$genusFilterInput
+      JVal <- input$speciesFilterInput
+      KVal <- input$sampleFilterInput
+      LVal <- input$runFilterInput
+      MVal <- input$labFilterInput
+      NVal <- input$typeFilterInput
+      OVal <- input$markerFilterInput
+      PVal <- input$dateInput[1]
+      QVal <- input$dateInput[2]
 
-  },ignoreInit = TRUE)
+      shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+      shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+      shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
+      shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
+      shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = EVal)
+      shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = FVal)
+      shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = GVal)
+      shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = HVal)
+      shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = IVal)
+      shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = JVal)
+      shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
+      shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
+      shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)
+      shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = NVal)
+      shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
+      shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
+
+      workMergedTableInitialGlobal<<-workMergedTable$data
+      leaflet::leafletProxy("mymap", data = workMergedTable$data) %>%
+        clearMarkers() %>%
+        clearMarkerClusters() %>%
+        clearPopups() %>%
+        #Adding labels to markers on map
+        addCircleMarkers(lng = ~North,
+                         lat = ~West,
+                         color = ~palette_map(workMergedTable$data$AbundanceCategory),
+                         clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
+                         popup= paste("<strong><h5>", workMergedTable$data$Final_Rank,":", workMergedTable$data$Final_Taxa, "</strong>",
+                                      "<br><h6>Sample:", workMergedTable$data$Sample,
+                                      "<br><h6>Marker:", paste0(workMergedTable$data$Marker,", Reads:", workMergedTable$data$Abundance),
+                                      "<br><h6>Date:", workMergedTable$data$Date,
+                                      "<br><h6>Run:", workMergedTable$data$Run,
+                                      "<br><h6>Type:", workMergedTable$data$Type,
+                                      "<br><h6>Lab:", workMergedTable$data$Lab,
+                                      "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West))
+      removeModal()
+
+    }
+
+  })
 
 
   ############### Reset Filtering Button ###########################################
@@ -1516,69 +1424,75 @@ print("Here loading data 13")
 
     shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
 
-    shiny::updateSliderInput(session = session, inputId = "abundance",
-                             min=0,
-                             max = max(mergedTable$data$Abundance),
-                             value=c(0,max(mergedTable$data$Abundance))
-    )
+    #Resetting the data mapping points for the first time
+    setMappingDataPoints()
+
+    removeModal()
+
+  })
+
+  setMappingDataPoints <- function() {
+
+print("In the top of the setMappingDataPoints function")
+
+    #Abundance input values
+    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(mergedTable$data$Abundance),"):"), value = min(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
+    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Lower Value (max ", max(mergedTable$data$Abundance),"):"),value = max(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
 
     #Dropdown menu for Final_Rank
-    shinyWidgets::updatePickerInput(session, inputId = "finalRank",
+    shinyWidgets::updatePickerInput(session, inputId = "finalRankInput",
                                     choices = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE))
-
     #Dropdown menu for superkingdom
     shinyWidgets::updatePickerInput(session, inputId = "kingdomFilterInput",
                                     choices = sort(unique(mergedTable$data$superkingdom), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$superkingdom), na.last = TRUE))
-
     #Dropdown menu for phylum
     shinyWidgets::updatePickerInput(session, inputId = "phylumFilterInput",
                                     choices = sort(unique(mergedTable$data$phylum), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$phylum), na.last = TRUE))
-
     #Dropdown menu for class
     shinyWidgets::updatePickerInput(session, inputId = "classFilterInput",
                                     choices = sort(unique(mergedTable$data$class), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$class), na.last = TRUE))
-
     #Dropdown menu for order
     shinyWidgets::updatePickerInput(session, inputId = "orderFilterInput",
                                     choices = sort(unique(mergedTable$data$order), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$order), na.last = TRUE))
-
     #Dropdown menu for family
     shinyWidgets::updatePickerInput(session, inputId = "familyFilterInput",
                                     choices = sort(unique(mergedTable$data$family), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$family), na.last = TRUE))
-
     #Dropdown menu for genus
     shinyWidgets::updatePickerInput(session, inputId = "genusFilterInput",
                                     choices = sort(unique(mergedTable$data$genus), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$genus), na.last = TRUE))
-
     #Dropdown menu for species
     shinyWidgets::updatePickerInput(session, inputId = "speciesFilterInput",
                                     choices = sort(unique(mergedTable$data$species), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$species), na.last = TRUE))
 
-    #################### update the filters based on submitted Meta Data ###########
+    #################### update the filters based on submitted Provenance Data ###########
+
+    #Radio Buttons Reset
+    shiny::updateRadioButtons(session, "SFATButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "SANFButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "BIRTButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "BCRTButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "TBATButton", choices = c("Yes", "No"), selected = "Yes")
 
     #Dropdown menu for Sample
     shinyWidgets::updatePickerInput(session, inputId = "sampleFilterInput",
                                     choices = sort(unique(mergedTable$data$Sample), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Sample), na.last = TRUE))
-
     #Dropdown menu for Run
     shinyWidgets::updatePickerInput(session, inputId = "runFilterInput",
                                     choices = sort(unique(mergedTable$data$Run), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Run), na.last = TRUE))
-
     #Dropdown menu for Lab
     shinyWidgets::updatePickerInput(session, inputId = "labFilterInput",
                                     choices = sort(unique(mergedTable$data$Lab), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Lab), na.last = TRUE))
-
     #Dropdown menu for Type
     shinyWidgets::updatePickerInput(session, inputId = "typeFilterInput",
                                     choices = sort(unique(mergedTable$data$Type), na.last = TRUE),
@@ -1587,33 +1501,32 @@ print("Here loading data 13")
     shinyWidgets::updatePickerInput(session,inputId = "markerFilterInput",
                                     choices = sort(unique(mergedTable$data$Marker), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Marker), na.last = TRUE))
-
     shiny::updateSliderInput(session = session, inputId = "dateInput",
                              min = as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                              max = as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                              value=c(as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                                      as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
 
-    leaflet::leafletProxy("mymap", data = as.data.frame(mergedTable)) %>%
+    leaflet::leafletProxy("mymap", data = mergedTable$data) %>%
       clearMarkers() %>%
       clearMarkerClusters() %>%
       clearPopups() %>%
       #Adding labels to markers on map
       addCircleMarkers(lng = ~North,
                        lat = ~West,
-                       color = ~palette_map(mergedTable$AbundanceCategory),
+                       color = ~palette_map(mergedTable$data$AbundanceCategory),
                        clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
-                       popup= paste("<strong><h5>Species:", mergedTable$Final_Taxa, "</strong>",
-                                    "<br><h6>Sample:", mergedTable$Sample,
-                                    "<br><h6>Marker:", mergedTable$Marker,
-                                    "<br><h6>Date:", mergedTable$Date,
-                                    "<br><h6>Run:", mergedTable$Run,
-                                    "<br><h6>Type:", mergedTable$Type,
-                                    "<br><h6>Lab:", mergedTable$Lab,
-                                    "<h6>Coord(Lat, Lon):", mergedTable$North,",", mergedTable$West))
+                       popup= paste("<strong><h5>", mergedTable$data$Final_Rank,":",mergedTable$data$Final_Taxa, "</strong>",
+                                    "<br><h6>Sample:", mergedTable$data$Sample,
+                                    "<br><h6>Marker:", paste0(mergedTable$data$Marker,", Reads:", mergedTable$data$Abundance),
+                                    "<br><h6>Date:", mergedTable$data$Date,
+                                    "<br><h6>Run:", mergedTable$data$Run,
+                                    "<br><h6>Type:", mergedTable$data$Type,
+                                    "<br><h6>Lab:", mergedTable$data$Lab,
+                                    "<h6>Coord(Lat, Lon):", mergedTable$data$West,",", mergedTable$data$North))
 
-    removeModal()
+print("at the end of the setMappingDataPoints function")
 
-  },ignoreInit = TRUE)
+  } # End of the update mapping points function
 
 } # End of Server

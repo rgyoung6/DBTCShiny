@@ -11,7 +11,7 @@
 #' @description
 #' This function takes a file selection and then uses all 'taxaReduced' files
 #' in that directory and combines them into a single taxa table file with presence
-#' absence results._CombineTaxaReduced.tsv
+#' absence results.The output file is named with the string _CombineTaxaReduced.tsv
 #'
 #' @details
 #' The User Input: This function requires a file in a directory where all 'taxaReduced'
@@ -75,6 +75,9 @@ combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
   start_wd <- getwd()
   on.exit(setwd(start_wd))
 
+  #If there are issues and I need to audit the script make this 1
+  auditScript=0
+
   #load in the files list
   if (is.null(fileLoc)){
     print(paste0("Select a file in the file folder with the reduced taxa files files you would like to combine (extension '_taxaReduced_YYYY_MM_DD_HHMM.tsv')."))
@@ -98,16 +101,12 @@ combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
     print(paste0("Start time...", Sys.time()))
     startTime <- paste0("Start time...", Sys.time())
     dateStamp <- paste0(format(Sys.time(), "%Y_%m_%d_%H%M"))
-
     #get the directory of interest
     fileLoc <- dirname(fileLoc)
-
     #Set the working directory
     setwd(fileLoc)
-
     #Write start time to the summary file
     suppressWarnings(write(paste0(dateStamp, " Start"), file = paste0(dateStamp, "_CombineTaxaReduced.txt"), append = FALSE))
-
     #Get the all files in the selected file folder with full paths of the files
     files <- as.data.frame(list.files(path = fileLoc, pattern = "*[.]*", full.names = TRUE))
     # Get the local paths
@@ -116,15 +115,17 @@ combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
     files <- files[grepl("_taxaReduced_.*", files[,2]),]
     # Get the names of the files
     files[,3] <- gsub("_taxaReduced_.*","",files[,2])
-    # Get a unique number for each file to associate with the combined output results
-    files[,4] <- c(1:nrow(files))
-
-    #Add in headers for the file table
-    colnames(files)<-c("File_Path", "File", "File_Name", "File_Unique_ID")
 
     #Write the files being combined
     suppressWarnings(write(paste0("The files being combined with an associated unique identifying number (File_Unique_ID column) used in the uniqueID column of the output file..."), file = paste0(dateStamp, "_CombineTaxaReduced.txt"), append = TRUE))
     suppressWarnings(write.table(files, file = paste0(dateStamp, "_CombineTaxaReduced.txt"), append = TRUE, na = "NA", row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t"))
+
+    #Audit line
+    if(auditScript>0){
+      auditFile <- paste0(fileLoc,"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")
+      print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"))
+      suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE))
+    }
 
     if(nrow(files)<2){
 
@@ -135,13 +136,26 @@ combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
 
     }else{
 
+      # Get a unique number for each file to associate with the combined output results
+      files[,4] <- c(1:nrow(files))
+
+      #Add in headers for the file table
+      colnames(files)<-c("File_Path", "File", "File_Name", "File_Unique_ID")
+
       #Create a flag for the first loop
       flag = TRUE
+
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
+
 
       for(records in 1:nrow(files)){
 
         print(paste0("Starting file ", files[records,3], " at time...", Sys.time()))
         suppressWarnings(write(paste0("Starting file ", files[records,3], " at time...", Sys.time()), file = paste0(dateStamp, "_CombineTaxaReduced.txt"), append = TRUE))
+
+        #Audit line
+        if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3"), file = auditFile, append = TRUE))}
 
         #Read in the files for this loop
         loopResults <- read.delim(files[records,1], header = TRUE, check.names=FALSE)

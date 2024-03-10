@@ -149,11 +149,14 @@ shinyAppServer <- function(input, output, session) {
           expr = {
 
             dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
-            if (.Platform$OS.type == "windows"){
+
+print(paste0("Here is the dadaDirectory...", dadaDirectory))
+
+#            if (.Platform$OS.type == "windows"){
               dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
-            } else{
-              dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
-            }
+#            } else{
+#              dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
+#            }
             output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 
          },

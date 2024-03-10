@@ -1134,25 +1134,25 @@ shinyAppServer <- function(input, output, session) {
   ################## GPS/Grouping Data Processing Upon Hitting Submit ################
 
   shiny::observeEvent(input$submitDataImport, {
-print("Here 1")
+
     if(grepl("\\.[Tt][Ss][Vv]$", ASVFileDisplayString$data)){
-print("Here 2")
+
       if(grepl("\\.[Tt][Ss][Vv]$", provenanceDataFileDisplayString$data)){
-print("Here 3")
+
         #Loading in the data files
         tryCatch(
           expr = {
-print("Here 4")
+
             shiny::showModal(shiny::modalDialog("Loading the data files, please wait...",  footer=NULL))
-print("Here 5")
+
             #Load in the associated GPS and other provenance data
             provenanceDataFileTable$data<-read.table(provenanceDataFileDisplayString$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
-print("Here 6")
+
             #get the directory of interest
             fileLoc <- dirname(provenanceDataFileDisplayString$data)
             #Set the working directory
             setwd(fileLoc)
-print("Here 7")
+
             #Get the all files in the selected file folder with full paths of the files
             files <- as.data.frame(list.files(path = fileLoc, pattern = "*[.]*", full.names = TRUE))
             # Get the local paths
@@ -1161,24 +1161,24 @@ print("Here 7")
             files <- files[grepl("_taxaReduced_.*", files[,2]),]
             # Get the names of the files
             files[,3] <- gsub("_taxaReduced_.*","",files[,2])
-print("Here 8")
+
             # Define a custom function to read each file with check.names = FALSE
             read_file <- function(file_path) {
               read.delim(file_path, check.names = FALSE)
             }
-print("Here 9")
+
             # Read all files and store data frames in a list
             ASVFileObject <- lapply(files[,1], read_file)  # or read.csv2 if you're working with CSV files using ";" as the separator
-print("Here 10")
+
             #For loop flattening and combining all of the elements in the ASVFileObject
             for(ASVFileObjectRecords in 1:length(ASVFileObject)){
-print("Here 11")
+
                 #Add a column to the front of the data frame with unique identifiers.
                 ASVFileTableTemp <- cbind(Number = 1:nrow(ASVFileObject[[ASVFileObjectRecords]]), ASVFileObject[[ASVFileObjectRecords]])
-print("Here 12")
+
                 # Rename the first column to ID
                 names(ASVFileTableTemp)[1] <- "ID"
-print("Here 13")
+
                 # Reshape the data to long format
                 ASVFileTableTemp <- reshape(ASVFileTableTemp,
                                              idvar = c("ID"),
@@ -1186,38 +1186,38 @@ print("Here 13")
                                              v.names = "Abundance",
                                              times = provenanceDataFileTable$data$Sample,
                                              direction = "long")
-print("Here 14")
+
                 #Rename column times to sample
                 colnames(ASVFileTableTemp)[colnames(ASVFileTableTemp) == "time"] <- "Sample"
-print("Here 15")
+
                 #Remove the 0 from the Abundance column
                 ASVFileTableTemp <- ASVFileTableTemp[ASVFileTableTemp$Abundance != 0, ]
-print("Here 16")
+
                 #Split the Final_Taxa column to keep the quality values in separate columns to use in the mapping
                 #"Num_Rec", "Coverage", "Identity", "Max_eVal"
-print("Here 17")
+
                 #Split the column by ( and replace the close bracket )
                 entries <- as.data.frame(do.call('rbind', strsplit(as.character(ASVFileTableTemp$Final_Taxa),'(',fixed = TRUE)), check.names=FALSE)
                 entries[,2] <- gsub(")","", as.character(entries[,2]))
-print("Here 18")
+
                 #Split the values column by ,
                 entries <- cbind(entries[,1],data.frame(do.call('rbind', strsplit(as.character(entries[,2]),',', fixed = TRUE)), check.names=FALSE), row.names = NULL)
-print("Here 19")
+
                 #Name the total results temp columns
                 colnames(entries) <- c("Final_Taxa", "AvgMinNumRec", "AvgMinCoverage", "AvgMinIdentity", "AvgMaxeVal")
-print("Here 20")
+
                 #Build the data frame again with the new data columns
                 ASVFileTableTemp <- cbind(
                   ASVFileTableTemp[,c(1:(which(colnames(ASVFileTableTemp) == "Final_Taxa")-1))],
                   entries,
                   ASVFileTableTemp[,c((which(colnames(ASVFileTableTemp) == "Final_Taxa")+1):ncol(ASVFileTableTemp))])
-print("Here 21")
+
                   # Remove brackets and contents from all values in the data frame
                   ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))] <- lapply(ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))], function(x) gsub("\\(.*?\\)", "", x))
-print("Here 22")
+
                   #Change all NA values to N/A so that they are easier to deal with in the dropdown menus
                   ASVFileTableTemp[is.na(ASVFileTableTemp)] <- "N/A"
-print("Here 23")
+
                   #Add a category column to place the data points on the map
                   ASVFileTableTemp$AbundanceCategory <- cut(
                     ASVFileTableTemp$Abundance,
@@ -1225,37 +1225,30 @@ print("Here 23")
                     labels = c("10", "100", "1000", "10000", "100000", "1000000"),
                     include.lowest = TRUE
                   )
-print("Here 24")
+
               if (is.na(ASVFileTable$data)){
-print("Here 25")
+
                 ASVFileTable$data <-ASVFileTableTemp
-print("Here 26")
+
               }else{
-print("Here 27")
+
                 ASVFileTable$data <- rbind(ASVFileTable$data, ASVFileTableTemp)
-print("Here 28")
+
               }
 
             }
-print("Here 29")
+
               ########################Process the submitted data files###################
 
              #Merge the flattened file with the GPS file.
              mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
-print("Here 30")
+
             #Remove the processing files modal
             removeModal()
-
-print("Here in the submit button right before setting the data points")
 
             #Setting up the data mapping points for the first time
             setMappingDataPoints()
 
-print("Here in the submit button right after setting the data points")
-
-            # Change the active tab to mapping Tab
-            updateTabItems(session, "map_filter_table_tabbox", "Mapping")
-print("Here 31")
           },
           error = function(e){
             shiny::showModal(shiny::modalDialog(
@@ -1393,7 +1386,6 @@ print("In the No for TBATButton")
       shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
       shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
 
-      workMergedTableInitialGlobal<<-workMergedTable$data
       leaflet::leafletProxy("mymap", data = workMergedTable$data) %>%
         clearMarkers() %>%
         clearMarkerClusters() %>%
@@ -1435,14 +1427,11 @@ print("In the No for TBATButton")
 
 print("In the top of the setMappingDataPoints function")
 
-    #Abundance input values
-    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(mergedTable$data$Abundance),"):"), value = min(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
-    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Lower Value (max ", max(mergedTable$data$Abundance),"):"),value = max(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
-
     #Dropdown menu for Final_Rank
     shinyWidgets::updatePickerInput(session, inputId = "finalRankInput",
                                     choices = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE))
+
     #Dropdown menu for superkingdom
     shinyWidgets::updatePickerInput(session, inputId = "kingdomFilterInput",
                                     choices = sort(unique(mergedTable$data$superkingdom), na.last = TRUE),
@@ -1474,13 +1463,6 @@ print("In the top of the setMappingDataPoints function")
 
     #################### update the filters based on submitted Provenance Data ###########
 
-    #Radio Buttons Reset
-    shiny::updateRadioButtons(session, "SFATButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "SANFButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "BIRTButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "BCRTButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "TBATButton", choices = c("Yes", "No"), selected = "Yes")
-
     #Dropdown menu for Sample
     shinyWidgets::updatePickerInput(session, inputId = "sampleFilterInput",
                                     choices = sort(unique(mergedTable$data$Sample), na.last = TRUE),
@@ -1501,11 +1483,25 @@ print("In the top of the setMappingDataPoints function")
     shinyWidgets::updatePickerInput(session,inputId = "markerFilterInput",
                                     choices = sort(unique(mergedTable$data$Marker), na.last = TRUE),
                                     selected = sort(unique(mergedTable$data$Marker), na.last = TRUE))
+
     shiny::updateSliderInput(session = session, inputId = "dateInput",
                              min = as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                              max = as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                              value=c(as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
                                      as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
+
+    #############################################
+
+    #Abundance input values
+    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(mergedTable$data$Abundance),"):"), value = min(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
+    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Lower Value (max ", max(mergedTable$data$Abundance),"):"),value = max(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
+
+    #Radio Buttons Reset
+    shiny::updateRadioButtons(session, "SFATButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "SANFButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "BIRTButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "BCRTButton", choices = c("Yes", "No"), selected = "Yes")
+    shiny::updateRadioButtons(session, "TBATButton", choices = c("Yes", "No"), selected = "Yes")
 
     leaflet::leafletProxy("mymap", data = mergedTable$data) %>%
       clearMarkers() %>%

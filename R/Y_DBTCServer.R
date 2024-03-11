@@ -1403,14 +1403,17 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
                                       "<br><h6>Lab:", workMergedTable$data$Lab,
                                       "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West))
 
+      #Set up the table for visualization
+      dataTableOutput<-workMergedTable$data[, !names(workMergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
+
       #Set the dataTable output
       output$dataTable <- DT::renderDT({
-        req(mergedTable$data)  # Ensure data is available
+        req(dataTableOutput)  # Ensure data is available
         datatable(
-          mergedTable$data,
+          dataTableOutput,
           filter = "top",  # Show filter boxes on top of columns
           options = list(
-            pageLength = 50  # Display 50 rows per page
+            pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
           )
         )
       })
@@ -1534,14 +1537,17 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
                                     "<h6>Coord(Lat, Lon):", mergedTable$data$West,",", mergedTable$data$North))
     ############################# TABLE ####################################################
 
+    #Set up the table for visualization
+    dataTableOutput<-mergedTable$data[, !names(mergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
+
     #Reset the data frame in the dataTable output
     output$dataTable <- DT::renderDT({
-      req(mergedTable$data)  # Ensure data is available
+      req(dataTableOutput)  # Ensure data is available
       datatable(
-        mergedTable$data,
+        dataTableOutput,
         filter = "top",  # Show filter boxes on top of columns
         options = list(
-          pageLength = 50  # Display 50 rows per page
+          pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
         )
       )
     })

@@ -81,7 +81,7 @@ NCBI preformatted databases can be established through two methods.
 
 1. Download your desired preformatted NCBI database by using the 'update_blastdb.pl' (found in the NCBI BLAST+ local install folder). NOTE: Perl programming langugage needs to be installed on your local machine. Instructions can be found at [Get NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK569850/).
 
-2. You can download your desired preformatted NCBI database manually at [NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory). 
+2. You can download your desired preformatted NCBI database manually with instructions at [BLAST FTP Site](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory) and a list of the available databases at [Index of /blast/db](https://ftp.ncbi.nlm.nih.gov/blast/db/). 
 
 ### Create a custom sequence database to BLAST against
 In addition to the NCBI resources, DBTC can also use custom databases. To establish these databases you will requre a fasta file with the desired records with MACER formatted headers. The MACER R package and instructions can be found at either of the two locations:

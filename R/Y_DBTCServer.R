@@ -1404,13 +1404,12 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
                                       "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West))
 
       #Set up the table for visualization
-      dataTableOutput<-workMergedTable$data[, !names(workMergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
+      dataTableOutputData<-workMergedTable$data[, !names(workMergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
 
       #Set the dataTable output
       output$dataTable <- DT::renderDT({
-        req(dataTableOutput)  # Ensure data is available
-        datatable(
-          dataTableOutput,
+        DT::datatable(
+          dataTableOutputData,
           filter = "top",  # Show filter boxes on top of columns
           options = list(
             pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
@@ -1424,7 +1423,6 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
   })
 
-
   ############### Reset Filtering Button ###########################################
 
   shiny::observeEvent(input$resetFilterMappingButton, {
@@ -1437,6 +1435,19 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
     removeModal()
 
   })
+
+
+
+
+
+
+
+
+
+
+
+
+  ####  Create a global function for the initial setting and resetting of the map #####
 
   setMappingDataPoints <- function() {
 
@@ -1538,13 +1549,12 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
     ############################# TABLE ####################################################
 
     #Set up the table for visualization
-    dataTableOutput<-mergedTable$data[, !names(mergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
+    dataTableOutputData<-mergedTable$data[, !names(mergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
 
     #Reset the data frame in the dataTable output
     output$dataTable <- DT::renderDT({
-      req(dataTableOutput)  # Ensure data is available
-      datatable(
-        dataTableOutput,
+      DT::datatable(
+        dataTableOutputData,
         filter = "top",  # Show filter boxes on top of columns
         options = list(
           pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page

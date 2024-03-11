@@ -19,7 +19,7 @@
 
 # Shiny Packages
 #' @import leaflet
-#' @import DT
+#  #' @import DT
 #'
 # Shiny Functions
 #' @importFrom magrittr %>%
@@ -27,7 +27,7 @@
 #' @importFrom shiny actionButton
 #' @importFrom shiny br
 #' @importFrom shiny column
-#' @importFrom shiny dataTableOutput
+# #' @importFrom shiny dataTableOutput
 #' @importFrom shiny div
 #' @importFrom shiny fluidRow
 #' @importFrom shiny h1
@@ -75,6 +75,12 @@
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom leaflet.extras addFullscreenControl
+
+#' @importFrom DT dataTableOutput
+#' @importFrom DT renderDT
+#' @importFrom DT datatable
+#' @importFrom DT DTOutput
+
 
 #################### Dash Board Body ########################################
 dashBoardBodyComponent <- function() {
@@ -679,7 +685,7 @@ dbtcTools <- function() {
       )),#End of top box
 
       shiny::tabPanel("Data Table", DT::DTOutput("dataTable"))
-
+#      shiny::tabPanel("Data Table", shiny::DTOutput("dataTable"))
     )#Tab Box
    )#Tab Item
  }

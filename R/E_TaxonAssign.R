@@ -227,7 +227,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
             #Run the taxonomizr taxonomy function
             suppressWarnings(taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, 'accessionTaxa.sql'))
-#            taxa <- taxonomizr::getTaxonomy(blastResultsTarget$taxa_id, taxaDBLoc)
             taxa <- as.data.frame(taxa)
 
             if(nrow(taxa) == 1){

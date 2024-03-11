@@ -20,7 +20,7 @@ associated summary file in the target directory.
 \description{
 This function takes a file selection and then uses all 'taxaReduced' files
 in that directory and combines them into a single taxa table file with presence
-absence results._CombineTaxaReduced.tsv
+absence results.The output file is named with the string _CombineTaxaReduced.tsv
 }
 \details{
 The User Input: This function requires a file in a directory where all 'taxaReduced'

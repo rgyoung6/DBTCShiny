@@ -19,7 +19,7 @@
 
 # Shiny Packages
 #' @import leaflet
-# #' @import DT
+#' @import DT
 #'
 # Shiny Functions
 #' @importFrom magrittr %>%
@@ -255,7 +255,7 @@ dbtcTools <- function() {
                                shiny::textInput("fwdIdent", "Foward identifier naming substring", value = "_R1_001"),
                                shiny::textInput("revIdent", "Reverse identifier naming substring", value = "_R2_001")
                              ),
-                             shiny::radioButtons("printQualityPdf", "Print quality plots to pdf:", c("Yes", "No"))
+                             shiny::radioButtons("printQualityPdf", "Print quality plots to pdf:", c("TRUE", "FALSE"))
                            ),
                            shiny::p(shiny::tags$b(shiny::tags$u("2. Pattern Trim", style = "font-size:14px;"))),
                            shiny::wellPanel(
@@ -563,95 +563,95 @@ dbtcTools <- function() {
           ))
       ),
       shiny::tabPanel("Data Filtering",
-      shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
+        shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
+          shiny::column(width = 6,
+          shiny::p(shiny::tags$b(shiny::tags$u("1. Taxonomic Filtering", style = "font-size:14px;"))),
+          shiny::wellPanel(
+          #Dropdown menu for SampleID
+          shinyWidgets::pickerInput(inputId = "finalRankInput","Final Rank",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "kingdomFilterInput","Kingdom",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "phylumFilterInput","Phylum",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "classFilterInput","Class",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "orderFilterInput","Order",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "familyFilterInput","Family",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "genusFilterInput","Genus",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE),
+          shinyWidgets::pickerInput(inputId = "speciesFilterInput","Species",
+            choices = "NA",
+            selected = "NA",
+            options = list('actions-box' = TRUE),
+            multiple = TRUE)
+        )),
         shiny::column(width = 6,
-        shiny::p(shiny::tags$b(shiny::tags$u("1. Taxonomic Filtering", style = "font-size:14px;"))),
-        shiny::wellPanel(
-        #Dropdown menu for SampleID
-        shinyWidgets::pickerInput(inputId = "finalRankInput","Final Rank",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "kingdomFilterInput","Kingdom",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "phylumFilterInput","Phylum",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "classFilterInput","Class",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "orderFilterInput","Order",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "familyFilterInput","Family",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "genusFilterInput","Genus",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE),
-        shinyWidgets::pickerInput(inputId = "speciesFilterInput","Species",
-          choices = "NA",
-          selected = "NA",
-          options = list('actions-box' = TRUE),
-          multiple = TRUE)
-      )),
-      shiny::column(width = 6,
-        shiny::p(shiny::tags$b(shiny::tags$u("2. Provenance Data Filtering", style = "font-size:14px;"))),
-        shiny::wellPanel(
-          #Dropdown menu for Sample
-          shinyWidgets::pickerInput(inputId = "sampleFilterInput","Sample",
-            choices = "NA",
-            selected = "NA",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE),
-          #Dropdown menu for Run
-          shinyWidgets::pickerInput(inputId = "runFilterInput","Run",
-            choices = "NA",
-            selected = "NA",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE),
-          #Dropdown menu for Lab
-          shinyWidgets::pickerInput(inputId = "labFilterInput","Laboratory",
-            choices = "NA",
-            selected = "NA",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE),
-          #Dropdown menu for Type
-          shinyWidgets::pickerInput(inputId = "typeFilterInput","Type",
-            choices = "NA",
-            selected = "NA",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE),
-
-          #Dropdown menu for the different molecular Markers
-          shinyWidgets::pickerInput(inputId = "markerFilterInput","Molecular Markers",
-            choices = "NA",
-            selected = "NA",
-            options = list('actions-box' = TRUE),
-            multiple = TRUE),
-          #Slider for date
-          shiny::sliderInput("dateInput","Select Event Date Range",
-                             min =as.Date(Sys.Date(), "%Y-%m-%d"),
-                             max = as.Date(Sys.Date(),"%Y-%m-%d"),
-                             value = range(c(as.Date(Sys.Date(), "%Y-%m-%d"),
-                                             as.Date(Sys.Date(), "%Y-%m-%d"))),
-                             timeFormat = "%Y-%m-%d",step = 1),
-          shiny::br()
-          )),
+          shiny::p(shiny::tags$b(shiny::tags$u("2. Provenance Data Filtering", style = "font-size:14px;"))),
+          shiny::wellPanel(
+            #Dropdown menu for Sample
+            shinyWidgets::pickerInput(inputId = "sampleFilterInput","Sample",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
+            #Dropdown menu for Run
+            shinyWidgets::pickerInput(inputId = "runFilterInput","Run",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
+            #Dropdown menu for Lab
+            shinyWidgets::pickerInput(inputId = "labFilterInput","Laboratory",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
+            #Dropdown menu for Type
+            shinyWidgets::pickerInput(inputId = "typeFilterInput","Type",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
+            #Dropdown menu for the different molecular Markers
+            shinyWidgets::pickerInput(inputId = "markerFilterInput","Molecular Markers",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
+            #Slider for date
+            shiny::sliderInput("dateInput","Select Event Date Range",
+                               min =as.Date(Sys.Date(), "%Y-%m-%d"),
+                               max = as.Date(Sys.Date(),"%Y-%m-%d"),
+                               value = range(c(as.Date(Sys.Date(), "%Y-%m-%d"),
+                                               as.Date(Sys.Date(), "%Y-%m-%d"))),
+                               timeFormat = "%Y-%m-%d",step = 1),
+            shiny::br()
+          )
+        ),
         shiny::column(width = 12,
           shiny::p(shiny::tags$b(shiny::tags$u("3. Quality Intrepretation", style = "font-size:14px;"))),
           shiny::wellPanel(
@@ -674,8 +674,12 @@ dbtcTools <- function() {
               ),
             ),
             shiny::br()
-          ))
-         ))#End of top box
+          )
+        )
+      )),#End of top box
+
+      shiny::tabPanel("Data Table", DT::DTOutput("dataTable"))
+
     )#Tab Box
    )#Tab Item
  }

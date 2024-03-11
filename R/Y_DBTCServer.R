@@ -191,11 +191,11 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
           },
           error = function(e){
-            print("Error - Dada Location Button choose file cancelled")
+            print("Error - Primer Location Button choose file cancelled")
             dadaLocation$data <- NA
           },
           warning = function(w){
-            print("Warning - Dada Location Button choose file cancelled")
+            print("Warning - Primer Location Button choose file cancelled")
             dadaLocation$data <- NA
           }
         )
@@ -286,9 +286,9 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
          shiny::showModal(shiny::modalDialog(
            title = "ERROR",
            "Dada Location Button choose file cancelled. Please refer to the R
-           consol for more information."
+           consol for more information - 1"
          ))
-         print("Error - Dada Location Button choose file cancelled")
+         print("Error - Dada Location Button choose file cancelled - 1")
          dadaLocation$data <- NA
        },
        warning = function(w){
@@ -296,9 +296,9 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
          shiny::showModal(shiny::modalDialog(
            title = "ERROR",
            "Dada Location Button choose file cancelled. Please refer to the R
-           consol for more information."
+           consol for more information - 2"
          ))
-         print("Warning - Dada Location Button choose file cancelled")
+         print("Warning - Dada Location Button choose file cancelled - 2")
          dadaLocation$data <- NA
        })
     }else{
@@ -306,6 +306,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
         title = "Missing Data",
         "Please select a primer file and try submitting again!"
       ))
+      print("Warning - Dada Location Button choose file cancelled - 3")
     }
    },ignoreInit = TRUE)
 
@@ -1318,23 +1319,18 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
       #Filter the dataset based on the radio button selections
       if(input$SFATButton == "No"){
-print("In the No for SFATButton")
         workMergedTable$data <- workMergedTable$data[!grepl("SFAT", workMergedTable$data$Result_Code), ]
       }
       if(input$SANFButton == "No"){
-print("In the No for SANFButton")
         workMergedTable$data <- workMergedTable$data[!grepl("SANF", workMergedTable$data$Result_Code), ]
       }
       if(input$BIRTButton == "No"){
-print("In the No for BIRTButton")
         workMergedTable$data <- workMergedTable$data[!grepl("BIRT", workMergedTable$data$Result_Code), ]
       }
       if(input$BCRTButton == "No"){
-print("In the No for BCRTButton")
         workMergedTable$data <- workMergedTable$data[!grepl("BCRT", workMergedTable$data$Result_Code), ]
       }
       if(input$TBATButton == "No"){
-print("In the No for TBATButton")
         workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
       }
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
@@ -1406,6 +1402,19 @@ print("In the No for TBATButton")
                                       "<br><h6>Type:", workMergedTable$data$Type,
                                       "<br><h6>Lab:", workMergedTable$data$Lab,
                                       "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West))
+
+      #Set the dataTable output
+      output$dataTable <- DT::renderDT({
+        req(mergedTable$data)  # Ensure data is available
+        datatable(
+          mergedTable$data,
+          filter = "top",  # Show filter boxes on top of columns
+          options = list(
+            pageLength = 50  # Display 50 rows per page
+          )
+        )
+      })
+
       removeModal()
 
     }
@@ -1427,8 +1436,6 @@ print("In the No for TBATButton")
   })
 
   setMappingDataPoints <- function() {
-
-print("In the top of the setMappingDataPoints function")
 
     #Dropdown menu for Final_Rank
     shinyWidgets::updatePickerInput(session, inputId = "finalRankInput",
@@ -1506,6 +1513,8 @@ print("In the top of the setMappingDataPoints function")
     shiny::updateRadioButtons(session, "BCRTButton", choices = c("Yes", "No"), selected = "Yes")
     shiny::updateRadioButtons(session, "TBATButton", choices = c("Yes", "No"), selected = "Yes")
 
+    ########################################### MAP #################################################
+
     leaflet::leafletProxy("mymap", data = mergedTable$data) %>%
       clearMarkers() %>%
       clearMarkerClusters() %>%
@@ -1523,9 +1532,18 @@ print("In the top of the setMappingDataPoints function")
                                     "<br><h6>Type:", mergedTable$data$Type,
                                     "<br><h6>Lab:", mergedTable$data$Lab,
                                     "<h6>Coord(Lat, Lon):", mergedTable$data$West,",", mergedTable$data$North))
+    ############################# TABLE ####################################################
 
-print("at the end of the setMappingDataPoints function")
-
+    #Reset the data frame in the dataTable output
+    output$dataTable <- DT::renderDT({
+      req(mergedTable$data)  # Ensure data is available
+      datatable(
+        mergedTable$data,
+        filter = "top",  # Show filter boxes on top of columns
+        options = list(
+          pageLength = 50  # Display 50 rows per page
+        )
+      )
+    })
   } # End of the update mapping points function
-
 } # End of Server

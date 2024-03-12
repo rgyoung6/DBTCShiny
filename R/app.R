@@ -19,7 +19,6 @@
 
 # Shiny Packages
 #' @import leaflet
-#  #' @import DT
 #'
 # Shiny Functions
 #' @importFrom magrittr %>%
@@ -27,7 +26,6 @@
 #' @importFrom shiny actionButton
 #' @importFrom shiny br
 #' @importFrom shiny column
-# #' @importFrom shiny dataTableOutput
 #' @importFrom shiny div
 #' @importFrom shiny fluidRow
 #' @importFrom shiny h1
@@ -188,6 +186,7 @@ welcomePage <- function() {
                             shiny::p("Each of below CRAN packages and their dependencies are required for the DBTCShiny package."),
                             shiny::tags$div(
                               shiny::tags$ul(
+                                shiny::tags$li(shiny::a("DT", href = "https://cran.r-project.org/web/packages/DT/index.html")),
                                 shiny::tags$li(shiny::a("ggplot2", href = "https://cran.r-project.org/web/packages/ggplot2/index.html")),
                                 shiny::tags$li(shiny::a("leaflet", href = "https://cran.r-project.org/web/packages/leaflet/index.html")),
                                 shiny::tags$li(shiny::a("leaflet.extras", href = "https://cran.r-project.org/web/packages/leaflet.extras/index.html")),
@@ -197,8 +196,12 @@ welcomePage <- function() {
                                 shiny::tags$li(shiny::a("shiny", href = "https://cran.r-project.org/web/packages/shiny/index.html")),
                                 shiny::tags$li(shiny::a("shinycssloaders", href = "https://cran.r-project.org/web/packages/shinycssloaders/index.html")),
                                 shiny::tags$li(shiny::a("shinydashboard", href = "https://cran.r-project.org/web/packages/shinydashboard/index.html")),
+                                shiny::tags$li(shiny::a("shinyFiles", href = "https://cran.r-project.org/web/packages/shinyFiles/index.html")),
+                                shiny::tags$li(shiny::a("shinyjs", href = "https://cran.r-project.org/web/packages/shinyjs/index.html")),
                                 shiny::tags$li(shiny::a("shinyWidgets", href = "https://cran.r-project.org/web/packages/shinyWidgets/index.html")),
-                                shiny::tags$li(shiny::a("taxonomizr", href = "https://cran.r-project.org/web/packages/taxonomizr/index.html"))
+                                shiny::tags$li(shiny::a("stats", href = "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html")),
+                                shiny::tags$li(shiny::a("taxonomizr", href = "https://cran.r-project.org/web/packages/taxonomizr/index.html")),
+                                shiny::tags$li(shiny::a("utils", href = "https://cran.r-project.org/web/packages/R.utils/index.html"))
                               )
                             ),
                             shiny::br(),
@@ -212,7 +215,7 @@ welcomePage <- function() {
                             shiny::p("    install.packages('BiocManager')"),
                             shiny::p("BiocManager::install('dada2', version = '3.16')"),
                             shiny::br(),
-                            shiny::p("install.packages(c('ggplot2','leaflet','leaflet.extras','magrittr','pbapply','plyr','shiny','shinycssloaders','shinydashboard','shinyWidgets','taxonomizr'))")
+                            shiny::p("install.packages(c('DT','ggplot2','leaflet','leaflet.extras','magrittr','pbapply','plyr','shiny','shinycssloaders','shinydashboard','shinyFiles','shinyjs','shinyWidgets','stats','taxonomizr','utils'))")
                           )),
                           shiny::fluidRow(shinydashboard::box(
                             title = shiny::p("Contact", style = "font-size:24px;"),

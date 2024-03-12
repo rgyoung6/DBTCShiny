@@ -10,6 +10,8 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
   - Assign taxa to the unique reads using NCBI taxon database through taxa names and/or taxaID's
   - Condense the resulting ASV taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence libraries for the same reads, or results from the same samples for different molecular regions) into a combined results table
 
+**NOTE:** While the DBTCShiny package is a package for analysis for high-thoughput sequencing results, the BLAST and Condense functions as well as the Mapping function can be utilized with single specimen sanger sequencing data.
+
 # Table of Contents  
 - [Installation](#installation)
 - [Package Dependencies](#package-dependencies)

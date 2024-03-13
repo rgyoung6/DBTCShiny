@@ -1,6 +1,0 @@
-2024_03_13_0533 Start
-The files being combined with an associated unique identifying number (File_Unique_ID column) used in the uniqueID column of the output file...
-File_Path	File	File_Name	File_Unique_ID
-./2024_03_13_0533_combinedDada.txt	2024_02_13_0304_Run1_Merge.tsv	2024_02_13_0304_Run1_Merge	1
-./2024_03_13_0533_combinedDada.txt	2024_02_13_0307_Run2_Merge.tsv	2024_02_13_0307_Run2_Merge	2
-Starting file 2024_02_13_0304_Run1_Merge at time...2024-03-13 05:33:16

@@ -337,16 +337,11 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
-
-print(paste0("Here is the value of dadaCombineFileDisplayString$data...",dadaCombineFileDisplayString$data))
-
     if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data) && length(dadaCombineFileDisplayString$data) != 0){
-#    if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data)){
       # Create variables for the arguments to avoid conflicts between the multithreading
       # and the shiny
       fileLoc= force(dadaCombineFileDisplayString$data)
       minLen = force(input$dadaCombineMinLen)
-print("In the if...")
       tryCatch(
         expr = {
           #Run the Dada function here.
@@ -451,11 +446,7 @@ print("In the if...")
       expr = {
 
         makeBlastTaxaDBLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastTaxaDBLoc)
-        if (.Platform$OS.type == "windows"){
-          makeBlastTaxaDBLocDisplayString$data <- as.character(makeBlastTaxaDBLoc$datapath)
-        } else{
-          makeBlastTaxaDBLocDisplayString$data <- as.character(substr(makeBlastTaxaDBLoc$datapath, 2, nchar(makeBlastTaxaDBLoc$datapath)))
-        }
+        makeBlastTaxaDBLocDisplayString$data <- as.character(makeBlastTaxaDBLoc$datapath)
         output$makeBlastTaxaDBLocDisplay <- shiny::renderText({as.character(makeBlastTaxaDBLocDisplayString$data)})
 
       },
@@ -551,11 +542,7 @@ print("In the if...")
     tryCatch(
       expr = {
         BLASTDatabasePath <- shinyFiles::parseFilePaths(volumes, input$BLASTDatabasePath)
-        if (.Platform$OS.type == "windows"){
-          BLASTDatabasePathDisplayString$data <- as.character(BLASTDatabasePath$datapath)
-        } else{
-          BLASTDatabasePathDisplayString$data <- as.character(substr(BLASTDatabasePath$datapath, 2, nchar(BLASTDatabasePath$datapath)))
-        }
+        BLASTDatabasePathDisplayString$data <- as.character(BLASTDatabasePath$datapath)
         output$BLASTDatabasePathDisplay <- shiny::renderText({as.character(BLASTDatabasePathDisplayString$data)})
       },
       error = function(e){
@@ -603,11 +590,7 @@ print("In the if...")
     tryCatch(
       expr = {
         querySeqPath <- shinyFiles::parseFilePaths(volumes, input$querySeqPath)
-        if (.Platform$OS.type == "windows"){
-          querySeqPathDisplayString$data <- as.character(querySeqPath$datapath)
-        } else{
-          querySeqPathDisplayString$data <- as.character(substr(querySeqPath$datapath, 2, nchar(querySeqPath$datapath)))
-        }
+        querySeqPathDisplayString$data <- as.character(querySeqPath$datapath)
         output$querySeqPathDisplay <- shiny::renderText({as.character(querySeqPathDisplayString$data)})
       },
       error = function(e){
@@ -703,11 +686,7 @@ print("In the if...")
     tryCatch(
       expr = {
         taxaAssignFileLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignFileLoc)
-        if (.Platform$OS.type == "windows"){
-          taxaAssignFileLocDisplayString$data <- as.character(taxaAssignFileLoc$datapath)
-        } else{
-          taxaAssignFileLocDisplayString$data <- as.character(substr(taxaAssignFileLoc$datapath, 2, nchar(taxaAssignFileLoc$datapath)))
-        }
+        taxaAssignFileLocDisplayString$data <- as.character(taxaAssignFileLoc$datapath)
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLocDisplayString$data)})
       },
       error = function(e){
@@ -825,11 +804,7 @@ print("In the if...")
       expr = {
 
         combineTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineTaxaFileLoc)
-        if (.Platform$OS.type == "windows"){
-          combineTaxaFileLocDisplayString$data <- as.character(combineTaxaFileLoc$datapath)
-        } else{
-          combineTaxaFileLocDisplayString$data <- as.character(substr(combineTaxaFileLoc$datapath, 2, nchar(combineTaxaFileLoc$datapath)))
-        }
+        combineTaxaFileLocDisplayString$data <- as.character(combineTaxaFileLoc$datapath)
         output$combineTaxaFileLocDisplay <- shiny::renderText({as.character(combineTaxaFileLocDisplayString$data)})
 
       },
@@ -901,11 +876,7 @@ print("In the if...")
       expr = {
 
         reduceTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$reduceTaxaFileLoc)
-        if (.Platform$OS.type == "windows"){
-          reduceTaxaFileLocDisplayString$data <- as.character(reduceTaxaFileLoc$datapath)
-        } else{
-          reduceTaxaFileLocDisplayString$data <- as.character(substr(reduceTaxaFileLoc$datapath, 2, nchar(reduceTaxaFileLoc$datapath)))
-        }
+        reduceTaxaFileLocDisplayString$data <- as.character(reduceTaxaFileLoc$datapath)
         output$reduceTaxaFileLocDisplay <- shiny::renderText({as.character(reduceTaxaFileLocDisplayString$data)})
 
       },
@@ -980,11 +951,7 @@ print("In the if...")
       expr = {
 
         combineReducedTaxaFileLoc <- shinyFiles::parseFilePaths(volumes, input$combineReducedTaxaFileLoc)
-        if (.Platform$OS.type == "windows"){
-          combineReducedTaxaFileLocDisplayString$data <- as.character(combineReducedTaxaFileLoc$datapath)
-        } else{
-          combineReducedTaxaFileLocDisplayString$data <- as.character(substr(combineReducedTaxaFileLoc$datapath, 2, nchar(combineReducedTaxaFileLoc$datapath)))
-        }
+        combineReducedTaxaFileLocDisplayString$data <- as.character(combineReducedTaxaFileLoc$datapath)
         output$combineReducedTaxaFileLocDisplay <- shiny::renderText({as.character(combineReducedTaxaFileLocDisplayString$data)})
 
       },
@@ -1059,11 +1026,7 @@ print("In the if...")
     tryCatch(
       expr = {
         ASVFile <- shinyFiles::parseFilePaths(volumes, input$ASVFile)
-        if (.Platform$OS.type == "windows"){
-          ASVFileDisplayString$data <- as.character(ASVFile$datapath)
-        } else{
-          ASVFileDisplayString$data <- as.character(substr(ASVFile$datapath, 2, nchar(ASVFile$datapath)))
-        }
+        ASVFileDisplayString$data <- as.character(ASVFile$datapath)
         output$ASVFileOut <- shiny::renderText({as.character(ASVFileDisplayString$data)})
       },
       error = function(e){
@@ -1087,11 +1050,7 @@ print("In the if...")
       expr = {
         provenanceDataFile <- shinyFiles::parseFilePaths(volumes, input$provenanceDataFile)
         #Filter and trim
-        if (.Platform$OS.type == "windows"){
-          provenanceDataFileDisplayString$data <- as.character(provenanceDataFile$datapath)
-        } else{
-          provenanceDataFileDisplayString$data <- as.character(substr(provenanceDataFile$datapath, 2, nchar(provenanceDataFile$datapath)))
-        }
+        provenanceDataFileDisplayString$data <- as.character(provenanceDataFile$datapath)
         output$provenanceDataFileOut <- shiny::renderText({as.character(provenanceDataFileDisplayString$data)})
       },
       error = function(e){

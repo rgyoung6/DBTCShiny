@@ -169,7 +169,7 @@ This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName
 ## make_BLAST_DB()
 This function takes a fasta file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) format and establishes a database upon which a BLAST search can be completed. There are also NCBI preformatted databases available where the make_BLAST_DB() function can then be skipped ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database. Note: The there are three main required elements for MACER formatted records which include a the Unique Identifier 
 - The MACER fasta header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
-- An example of the header format output from the MACER program is ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
+
 
 ## seq_BLAST()
 This function takes fasta files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.

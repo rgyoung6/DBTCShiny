@@ -439,6 +439,7 @@ dbtcTools <- function() {
                          shiny::fluidRow(
                            shiny::strong("Please select the NCBI accessionTaxa.sql data base file to use in constructing the custom database."),
                            shiny::br(),
+                           shinyFiles::shinyFilesButton("taxaAssignDBLoc", "Select the NCBI Taxon Database File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("taxaAssignDBLocDisplay")),

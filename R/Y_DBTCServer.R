@@ -152,11 +152,7 @@ shinyAppServer <- function(input, output, session) {
 
 print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
-#            if (.Platform$OS.type == "windows"){
-              dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
-#            } else{
-#              dadaDirectoryDisplayString$data <- as.character(substr(dadaDirectory$datapath, 2, nchar(dadaDirectory$datapath)))
-#            }
+            dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
             output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 
          },
@@ -324,11 +320,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
         tryCatch(
           expr = {
             dadaCombineFile <- shinyFiles::parseFilePaths(volumes, input$dadaCombineFile)
-            if (.Platform$OS.type == "windows"){
-              dadaCombineFileDisplayString$data <- as.character(ASVFile$dadaCombineFile)
-            } else{
-              dadaCombineFileDisplayString$data <- as.character(substr(ASVFile$dadaCombineFile, 2, nchar(ASVFile$dadaCombineFile)))
-            }
+            dadaCombineFileDisplayString$data <- as.character(dadaCombineFile$datapath)
             output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
          },
          error = function(e){
@@ -346,12 +338,15 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
 
+print(paste0("Here is the value of dadaCombineFileDisplayString$data...",dadaCombineFileDisplayString$data))
+
     if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data) && length(dadaCombineFileDisplayString$data) != 0){
+#    if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data)){
       # Create variables for the arguments to avoid conflicts between the multithreading
       # and the shiny
       fileLoc= force(dadaCombineFileDisplayString$data)
       minLen = force(input$dadaCombineMinLen)
-
+print("In the if...")
       tryCatch(
         expr = {
           #Run the Dada function here.
@@ -404,11 +399,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
       expr = {
 
         makeBlastDBFileLoc <- shinyFiles::parseFilePaths(volumes, input$makeBlastDBFileLoc)
-        if (.Platform$OS.type == "windows"){
-          makeBlastDBFileLocDisplayString$data <- as.character(makeBlastDBFileLoc$datapath)
-        } else{
-          makeBlastDBFileLocDisplayString$data <- as.character(substr(makeBlastDBFileLoc$datapath, 2, nchar(makeBlastDBFileLoc$datapath)))
-        }
+        makeBlastDBFileLocDisplayString$data <- as.character(makeBlastDBFileLoc$datapath)
         output$makeBlastDBFileLocDisplay <- shiny::renderText({as.character(makeBlastDBFileLocDisplayString$data)})
 
       },

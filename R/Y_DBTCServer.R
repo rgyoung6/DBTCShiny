@@ -122,14 +122,14 @@ shinyAppServer <- function(input, output, session) {
     if (input$tab_being_displayed == "mappingDashboard"){
       if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
         shiny::showModal(shiny::modalDialog(
-          title = "No Data Loaded",
+          title = "Mapping Dashboard - No Data Loaded - 1",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-      }else if (length(mergedTable$data)==1 && length(workMergedTable$data)==1 ){
-        shiny::showModal(shiny::modalDialog(
-          title = "No Data Loaded",
-          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
-        ))
+       }else if (length(mergedTable$data)==1 && length(workMergedTable$data)==1 ){
+         shiny::showModal(shiny::modalDialog(
+           title = "Mapping Dashboard - No Data Loaded - 2",
+           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+         ))
        }else if (length(mergedTable$data)>1 && length(workMergedTable$data)<1){
          #Resetting the data mapping points for the first time
          setMappingDataPoints()
@@ -178,11 +178,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
           expr = {
 
             primerFile <- shinyFiles::parseFilePaths(volumes, input$primerFile)
-            if (.Platform$OS.type == "windows"){
-              primerFileDisplayString$data <- as.character(primerFile$datapath)
-            } else{
-              primerFileDisplayString$data <- as.character(substr(primerFile$datapath, 2, nchar(primerFile$datapath)))
-            }
+            primerFileDisplayString$data <- as.character(primerFile$datapath)
             output$primerFileDisplay <- shiny::renderText({as.character(primerFileDisplayString$data)})
 
           },
@@ -418,11 +414,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
       expr = {
 
         makeblastdbPath <- shinyFiles::parseFilePaths(volumes, input$makeblastdbPath)
-        if (.Platform$OS.type == "windows"){
-          makeblastdbPathDisplayString$data <- as.character(makeblastdbPath$datapath)
-        } else{
-          makeblastdbPathDisplayString$data <- as.character(substr(makeblastdbPath$datapath, 2, nchar(makeblastdbPath$datapath)))
-        }
+        makeblastdbPathDisplayString$data <- as.character(makeblastdbPath$datapath)
         output$makeblastdbPathDisplay <- shiny::renderText({as.character(makeblastdbPathDisplayString$data)})
 
       },
@@ -564,11 +556,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
     tryCatch(
       expr = {
         blastnPath <- shinyFiles::parseFilePaths(volumes, input$blastnPath)
-        if (.Platform$OS.type == "windows"){
-          blastnPathDisplayString$data <- as.character(blastnPath$datapath)
-        } else{
-          blastnPathDisplayString$data <- as.character(substr(blastnPath$datapath, 2, nchar(blastnPath$datapath)))
-        }
+        blastnPathDisplayString$data <- as.character(blastnPath$datapath)
         output$blastnPathDisplay <- shiny::renderText({as.character(blastnPathDisplayString$data)})
       },
       error = function(e){
@@ -609,13 +597,6 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
     if(is.na(blastnPathDisplayString$data) | is.null(blastnPathDisplayString$data)){
       blastnPathDisplayString$data <- "blastn"
     }
-
-    print(paste0("BLASTDatabasePathDisplayString$data - ",BLASTDatabasePathDisplayString$data))
-    print(paste0("blastnPathDisplayString$data - ", blastnPathDisplayString$data))
-    print(paste0("querySeqPathDisplayString$data - ", querySeqPathDisplayString$data))
-    print(paste0("input$BLASTminLen - ", input$BLASTminLen))
-    print(paste0("input$BLASTResults - ", input$BLASTResults))
-    print(paste0("input$blastSeqNumCores - ", input$blastSeqNumCores))
 
     if (!is.na(BLASTDatabasePathDisplayString$data) && is.character(BLASTDatabasePathDisplayString$data) && length(BLASTDatabasePathDisplayString$data) != 0 &&
         !is.na(blastnPathDisplayString$data) && is.character(blastnPathDisplayString$data) && length(blastnPathDisplayString$data) != 0 &&
@@ -709,11 +690,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
       expr = {
 
         taxaAssignDBLoc <- shinyFiles::parseFilePaths(volumes, input$taxaAssignDBLoc)
-        if (.Platform$OS.type == "windows"){
-          taxaAssignDBLocDisplayString$data <- as.character(taxaAssignDBLoc$datapath)
-        } else{
-          taxaAssignDBLocDisplayString$data <- as.character(substr(taxaAssignDBLoc$datapath, 2, nchar(taxaAssignDBLoc$datapath)))
-        }
+        taxaAssignDBLocDisplayString$data <- as.character(taxaAssignDBLoc$datapath)
         output$taxaAssignDBLocDisplay <- shiny::renderText({as.character(taxaAssignDBLocDisplayString$data)})
 
       },
@@ -1122,7 +1099,7 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
             }
 
             # Read all files and store data frames in a list
-            ASVFileObject <- lapply(files[,1], read_file)  # or read.csv2 if you're working with CSV files using ";" as the separator
+            ASVFileObject <- lapply(files[,1], read_file)
 
             #For loop flattening and combining all of the elements in the ASVFileObject
             for(ASVFileObjectRecords in 1:length(ASVFileObject)){
@@ -1140,6 +1117,9 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
                                              v.names = "Abundance",
                                              times = provenanceDataFileTable$data$Sample,
                                              direction = "long")
+
+                #Remove the cluncky row names
+                row.names(ASVFileTableTemp) <- NULL
 
                 #Rename column times to sample
                 colnames(ASVFileTableTemp)[colnames(ASVFileTableTemp) == "time"] <- "Sample"
@@ -1194,8 +1174,8 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
 
               ########################Process the submitted data files###################
 
-             #Merge the flattened file with the GPS file.
-             mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
+            #Merge the flattened file with the GPS file.
+            mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
 
             #Remove the processing files modal
             removeModal()
@@ -1239,14 +1219,14 @@ print(paste0("Here is the dadaDirectory...", dadaDirectory))
     if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
 
       shiny::showModal(shiny::modalDialog(
-        title = "No Data Loaded",
+        title = "Update Filtering - No Data Loaded - 1",
         "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
       ))
 
     }else if (length(mergedTable$data)==1){
 
       shiny::showModal(shiny::modalDialog(
-        title = "No Data Loaded",
+        title = "Update Filtering - No Data Loaded - 2",
         "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
       ))
 

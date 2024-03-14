@@ -173,7 +173,6 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
 
       #Get the list of files in the target directory to loop through
       pathList <- list.files(path=querySeqPath, pattern = "*[.]([Ff][Aa][Ss]$)|([Ff][Aa][Ss][Tt][Aa]$)", full.names = TRUE)
-
       fileList <- list.files(path=querySeqPath, pattern = "*[.]([Ff][Aa][Ss]$)|([Ff][Aa][Ss][Tt][Aa]$)")
       fileNames <- sub("\\..*","", as.vector(fileList))
 
@@ -199,7 +198,9 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
           #Audit line
           if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 4"), file = auditFile, append = TRUE))}
 
+          print("********************************************************************************")
           print(paste0("Beginning the BLASTing of file ",pathList[filesInFolder], " at - ", Sys.time()))
+          print("********************************************************************************")
 
           #Read in the data from the target file
           seqTable <- read.delim(pathList[filesInFolder], header = FALSE)
@@ -242,9 +243,16 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
               #save the reduced fasta to a temp file
               write.table(seqTable, file = temp_file, append = FALSE, na = "", row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\n")
 
-              #Build the BLAST command
-              BLASTCmdString<- paste0("\"",blastnPath, "\" -db ", databaseName, " -query \"", temp_file, "\" -max_target_seqs ", BLASTResults, " -outfmt \"6 qseqid sseqid staxid qcovs pident ssciname scomname qstart qend sstart send evalue\" -num_threads ", numCores, " -out \"", querySeqPath,"/", fileNames[filesInFolder], "_BLAST_", databaseName,"_",dateStamp, ".tsv\"")
+              # Check if the file exists
+              while(!file.exists(temp_file)) {
+                print("Writing file please standby!")
+                # Wait for 1 second
+                Sys.sleep(1)
+              }
 
+              #Build the BLAST command
+              BLASTCmdString<- paste0("\"",blastnPath, "\" -db \"", dirname(databasePath), "/", databaseName, "\" -query \"", temp_file, "\" -max_target_seqs ", BLASTResults, " -outfmt \"6 qseqid sseqid staxid qcovs pident ssciname scomname qstart qend sstart send evalue\" -num_threads ", numCores, " -out \"", querySeqPath,"/", fileNames[filesInFolder], "_BLAST_", databaseName,"_",dateStamp, ".tsv\"")
+#              BLASTCmdString<- paste0(blastnPath, " -db ", querySeqPath, "/",databaseName, " -query ", temp_file, " -max_target_seqs ", BLASTResults, " -outfmt \"6 qseqid sseqid staxid qcovs pident ssciname scomname qstart qend sstart send evalue\" -num_threads ", numCores, " -out ", querySeqPath,"/", fileNames[filesInFolder], "_BLAST_", databaseName,"_",dateStamp, ".tsv")
               #Build the file to run based on the operating system
               if (.Platform$OS.type == "windows"){
 

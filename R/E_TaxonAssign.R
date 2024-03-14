@@ -192,7 +192,10 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
         #Get the start time to use in the reporting of the progress throughout
         startTime <- Sys.time()
+
+        print("********************************************************************************")
         print(paste0("Starting analysis ", filesList[fileCounter,3], ": ", fileCounter, " of ", nrow(filesList)," at ", Sys.time()))
+        print("********************************************************************************")
 
         #Create the output dataframe
         condensedOut <- data.frame(uniqueID = character(), superkingdom = character(), phylum = character(), class = character(), order = character(), family = character(), genus = character(), species = character(), Top_BLAST = character(), Lowest_Single_Rank = character(), Lowest_Single_Taxa = character(), Lowest_Single_Rank_Above_Thres = character(), Lowest_Single_Taxa_Above_Thres = character(), Final_Common_Names = character(), Final_Rank = character(), Final_Taxa = character(), Final_Rank_Taxa_Thres = character(), Result_Code = character())

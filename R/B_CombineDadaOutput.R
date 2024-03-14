@@ -167,7 +167,9 @@ combine_dada_output <- function(fileLoc = NULL, minLen = 100){
         #Audit line
         if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 3"), file = auditFile, append = TRUE))}
 
+        print("********************************************************************************")
         print(paste0("Starting file ", files[records,3], " at time...", Sys.time()))
+        print("********************************************************************************")
         suppressWarnings(write(paste0("Starting file ", files[records,3], " at time...", Sys.time()), file = paste0(dateStamp, "_combinedDada.txt"), append = TRUE))
 
         #Read in the files for this loop

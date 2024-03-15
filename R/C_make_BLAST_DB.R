@@ -237,9 +237,32 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
           write("\n", file = blastCommandFile, append = TRUE)
           write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
 
+
+
+
+
+        tryCatch(
+          expr = {
           #Change the permissions of the file
           Sys.chmod(blastCommandFile, mode = "0777")
+         },
+         error = function(e){
+           print("Error - Insufficent User Permissions")
+         },
+         warning = function(w){
+           print("Warning - Insufficent User Permissions")
+         }
+       )
 
+
+          
+
+
+
+
+
+
+          
           #Run the BLAST command in a system command
           system(paste0("bash '", blastCommandFile, "'"))
 

@@ -150,8 +150,6 @@ shinyAppServer <- function(input, output, session) {
 
             dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
 
-print(paste0("Here is the dadaDirectory...", dadaDirectory))
-
             dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
             output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 

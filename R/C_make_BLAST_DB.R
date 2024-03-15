@@ -237,6 +237,9 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
           write("\n", file = blastCommandFile, append = TRUE)
           write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
 
+          #Change the permissions of the file
+          Sys.chmod(blastCommandFile, mode = "0777")
+
           #Run the BLAST command in a system command
           system(paste0("bash '", blastCommandFile, "'"))
 

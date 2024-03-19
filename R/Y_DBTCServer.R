@@ -125,12 +125,22 @@ shinyAppServer <- function(input, output, session) {
           title = "Mapping Dashboard - No Data Loaded - 1",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-       }else if (length(mergedTable$data)==1 && length(workMergedTable$data)==1 ){
+       }else if(ASVFileTable$data == 0 && provenanceDataFileTable$data == 0){
          shiny::showModal(shiny::modalDialog(
            title = "Mapping Dashboard - No Data Loaded - 2",
            "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
          ))
-       }else if (length(mergedTable$data)>1 && length(workMergedTable$data)<1){
+       }else if (length(mergedTable$data)==0 && length(workMergedTable$data)==0 ){
+         shiny::showModal(shiny::modalDialog(
+           title = "Mapping Dashboard - No Data Loaded - 3",
+           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+         ))
+       }else if (is.na(mergedTable$data) && is.na(workMergedTable$data)){
+         shiny::showModal(shiny::modalDialog(
+           title = "Mapping Dashboard - No Data Loaded - 4",
+           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+         ))
+       }else{
          #Resetting the data mapping points for the first time
          setMappingDataPoints()
        }
@@ -149,7 +159,6 @@ shinyAppServer <- function(input, output, session) {
           expr = {
 
             dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
-
             dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
             output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 
@@ -274,29 +283,27 @@ shinyAppServer <- function(input, output, session) {
        error = function(e){
          removeModal()
          shiny::showModal(shiny::modalDialog(
-           title = "ERROR",
-           "Dada Location Button choose file cancelled. Please refer to the R
-           consol for more information - 1"
+           title = "Error",
+           "Dada Implement - Please refer to the R consol for more information - 1"
          ))
-         print("Error - Dada Location Button choose file cancelled - 1")
+         print("Error - Dada Implement - 1")
          dadaLocation$data <- NA
        },
        warning = function(w){
          removeModal()
          shiny::showModal(shiny::modalDialog(
-           title = "ERROR",
-           "Dada Location Button choose file cancelled. Please refer to the R
-           consol for more information - 2"
+           title = "Warning",
+           "Dada Implement - Please refer to the R consol for more information - 2"
          ))
-         print("Warning - Dada Location Button choose file cancelled - 2")
+         print("Warning - Dada Implement - 2")
          dadaLocation$data <- NA
        })
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
-        "Please select a primer file and try submitting again!"
+        "Please select a primer file and appropriate fastq file location and try submitting again!"
       ))
-      print("Warning - Dada Location Button choose file cancelled - 3")
+      print("Warning - Dada Implement primer file and dada location incorrect - 3")
     }
    },ignoreInit = TRUE)
 
@@ -318,11 +325,11 @@ shinyAppServer <- function(input, output, session) {
             output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
          },
          error = function(e){
-           print("Error - Dada Location Button choose file cancelled")
+           print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
            dadaLocation$data <- NA
          },
          warning = function(w){
-           print("Warning - Dada Location Button choose file cancelled")
+           print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
            dadaLocation$data <- NA
          }
        )
@@ -340,30 +347,30 @@ shinyAppServer <- function(input, output, session) {
         expr = {
           #Run the Dada function here.
           shiny::showModal(shiny::modalDialog(
-            title = "Dada combine analysis results is underway.",
+            title = "Dada combine analysis is underway.",
             "Processing, please stand by...", footer=""
           ))
 
         #Run the Dada combine function here.
-          combine_dada_output(fileLoc = fileLoc, minLen = minLen)
+        combine_dada_output(fileLoc = fileLoc, minLen = minLen)
 
         removeModal()
         shiny::showModal(shiny::modalDialog(
-          title = "Dada combine analysis results is complete",
+          title = "Dada combine analysis complete",
           "Please see output files in the target directory."
         ))
         },
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Warning",
             "Please refer to the R consol for more information."
           ))
         }
@@ -501,14 +508,14 @@ shinyAppServer <- function(input, output, session) {
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "There was an error in running the makeBLASTDB function. Make sure you have permissions for the target folder. Please see the R output for further details."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "There was an error in running the makeBLASTDB function. Make sure you have permissions for the target folder. Please see the R output for further details."
           ))
         })
@@ -635,14 +642,14 @@ shinyAppServer <- function(input, output, session) {
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         }
@@ -747,14 +754,14 @@ shinyAppServer <- function(input, output, session) {
          error = function(e){
            removeModal()
            shiny::showModal(shiny::modalDialog(
-             title = "ERROR",
+             title = "Error",
              "Please refer to the R consol for more information."
            ))
          },
          warning = function(w){
            removeModal()
            shiny::showModal(shiny::modalDialog(
-             title = "ERROR",
+             title = "Error",
              "Please refer to the R consol for more information."
            ))
          }
@@ -820,14 +827,14 @@ shinyAppServer <- function(input, output, session) {
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         }
@@ -895,14 +902,14 @@ shinyAppServer <- function(input, output, session) {
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         }
@@ -970,14 +977,14 @@ shinyAppServer <- function(input, output, session) {
         error = function(e){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         },
         warning = function(w){
           removeModal()
           shiny::showModal(shiny::modalDialog(
-            title = "ERROR",
+            title = "Error",
             "Please refer to the R consol for more information."
           ))
         }
@@ -1221,7 +1228,7 @@ shinyAppServer <- function(input, output, session) {
         "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
       ))
 
-    }else if (length(mergedTable$data)==1){
+    }else if (length(mergedTable$data)==0){
 
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 2",

@@ -408,7 +408,10 @@ dbtcTools <- function() {
            ),
            shiny::numericInput("BLASTResults", "An integer value for the desired maximum number of BLAST returned results is required.", value = 200, min = 0, max = 1000),
            shiny::numericInput("BLASTminLen", "The minimum length, in nucleotides, of the reads to BLAST. All reads below this value will be removed from furtehr analyses.", value = 100, min = 0, max = 10000),
-           shiny::numericInput("blastSeqNumCores", "The number of cores used for the analysis. Note: Windows analyses can only use a single core.", value = 1, min = 0, max = 1000),
+           shiny::conditionalPanel(
+              condition=".Platform$OS.type != 'windows'",
+              shiny::numericInput("blastSeqNumCores", "The number of cores used for the analysis. Note: Windows analyses can only use a single core.", value = 1, min = 0, max = 1000),
+           ),
            #Submit button to run the script
            shiny::actionButton("blastSequences","Sequence BLAST Submit", icon = shiny::icon("play-circle"))
          )

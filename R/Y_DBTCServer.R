@@ -1,3 +1,4 @@
+
 # Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
 #********************************************Main program section***********************************************
 ################# Server Function #############################################
@@ -94,16 +95,16 @@ shinyAppServer <- function(input, output, session) {
                                                   "#9d02d7",
                                                   "#0000ff",
                                                   "#00008b"),
-                                         domain = c("10", "100", "1000", "10000", "100000", "1000000"))
+                                      domain = c("10", "100", "1000", "10000", "100000", "1000000"))
 
   output$mymap <- leaflet::renderLeaflet({
     leaflet::leaflet() %>%
       leaflet::addTiles() %>%
       leaflet::addLegend(position = "topright",
-                pal = palette_map,
-                values = c("10", "100", "1000", "10000", "100000", "1000000"),
-                title = "Reads",
-                opacity = 0.6) %>%
+                         pal = palette_map,
+                         values = c("10", "100", "1000", "10000", "100000", "1000000"),
+                         title = "Reads",
+                         opacity = 0.6) %>%
 
       #View map full screen (note: only works in web browser)
       leaflet.extras::addFullscreenControl() %>%
@@ -118,93 +119,91 @@ shinyAppServer <- function(input, output, session) {
 
   ################## mappingDashboard Click observe event #######################
   shiny::observe({
-
     if (input$tab_being_displayed == "mappingDashboard"){
-      if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
+      if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
         shiny::showModal(shiny::modalDialog(
           title = "Mapping Dashboard - No Data Loaded - 1",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-       }else if(ASVFileTable$data == 0 && provenanceDataFileTable$data == 0){
-         shiny::showModal(shiny::modalDialog(
-           title = "Mapping Dashboard - No Data Loaded - 2",
-           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
-         ))
-       }else if (length(mergedTable$data)==0 && length(workMergedTable$data)==0 ){
-         shiny::showModal(shiny::modalDialog(
-           title = "Mapping Dashboard - No Data Loaded - 3",
-           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
-         ))
-       }else if (is.na(mergedTable$data) && is.na(workMergedTable$data)){
-         shiny::showModal(shiny::modalDialog(
-           title = "Mapping Dashboard - No Data Loaded - 4",
-           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
-         ))
-       }else{
-         #Resetting the data mapping points for the first time
-         setMappingDataPoints()
-       }
-     }
-   })
+      }else if(length(ASVFileTable$data) == 0 && length(provenanceDataFileTable$data) == 0){
+        shiny::showModal(shiny::modalDialog(
+          title = "Mapping Dashboard - No Data Loaded - 2",
+          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+        ))
+      }else if (!is.data.frame(mergedTable$data) && !is.data.frame(workMergedTable$data)){
+        shiny::showModal(shiny::modalDialog(
+          title = "Mapping Dashboard - No Data Loaded - 4",
+          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+        ))
+      }else if (length(mergedTable$data)==0 && length(workMergedTable$data)==0 ){
+        shiny::showModal(shiny::modalDialog(
+          title = "Mapping Dashboard - No Data Loaded - 3",
+          "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+        ))
+      }else{
+        #Resetting the data mapping points for the first time
+        setMappingDataPoints()
+      }
+    }
+  })
 
   ################## Dada Submit Function #####################################
-    #Connect this to the shinyChooseButton
-    shinyFiles::shinyFileChoose(input, "dadaDirectory", roots = volumes, session = session)
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "dadaDirectory", roots = volumes, session = session)
 
-    # Get the file with the primer data for this analysis
-    shiny::observeEvent(input$dadaDirectory, {
+  # Get the file with the primer data for this analysis
+  shiny::observeEvent(input$dadaDirectory, {
 
-      if(!is.null(input$dadaDirectory)){
-        tryCatch(
-          expr = {
+    if(!is.null(input$dadaDirectory)){
+      tryCatch(
+        expr = {
 
-            dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
-            dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
-            output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
+          dadaDirectory <- shinyFiles::parseFilePaths(volumes, input$dadaDirectory)
+          dadaDirectoryDisplayString$data <- as.character(dadaDirectory$datapath)
+          output$dadaDirectoryDisplay <- shiny::renderText({as.character(dadaDirectoryDisplayString$data)})
 
-         },
-         error = function(e){
-           print("Error - Dada Location Button choose file cancelled")
-           dadaLocation$data <- NA
-         },
-         warning = function(w){
-           print("Warning - Dada Location Button choose file cancelled")
-           dadaLocation$data <- NA
-         }
-       )
-      }
-    },ignoreInit = TRUE)
+        },
+        error = function(e){
+          print("Error - Dada Location Button choose file cancelled")
+          dadaLocation$data <- NA
+        },
+        warning = function(w){
+          print("Warning - Dada Location Button choose file cancelled")
+          dadaLocation$data <- NA
+        }
+      )
+    }
+  },ignoreInit = TRUE)
 
-    #Connect this to the shinyChooseButton
-    shinyFiles::shinyFileChoose(input, "primerFile", roots = volumes, session = session)
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "primerFile", roots = volumes, session = session)
 
-    # Get the file with the primer data for this analysis
-    shiny::observeEvent(input$primerFile, {
-      if(!is.null(input$primerFile)){
-        tryCatch(
-          expr = {
+  # Get the file with the primer data for this analysis
+  shiny::observeEvent(input$primerFile, {
+    if(!is.null(input$primerFile)){
+      tryCatch(
+        expr = {
 
-            primerFile <- shinyFiles::parseFilePaths(volumes, input$primerFile)
-            primerFileDisplayString$data <- as.character(primerFile$datapath)
-            output$primerFileDisplay <- shiny::renderText({as.character(primerFileDisplayString$data)})
+          primerFile <- shinyFiles::parseFilePaths(volumes, input$primerFile)
+          primerFileDisplayString$data <- as.character(primerFile$datapath)
+          output$primerFileDisplay <- shiny::renderText({as.character(primerFileDisplayString$data)})
 
-          },
-          error = function(e){
-            print("Error - Primer Location Button choose file cancelled")
-            dadaLocation$data <- NA
-          },
-          warning = function(w){
-            print("Warning - Primer Location Button choose file cancelled")
-            dadaLocation$data <- NA
-          }
-        )
-      }
-    },ignoreInit = TRUE)
+        },
+        error = function(e){
+          print("Error - Primer Location Button choose file cancelled")
+          dadaLocation$data <- NA
+        },
+        warning = function(w){
+          print("Warning - Primer Location Button choose file cancelled")
+          dadaLocation$data <- NA
+        }
+      )
+    }
+  },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
-
-   if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
-       !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
+    if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
+        !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
 
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
@@ -212,92 +211,92 @@ shinyAppServer <- function(input, output, session) {
       runFolderLoc <- force(dadaDirectoryDisplayString$data)
       primerFile <- force(primerFileDisplayString$data)
 
-       if (force(input$uniOrbidirectional) == "Unidirectional"){
-         unidirectional = TRUE
-         bidirectional = FALSE
-         fwdIdent <- ""
-         revIdent <- ""
-       }else if(force(input$uniOrbidirectional) == "Bidirectional"){
-         unidirectional = FALSE
-         bidirectional = TRUE
-         fwdIdent <- force(input$fwdIdent)
-         revIdent <- force(input$revIdent)
-       }else{
-         unidirectional = TRUE
-         bidirectional = TRUE
-         fwdIdent <- force(input$fwdIdent)
-         revIdent <- force(input$revIdent)
-       }
-       printQualityPdf <- force(input$printQualityPdf)
-       maxPrimeMis <- force(input$maxPrimeMis)
-       fwdTrimLen <- force(input$fwdTrimLen)
-       revTrimLen <- force(input$revTrimLen)
-       maxEEVal <- force(input$maxEEVal)
-       truncQValue <- force(input$truncQValue)
-       truncLenValueF <- force(input$truncLenValueF)
-       truncLenValueR <- force(input$truncLenValueR)
-       error <- force(input$error)
-       nbases <- force(input$nbases)
-       maxMismatchValue <- force(input$maxMismatchValue)
-       minOverlapValue <- force(input$minOverlapValue)
-       trimOverhang <- force(input$trimOverhang)
-       minFinalSeqLen <- force(input$minFinalSeqLen)
+      if (force(input$uniOrbidirectional) == "Unidirectional"){
+        unidirectional = TRUE
+        bidirectional = FALSE
+        fwdIdent <- ""
+        revIdent <- ""
+      }else if(force(input$uniOrbidirectional) == "Bidirectional"){
+        unidirectional = FALSE
+        bidirectional = TRUE
+        fwdIdent <- force(input$fwdIdent)
+        revIdent <- force(input$revIdent)
+      }else{
+        unidirectional = TRUE
+        bidirectional = TRUE
+        fwdIdent <- force(input$fwdIdent)
+        revIdent <- force(input$revIdent)
+      }
+      printQualityPdf <- force(input$printQualityPdf)
+      maxPrimeMis <- force(input$maxPrimeMis)
+      fwdTrimLen <- force(input$fwdTrimLen)
+      revTrimLen <- force(input$revTrimLen)
+      maxEEVal <- force(input$maxEEVal)
+      truncQValue <- force(input$truncQValue)
+      truncLenValueF <- force(input$truncLenValueF)
+      truncLenValueR <- force(input$truncLenValueR)
+      error <- force(input$error)
+      nbases <- force(input$nbases)
+      maxMismatchValue <- force(input$maxMismatchValue)
+      minOverlapValue <- force(input$minOverlapValue)
+      trimOverhang <- force(input$trimOverhang)
+      minFinalSeqLen <- force(input$minFinalSeqLen)
 
-       tryCatch(
-       expr = {
-        #Run the Dada function here.
+      tryCatch(
+        expr = {
+          #Run the Dada function here.
 
-        shiny::showModal(shiny::modalDialog(
-         title = "Dada analysis is underway.",
-         "Processing, please stand by...", footer=""
+          shiny::showModal(shiny::modalDialog(
+            title = "Dada analysis is underway.",
+            "Processing, please stand by...", footer=""
 
-        ))
+          ))
 
-        dada_implement(runFolderLoc = runFolderLoc,
-                     primerFile = primerFile,
-                     fwdIdent = fwdIdent,
-                     revIdent = revIdent,
-                     unidirectional = unidirectional,
-                     bidirectional = bidirectional,
-                     printQualityPdf = printQualityPdf,
-                     maxPrimeMis = maxPrimeMis,
-                     fwdTrimLen = fwdTrimLen,
-                     revTrimLen = revTrimLen,
-                     maxEEVal = maxEEVal,
-                     truncQValue = truncQValue,
-                     truncLenValueF = truncLenValueF,
-                     truncLenValueR = truncLenValueR,
-                     error = error,
-                     nbases = nbases,
-                     maxMismatchValue = maxMismatchValue,
-                     minOverlapValue = minOverlapValue,
-                     trimOverhang = trimOverhang,
-                     minFinalSeqLen = minFinalSeqLen)
-         removeModal()
-         shiny::showModal(shiny::modalDialog(
-           title = "Dada analysis is complete",
-           "Please see output files in the target
+          dada_implement(runFolderLoc = runFolderLoc,
+                         primerFile = primerFile,
+                         fwdIdent = fwdIdent,
+                         revIdent = revIdent,
+                         unidirectional = unidirectional,
+                         bidirectional = bidirectional,
+                         printQualityPdf = printQualityPdf,
+                         maxPrimeMis = maxPrimeMis,
+                         fwdTrimLen = fwdTrimLen,
+                         revTrimLen = revTrimLen,
+                         maxEEVal = maxEEVal,
+                         truncQValue = truncQValue,
+                         truncLenValueF = truncLenValueF,
+                         truncLenValueR = truncLenValueR,
+                         error = error,
+                         nbases = nbases,
+                         maxMismatchValue = maxMismatchValue,
+                         minOverlapValue = minOverlapValue,
+                         trimOverhang = trimOverhang,
+                         minFinalSeqLen = minFinalSeqLen)
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Dada analysis is complete",
+            "Please see output files in the target
            directory."
-         ))
-       },
-       error = function(e){
-         removeModal()
-         shiny::showModal(shiny::modalDialog(
-           title = "Error",
-           "Dada Implement - Please refer to the R consol for more information - 1"
-         ))
-         print("Error - Dada Implement - 1")
-         dadaLocation$data <- NA
-       },
-       warning = function(w){
-         removeModal()
-         shiny::showModal(shiny::modalDialog(
-           title = "Warning",
-           "Dada Implement - Please refer to the R consol for more information - 2"
-         ))
-         print("Warning - Dada Implement - 2")
-         dadaLocation$data <- NA
-       })
+          ))
+        },
+        error = function(e){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Error",
+            "Dada Implement - Please refer to the R consol for more information - 1"
+          ))
+          print("Error - Dada Implement - 1")
+          dadaLocation$data <- NA
+        },
+        warning = function(w){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Warning",
+            "Dada Implement - Please refer to the R consol for more information - 2"
+          ))
+          print("Warning - Dada Implement - 2")
+          dadaLocation$data <- NA
+        })
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
@@ -305,36 +304,36 @@ shinyAppServer <- function(input, output, session) {
       ))
       print("Warning - Dada Implement primer file and dada location incorrect - 3")
     }
-   },ignoreInit = TRUE)
+  },ignoreInit = TRUE)
 
   ################## Dada Combine Function ####################################
   #Get the location of the dada output files you would like to combine
 
-    #Connect this to the shinyChooseButton
-    shinyFiles::shinyFileChoose(input, "dadaCombineFile", roots = volumes, session = session)
+  #Connect this to the shinyChooseButton
+  shinyFiles::shinyFileChoose(input, "dadaCombineFile", roots = volumes, session = session)
 
-    # Get the file with the primer data for this analysis
-    shiny::observeEvent(input$dadaCombineFile, {
+  # Get the file with the primer data for this analysis
+  shiny::observeEvent(input$dadaCombineFile, {
 
-      if(!is.null(input$dadaCombineFile)){
+    if(!is.null(input$dadaCombineFile)){
 
-        tryCatch(
-          expr = {
-            dadaCombineFile <- shinyFiles::parseFilePaths(volumes, input$dadaCombineFile)
-            dadaCombineFileDisplayString$data <- as.character(dadaCombineFile$datapath)
-            output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
-         },
-         error = function(e){
-           print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-           dadaLocation$data <- NA
-         },
-         warning = function(w){
-           print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-           dadaLocation$data <- NA
-         }
-       )
-      }
-    })
+      tryCatch(
+        expr = {
+          dadaCombineFile <- shinyFiles::parseFilePaths(volumes, input$dadaCombineFile)
+          dadaCombineFileDisplayString$data <- as.character(dadaCombineFile$datapath)
+          output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
+        },
+        error = function(e){
+          print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
+          dadaLocation$data <- NA
+        },
+        warning = function(w){
+          print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
+          dadaLocation$data <- NA
+        }
+      )
+    }
+  })
 
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
@@ -351,14 +350,14 @@ shinyAppServer <- function(input, output, session) {
             "Processing, please stand by...", footer=""
           ))
 
-        #Run the Dada combine function here.
-        combine_dada_output(fileLoc = fileLoc, minLen = minLen)
+          #Run the Dada combine function here.
+          combine_dada_output(fileLoc = fileLoc, minLen = minLen)
 
-        removeModal()
-        shiny::showModal(shiny::modalDialog(
-          title = "Dada combine analysis complete",
-          "Please see output files in the target directory."
-        ))
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Dada combine analysis complete",
+            "Please see output files in the target directory."
+          ))
         },
         error = function(e){
           removeModal()
@@ -463,9 +462,8 @@ shinyAppServer <- function(input, output, session) {
     if(is.na(makeblastdbPathDisplayString$data)){
       makeblastdbPathDisplayString$data <- "makeblastdb"
     }
-
     if (!is.na(makeBlastDBFileLocDisplayString$data) && is.character(makeBlastDBFileLocDisplayString$data) && length(makeBlastDBFileLocDisplayString$data) != 0 &&
-      !is.na(makeBlastTaxaDBLocDisplayString$data) && is.character(makeBlastTaxaDBLocDisplayString$data) && length(makeBlastTaxaDBLocDisplayString$data)!= 0 ){
+        !is.na(makeBlastTaxaDBLocDisplayString$data) && is.character(makeBlastTaxaDBLocDisplayString$data) && length(makeBlastTaxaDBLocDisplayString$data)!= 0 ){
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(makeBlastDBFileLocDisplayString$data)
@@ -613,7 +611,7 @@ shinyAppServer <- function(input, output, session) {
       querySeqPath = force(querySeqPathDisplayString$data)
       minLen = force(input$BLASTminLen)
       BLASTResults = force(input$BLASTResults)
-      numCores = force(input$blastSeqNumCores)
+      if(.Platform$OS.type == 'windows'){numCores=1}else{numCores = force(input$blastSeqNumCores)}
 
       tryCatch(
         expr = {
@@ -711,61 +709,62 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$taxonAssign, {
+
     if (!is.na(taxaAssignFileLocDisplayString$data) && is.character(taxaAssignFileLocDisplayString$data) && length(taxaAssignFileLocDisplayString$data) != 0 && !is.na(taxaAssignDBLocDisplayString$data) && is.character(taxaAssignDBLocDisplayString$data) && length(taxaAssignDBLocDisplayString$data) != 0) {
 
       # Create local variables to avoid conflicts with shiny and multithread
-       fileLoc = force(taxaAssignFileLocDisplayString$data)
+      fileLoc = force(taxaAssignFileLocDisplayString$data)
 
-       taxaDBLoc = force(taxaAssignDBLocDisplayString$data)
-       numCores = force(input$taxaAssignNumCores)
-       coverage = force(input$coverage)
-       ident = force(input$ident)
-       propThres = force(input$propThres)
-       coverReportThresh = force(input$coverReportThresh)
-       identReportThresh = force(input$identReportThresh)
-       includeAllDada = force(input$includeAllDada)
+      taxaDBLoc = force(taxaAssignDBLocDisplayString$data)
+      numCores = force(input$taxaAssignNumCores)
+      coverage = force(input$coverage)
+      ident = force(input$ident)
+      propThres = force(input$propThres)
+      coverReportThresh = force(input$coverReportThresh)
+      identReportThresh = force(input$identReportThresh)
+      includeAllDada = force(input$includeAllDada)
 
-       tryCatch(
-         expr = {
-           #Run the function here.
-           shiny::showModal(shiny::modalDialog(
-             title = "Taxonomic assingment is underway.",
-             "See the R terminal for estimated time to completion.
+      tryCatch(
+        expr = {
+          #Run the function here.
+          shiny::showModal(shiny::modalDialog(
+            title = "Taxonomic assingment is underway.",
+            "See the R terminal for estimated time to completion.
              Processing, please stand by...", footer=""
 
-           ))
-           #Run the function
-           taxon_assign(fileLoc = fileLoc,
-                        taxaDBLoc = taxaDBLoc,
-                        numCores = numCores,
-                        coverage = coverage,
-                        ident = ident,
-                        propThres = propThres,
-                        coverReportThresh = coverReportThresh,
-                        identReportThresh = identReportThresh,
-                        includeAllDada = includeAllDada)
-            removeModal()
+          ))
+          #Run the function
+          taxon_assign(fileLoc = fileLoc,
+                       taxaDBLoc = taxaDBLoc,
+                       numCores = numCores,
+                       coverage = coverage,
+                       ident = ident,
+                       propThres = propThres,
+                       coverReportThresh = coverReportThresh,
+                       identReportThresh = identReportThresh,
+                       includeAllDada = includeAllDada)
+          removeModal()
 
-           shiny::showModal(shiny::modalDialog(
-             title = "Taxonomic assingment is complete",
-             "Please see output files in the target directory."
-           ))
-         },
-         error = function(e){
-           removeModal()
-           shiny::showModal(shiny::modalDialog(
-             title = "Error",
-             "Please refer to the R consol for more information."
-           ))
-         },
-         warning = function(w){
-           removeModal()
-           shiny::showModal(shiny::modalDialog(
-             title = "Error",
-             "Please refer to the R consol for more information."
-           ))
-         }
-       )
+          shiny::showModal(shiny::modalDialog(
+            title = "Taxonomic assingment is complete",
+            "Please see output files in the target directory."
+          ))
+        },
+        error = function(e){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Error",
+            "Please refer to the R consol for more information."
+          ))
+        },
+        warning = function(w){
+          removeModal()
+          shiny::showModal(shiny::modalDialog(
+            title = "Error",
+            "Please refer to the R consol for more information."
+          ))
+        }
+      )
 
     }else{
       shiny::showModal(shiny::modalDialog(
@@ -802,7 +801,9 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$combineTaxa, {
+
     if (!is.na(combineTaxaFileLocDisplayString$data) && is.character(combineTaxaFileLocDisplayString$data) && length(combineTaxaFileLocDisplayString$data) != 0) {
+
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(combineTaxaFileLocDisplayString$data)
       numCores = force(input$combineTaxaNumCores)
@@ -874,7 +875,9 @@ shinyAppServer <- function(input, output, session) {
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$reduceTaxa, {
+
     if (!is.na(reduceTaxaFileLocDisplayString$data) && is.character(reduceTaxaFileLocDisplayString$data) && length(reduceTaxaFileLocDisplayString$data) != 0) {
+
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(reduceTaxaFileLocDisplayString$data)
       numCores = force(input$reduceTaxaNumCores)
@@ -950,7 +953,8 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$combineReduceTaxa, {
 
-     if (!is.na(combineReducedTaxaFileLocDisplayString$data) && is.character(combineReducedTaxaFileLocDisplayString$data) && length(combineReducedTaxaFileLocDisplayString$data) != 0) {
+    if (!is.na(combineReducedTaxaFileLocDisplayString$data) && is.character(combineReducedTaxaFileLocDisplayString$data) && length(combineReducedTaxaFileLocDisplayString$data) != 0) {
+
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(combineReducedTaxaFileLocDisplayString$data)
       presenceAbsence = force(input$presenceAbsence)
@@ -1109,61 +1113,61 @@ shinyAppServer <- function(input, output, session) {
             #For loop flattening and combining all of the elements in the ASVFileObject
             for(ASVFileObjectRecords in 1:length(ASVFileObject)){
 
-                #Add a column to the front of the data frame with unique identifiers.
-                ASVFileTableTemp <- cbind(Number = 1:nrow(ASVFileObject[[ASVFileObjectRecords]]), ASVFileObject[[ASVFileObjectRecords]])
+              #Add a column to the front of the data frame with unique identifiers.
+              ASVFileTableTemp <- cbind(Number = 1:nrow(ASVFileObject[[ASVFileObjectRecords]]), ASVFileObject[[ASVFileObjectRecords]])
 
-                # Rename the first column to ID
-                names(ASVFileTableTemp)[1] <- "ID"
+              # Rename the first column to ID
+              names(ASVFileTableTemp)[1] <- "ID"
 
-                # Reshape the data to long format
-                ASVFileTableTemp <- reshape(ASVFileTableTemp,
-                                             idvar = c("ID"),
-                                             varying = provenanceDataFileTable$data$Sample,
-                                             v.names = "Abundance",
-                                             times = provenanceDataFileTable$data$Sample,
-                                             direction = "long")
+              # Reshape the data to long format
+              ASVFileTableTemp <- reshape(ASVFileTableTemp,
+                                          idvar = c("ID"),
+                                          varying = provenanceDataFileTable$data$Sample,
+                                          v.names = "Abundance",
+                                          times = provenanceDataFileTable$data$Sample,
+                                          direction = "long")
 
-                #Remove the cluncky row names
-                row.names(ASVFileTableTemp) <- NULL
+              #Remove the cluncky row names
+              row.names(ASVFileTableTemp) <- NULL
 
-                #Rename column times to sample
-                colnames(ASVFileTableTemp)[colnames(ASVFileTableTemp) == "time"] <- "Sample"
+              #Rename column times to sample
+              colnames(ASVFileTableTemp)[colnames(ASVFileTableTemp) == "time"] <- "Sample"
 
-                #Remove the 0 from the Abundance column
-                ASVFileTableTemp <- ASVFileTableTemp[ASVFileTableTemp$Abundance != 0, ]
+              #Remove the 0 from the Abundance column
+              ASVFileTableTemp <- ASVFileTableTemp[ASVFileTableTemp$Abundance != 0, ]
 
-                #Split the Final_Taxa column to keep the quality values in separate columns to use in the mapping
-                #"Num_Rec", "Coverage", "Identity", "Max_eVal"
+              #Split the Final_Taxa column to keep the quality values in separate columns to use in the mapping
+              #"Num_Rec", "Coverage", "Identity", "Max_eVal"
 
-                #Split the column by ( and replace the close bracket )
-                entries <- as.data.frame(do.call('rbind', strsplit(as.character(ASVFileTableTemp$Final_Taxa),'(',fixed = TRUE)), check.names=FALSE)
-                entries[,2] <- gsub(")","", as.character(entries[,2]))
+              #Split the column by ( and replace the close bracket )
+              entries <- as.data.frame(do.call('rbind', strsplit(as.character(ASVFileTableTemp$Final_Taxa),'(',fixed = TRUE)), check.names=FALSE)
+              entries[,2] <- gsub(")","", as.character(entries[,2]))
 
-                #Split the values column by ,
-                entries <- cbind(entries[,1],data.frame(do.call('rbind', strsplit(as.character(entries[,2]),',', fixed = TRUE)), check.names=FALSE), row.names = NULL)
+              #Split the values column by ,
+              entries <- cbind(entries[,1],data.frame(do.call('rbind', strsplit(as.character(entries[,2]),',', fixed = TRUE)), check.names=FALSE), row.names = NULL)
 
-                #Name the total results temp columns
-                colnames(entries) <- c("Final_Taxa", "AvgMinNumRec", "AvgMinCoverage", "AvgMinIdentity", "AvgMaxeVal")
+              #Name the total results temp columns
+              colnames(entries) <- c("Final_Taxa", "AvgMinNumRec", "AvgMinCoverage", "AvgMinIdentity", "AvgMaxeVal")
 
-                #Build the data frame again with the new data columns
-                ASVFileTableTemp <- cbind(
-                  ASVFileTableTemp[,c(1:(which(colnames(ASVFileTableTemp) == "Final_Taxa")-1))],
-                  entries,
-                  ASVFileTableTemp[,c((which(colnames(ASVFileTableTemp) == "Final_Taxa")+1):ncol(ASVFileTableTemp))])
+              #Build the data frame again with the new data columns
+              ASVFileTableTemp <- cbind(
+                ASVFileTableTemp[,c(1:(which(colnames(ASVFileTableTemp) == "Final_Taxa")-1))],
+                entries,
+                ASVFileTableTemp[,c((which(colnames(ASVFileTableTemp) == "Final_Taxa")+1):ncol(ASVFileTableTemp))])
 
-                  # Remove brackets and contents from all values in the data frame
-                  ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))] <- lapply(ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))], function(x) gsub("\\(.*?\\)", "", x))
+              # Remove brackets and contents from all values in the data frame
+              ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))] <- lapply(ASVFileTableTemp[,c(which(names(ASVFileTableTemp) %in% "superkingdom"):which(names(ASVFileTableTemp) %in% "species"))], function(x) gsub("\\(.*?\\)", "", x))
 
-                  #Change all NA values to N/A so that they are easier to deal with in the dropdown menus
-                  ASVFileTableTemp[is.na(ASVFileTableTemp)] <- "N/A"
+              #Change all NA values to N/A so that they are easier to deal with in the dropdown menus
+              ASVFileTableTemp[is.na(ASVFileTableTemp)] <- "N/A"
 
-                  #Add a category column to place the data points on the map
-                  ASVFileTableTemp$AbundanceCategory <- cut(
-                    ASVFileTableTemp$Abundance,
-                    breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000),
-                    labels = c("10", "100", "1000", "10000", "100000", "1000000"),
-                    include.lowest = TRUE
-                  )
+              #Add a category column to place the data points on the map
+              ASVFileTableTemp$AbundanceCategory <- cut(
+                ASVFileTableTemp$Abundance,
+                breaks = c(0, 10, 100, 1000, 10000, 100000, 1000000),
+                labels = c("10", "100", "1000", "10000", "100000", "1000000"),
+                include.lowest = TRUE
+              )
 
               if (is.na(ASVFileTable$data)){
 
@@ -1177,7 +1181,7 @@ shinyAppServer <- function(input, output, session) {
 
             }
 
-              ########################Process the submitted data files###################
+            ########################Process the submitted data files###################
 
             #Merge the flattened file with the GPS file.
             mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
@@ -1221,8 +1225,7 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$updateFilterMappingButton, {
 
-    if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
-
+    if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 1",
         "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
@@ -1276,12 +1279,17 @@ shinyAppServer <- function(input, output, session) {
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
 
+print(paste0("Line 1282 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
+
       #This section is keeping the selected elements to re apply after updating the filters
       if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
         AVal<-input$abundanceLow
       }else{
         AVal <-min(workMergedTable$data$Abundance)
       }
+
+print(paste0("Line 1291 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
+
       if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
         BVal<-input$abundanceHigh
       }else{
@@ -1303,7 +1311,9 @@ shinyAppServer <- function(input, output, session) {
       PVal <- input$dateInput[1]
       QVal <- input$dateInput[2]
 
+print(paste0("Line 1314 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+print(paste0("Line 1316 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
       shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
       shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
@@ -1370,17 +1380,6 @@ shinyAppServer <- function(input, output, session) {
     removeModal()
 
   })
-
-
-
-
-
-
-
-
-
-
-
 
   ####  Create a global function for the initial setting and resetting of the map #####
 

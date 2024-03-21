@@ -119,21 +119,18 @@ shinyAppServer <- function(input, output, session) {
 
   ################## mappingDashboard Click observe event #######################
   shiny::observe({
-
-print("Right before the checking to see if there are data in the system at the observe")
-
     if (input$tab_being_displayed == "mappingDashboard"){
-      if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
+      if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
         shiny::showModal(shiny::modalDialog(
           title = "Mapping Dashboard - No Data Loaded - 1",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-      }else if(ASVFileTable$data == 0 && provenanceDataFileTable$data == 0){
+      }else if(length(ASVFileTable$data) == 0 && length(provenanceDataFileTable$data) == 0){
         shiny::showModal(shiny::modalDialog(
           title = "Mapping Dashboard - No Data Loaded - 2",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
-      }else if (is.na(mergedTable$data) && is.na(workMergedTable$data)){
+      }else if (!is.data.frame(mergedTable$data) && !is.data.frame(workMergedTable$data)){
         shiny::showModal(shiny::modalDialog(
           title = "Mapping Dashboard - No Data Loaded - 4",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
@@ -144,9 +141,6 @@ print("Right before the checking to see if there are data in the system at the o
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
       }else{
-
-print("At the point where we passed the checks for data and before setting the data points")
-
         #Resetting the data mapping points for the first time
         setMappingDataPoints()
       }
@@ -208,13 +202,8 @@ print("At the point where we passed the checks for data and before setting the d
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
-
-print("Here before the if with the && at the top of the datasubmit observeEvent")
-
     if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
         !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
-
-print("Here after the if with the && at the top of the datasubmit observeEvent")
 
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
@@ -348,13 +337,7 @@ print("Here after the if with the && at the top of the datasubmit observeEvent")
 
   #Running the data combine
   shiny::observeEvent(input$dadaCombine, {
-
-print("Right before the dataCombine observeEvent")
-
     if (!is.na(dadaCombineFileDisplayString$data) && is.character(dadaCombineFileDisplayString$data) && length(dadaCombineFileDisplayString$data) != 0){
-
-print("Right after the dataCombine observeEvent")
-
       # Create variables for the arguments to avoid conflicts between the multithreading
       # and the shiny
       fileLoc= force(dadaCombineFileDisplayString$data)
@@ -479,22 +462,13 @@ print("Right after the dataCombine observeEvent")
     if(is.na(makeblastdbPathDisplayString$data)){
       makeblastdbPathDisplayString$data <- "makeblastdb"
     }
-
-print("Right before the if in the top of the makeBlastDB observeEvent")
-
     if (!is.na(makeBlastDBFileLocDisplayString$data) && is.character(makeBlastDBFileLocDisplayString$data) && length(makeBlastDBFileLocDisplayString$data) != 0 &&
         !is.na(makeBlastTaxaDBLocDisplayString$data) && is.character(makeBlastTaxaDBLocDisplayString$data) && length(makeBlastTaxaDBLocDisplayString$data)!= 0 ){
-
-print("Right after the if in the top of the makeBlastDB observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(makeBlastDBFileLocDisplayString$data)
 
-print("Right before the  2nd if in the top of the makeBlastDB observeEvent")
-
       if(is.character(makeblastdbPathDisplayString$data) && length(makeblastdbPathDisplayString$data) != 0){
-
-print("Right after the  2nd if in the top of the makeBlastDB observeEvent")
 
         makeblastdbPath = force(makeblastdbPathDisplayString$data)
 
@@ -627,13 +601,9 @@ print("Right after the  2nd if in the top of the makeBlastDB observeEvent")
       blastnPathDisplayString$data <- "blastn"
     }
 
-print("Right before the if in the top of the blastSequences observeEvent")
-
     if (!is.na(BLASTDatabasePathDisplayString$data) && is.character(BLASTDatabasePathDisplayString$data) && length(BLASTDatabasePathDisplayString$data) != 0 &&
         !is.na(blastnPathDisplayString$data) && is.character(blastnPathDisplayString$data) && length(blastnPathDisplayString$data) != 0 &&
         !is.na(querySeqPathDisplayString$data) && is.character(querySeqPathDisplayString$data) && length(querySeqPathDisplayString$data) != 0) {
-
-print("Right after the if in the top of the blastSequences observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       databasePath = force(BLASTDatabasePathDisplayString$data)
@@ -641,7 +611,7 @@ print("Right after the if in the top of the blastSequences observeEvent")
       querySeqPath = force(querySeqPathDisplayString$data)
       minLen = force(input$BLASTminLen)
       BLASTResults = force(input$BLASTResults)
-      numCores = force(input$blastSeqNumCores)
+      if(.Platform$OS.type == 'windows'){numCores=1}else{numCores = force(input$blastSeqNumCores)}
 
       tryCatch(
         expr = {
@@ -740,11 +710,7 @@ print("Right after the if in the top of the blastSequences observeEvent")
 
   shiny::observeEvent(input$taxonAssign, {
 
-print("Right before the if in the top of the taxonAssign observeEvent")
-
     if (!is.na(taxaAssignFileLocDisplayString$data) && is.character(taxaAssignFileLocDisplayString$data) && length(taxaAssignFileLocDisplayString$data) != 0 && !is.na(taxaAssignDBLocDisplayString$data) && is.character(taxaAssignDBLocDisplayString$data) && length(taxaAssignDBLocDisplayString$data) != 0) {
-
-print("Right after the if in the top of the taxonAssign observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(taxaAssignFileLocDisplayString$data)
@@ -836,11 +802,7 @@ print("Right after the if in the top of the taxonAssign observeEvent")
 
   shiny::observeEvent(input$combineTaxa, {
 
-print("Right before the if in the top of the combineTaxa observeEvent")
-
     if (!is.na(combineTaxaFileLocDisplayString$data) && is.character(combineTaxaFileLocDisplayString$data) && length(combineTaxaFileLocDisplayString$data) != 0) {
-
-print("Right after the if in the top of the combineTaxa observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(combineTaxaFileLocDisplayString$data)
@@ -914,11 +876,7 @@ print("Right after the if in the top of the combineTaxa observeEvent")
 
   shiny::observeEvent(input$reduceTaxa, {
 
-print("Right before the if in the top of the reduceTaxa observeEvent")
-
     if (!is.na(reduceTaxaFileLocDisplayString$data) && is.character(reduceTaxaFileLocDisplayString$data) && length(reduceTaxaFileLocDisplayString$data) != 0) {
-
-print("Right after the if in the top of the reduceTaxa observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(reduceTaxaFileLocDisplayString$data)
@@ -995,11 +953,7 @@ print("Right after the if in the top of the reduceTaxa observeEvent")
 
   shiny::observeEvent(input$combineReduceTaxa, {
 
-print("Right before the if in the top of the combineReduceTaxa observeEvent")
-
     if (!is.na(combineReducedTaxaFileLocDisplayString$data) && is.character(combineReducedTaxaFileLocDisplayString$data) && length(combineReducedTaxaFileLocDisplayString$data) != 0) {
-
-print("Right after the if in the top of the combineReduceTaxa observeEvent")
 
       # Create local variables to avoid conflicts with shiny and multithread
       fileLoc = force(combineReducedTaxaFileLocDisplayString$data)
@@ -1156,13 +1110,8 @@ print("Right after the if in the top of the combineReduceTaxa observeEvent")
             # Read all files and store data frames in a list
             ASVFileObject <- lapply(files[,1], read_file)
 
-print(paste0("Right before the for loop that uses the length of the ASVFileObject in the submitDataImport observeEvent and here is the length...", length(ASVFileObject)) )
-
             #For loop flattening and combining all of the elements in the ASVFileObject
             for(ASVFileObjectRecords in 1:length(ASVFileObject)){
-
-print("In the for loop that uses the length of the ASVFileObject in the submitDataImport observeEvent")
-
 
               #Add a column to the front of the data frame with unique identifiers.
               ASVFileTableTemp <- cbind(Number = 1:nrow(ASVFileObject[[ASVFileObjectRecords]]), ASVFileObject[[ASVFileObjectRecords]])
@@ -1276,18 +1225,13 @@ print("In the for loop that uses the length of the ASVFileObject in the submitDa
 
   shiny::observeEvent(input$updateFilterMappingButton, {
 
-print(paste0("In the updateFilterMappingButton observe event before the if/else-if length(mergedTable$data)...", length(mergedTable$data)))
-
-    if(is.na(ASVFileTable$data) && is.na(provenanceDataFileTable$data)){
-
+    if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 1",
         "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
       ))
 
     }else if (length(mergedTable$data)==0){
-
-print("In the updateFilterMappingButton observe event else if section that uses the length(mergedTable$data)")
 
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 2",
@@ -1335,12 +1279,17 @@ print("In the updateFilterMappingButton observe event else if section that uses 
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
 
+print(paste0("Line 1282 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
+
       #This section is keeping the selected elements to re apply after updating the filters
       if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
         AVal<-input$abundanceLow
       }else{
         AVal <-min(workMergedTable$data$Abundance)
       }
+
+print(paste0("Line 1291 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
+
       if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
         BVal<-input$abundanceHigh
       }else{
@@ -1362,7 +1311,9 @@ print("In the updateFilterMappingButton observe event else if section that uses 
       PVal <- input$dateInput[1]
       QVal <- input$dateInput[2]
 
+print(paste0("Line 1314 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+print(paste0("Line 1316 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
       shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
       shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)

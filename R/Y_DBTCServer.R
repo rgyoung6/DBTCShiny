@@ -1279,16 +1279,12 @@ shinyAppServer <- function(input, output, session) {
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
 
-print(paste0("Line 1282 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
-
       #This section is keeping the selected elements to re apply after updating the filters
       if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
         AVal<-input$abundanceLow
       }else{
         AVal <-min(workMergedTable$data$Abundance)
       }
-
-print(paste0("Line 1291 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
 
       if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
         BVal<-input$abundanceHigh
@@ -1311,9 +1307,7 @@ print(paste0("Line 1291 - max(workMergedTable$data$Abundance) = ", max(workMerge
       PVal <- input$dateInput[1]
       QVal <- input$dateInput[2]
 
-print(paste0("Line 1314 - min(workMergedTable$data$Abundance) = ", min(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
-print(paste0("Line 1316 - max(workMergedTable$data$Abundance) = ", max(workMergedTable$data$Abundance)))
       shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
       shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
       shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)

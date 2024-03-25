@@ -165,11 +165,11 @@ shinyAppServer <- function(input, output, session) {
         },
         error = function(e){
           print("Error - Dada Location Button choose file cancelled")
-          dadaLocation$data <- NA
+
         },
         warning = function(w){
           print("Warning - Dada Location Button choose file cancelled")
-          dadaLocation$data <- NA
+
         }
       )
     }
@@ -191,25 +191,37 @@ shinyAppServer <- function(input, output, session) {
         },
         error = function(e){
           print("Error - Primer Location Button choose file cancelled")
-          dadaLocation$data <- NA
+
         },
         warning = function(w){
           print("Warning - Primer Location Button choose file cancelled")
-          dadaLocation$data <- NA
+
         }
       )
     }
   },ignoreInit = TRUE)
 
   shiny::observeEvent(input$dadaSubmit, {
-    if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0 &&
-        !is.na(primerFileDisplayString$data) && is.character(primerFileDisplayString$data) && length(primerFileDisplayString$data) != 0){
-
+    if (!is.na(dadaDirectoryDisplayString$data) && is.character(dadaDirectoryDisplayString$data) && length(dadaDirectoryDisplayString$data) != 0){
       # Create variables to call the dada_implement so that there are no conflicts
       # with the multithreading and the shiny app
-
       runFolderLoc <- force(dadaDirectoryDisplayString$data)
       primerFile <- force(primerFileDisplayString$data)
+
+      #This try catch sets up the Shiny to send the appropriate value of NA if the
+      # primerFile is not included or if the selection window is cancelled.
+      tryCatch(
+        expr = {
+          if(length(primerFile)==0){
+            primerFile = NA
+          }
+        },
+        error = function(e){
+          primerFile = NA
+        },
+        warning = function(w){
+          primerFile = NA
+        })
 
       if (force(input$uniOrbidirectional) == "Unidirectional"){
         unidirectional = TRUE
@@ -286,7 +298,7 @@ shinyAppServer <- function(input, output, session) {
             "Dada Implement - Please refer to the R consol for more information - 1"
           ))
           print("Error - Dada Implement - 1")
-          dadaLocation$data <- NA
+
         },
         warning = function(w){
           removeModal()
@@ -295,12 +307,12 @@ shinyAppServer <- function(input, output, session) {
             "Dada Implement - Please refer to the R consol for more information - 2"
           ))
           print("Warning - Dada Implement - 2")
-          dadaLocation$data <- NA
+
         })
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
-        "Please select a primer file and appropriate fastq file location and try submitting again!"
+        "Please select an appropriate fastq file location and try submitting again!"
       ))
       print("Warning - Dada Implement primer file and dada location incorrect - 3")
     }
@@ -325,11 +337,11 @@ shinyAppServer <- function(input, output, session) {
         },
         error = function(e){
           print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-          dadaLocation$data <- NA
+
         },
         warning = function(w){
           print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-          dadaLocation$data <- NA
+
         }
       )
     }

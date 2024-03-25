@@ -166,27 +166,44 @@ dada_implement <- function(runFolderLoc = NULL,
                            minFinalSeqLen = 100){
 
   #If there are issues and I need to audit the script make this 1
-  auditScript=0
+  auditScript=1
 
   if(unidirectional == FALSE & bidirectional == FALSE){
     print("One or both of the unidirectional or bidirectional selections need to be TRUE!")
   }else{
+
+    if(is.null(runFolderLoc)){
+      # prompting to choose the file of interest with the tab delimited primer info
+      print("Select a fastq file in one of the run folders in the directory of")
+      print("interest. NOTE: all run folders with fastq data in the parent directory")
+      print("will be processed by DBTC. If this is not what you want please ")
+      print("rearrange your folder structure")
+      n <- substr(readline(prompt="Hit enter key to continue..."),1,1)
+      #Set the target folder.
+      runFolderLoc <- file.choose()
+    }
 
     #Get the initial working directory
     start_wd <- getwd()
     on.exit(setwd(start_wd))
 
     if(is.null(primerFile)){
-      # prompting to choose the file of interest with the tab delimited primer info
-      n <- substr(readline(prompt="Choose the file with the primers of interest. Hit enter key to continue..."),1,1)
-      primerFile <- file.choose()
-    }
-
-    if(is.null(runFolderLoc)){
-      # prompting to choose the file of interest with the tab delimited primer info
-      n <- substr(readline(prompt="Select a fastq file in one of the run folders in the directory of interest (NOTE: all run folders with fastq data in the parent directory will be processed by DBTC. If this is not what you want please rearrange your folder structure)."),1,1)
-      #Set the target folder.
-      runFolderLoc <- file.choose()
+      tryCatch(
+        expr = {
+          # prompting to choose the file of interest with the tab delimited primer info
+          print("Choose the file with the primers of interest. If there is no primer")
+          print("file for this analysis then submit the function with primerFile = '' ")
+          print("or cancel the prompt for the location of the file. ")
+          n <- substr(readline(prompt= "Hit enter key to continue..."),1,1)
+          primerFile <- file.choose()
+        },
+        error = function(e){
+          primerFile = NULL
+        },
+        warning = function(w){
+          primerFile = NULL
+        }
+      )
     }
 
     runFolderLoc <- dirname(dirname(runFolderLoc))
@@ -198,18 +215,42 @@ dada_implement <- function(runFolderLoc = NULL,
       suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE))
     }
 
-    #Read in the primers from the primer file.
-    primerFileData <- read.delim(primerFile, header = TRUE)
+    if(!is.null(primerFile)){
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1A")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1A"), file = auditFile, append = TRUE))}
 
-    #Set a list for the forward and reverse primers
-    fwdPrimerList<-primerFileData[,1]
-    fwdPrimerList<-fwdPrimerList[!(fwdPrimerList=="")]
-    revPrimerList<-primerFileData[,2]
-    revPrimerList<-revPrimerList[!(revPrimerList=="")]
+      #Read in the primers from the primer file.
+      primerFileData <- read.delim(primerFile, header = TRUE)
 
-    #Get the maximum length of the forward and reverse primers
-    fwdPrimeMaxLen<-as.numeric(max(nchar(fwdPrimerList)))
-    revPrimeMaxLen<-as.numeric(max(nchar(revPrimerList)))
+      #Set a list for the forward and reverse primers
+      fwdPrimerList<-primerFileData[,1]
+      fwdPrimerList<-fwdPrimerList[!(fwdPrimerList=="")]
+      revPrimerList<-primerFileData[,2]
+      revPrimerList<-revPrimerList[!(revPrimerList=="")]
+
+      #Audit line
+      if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1B")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1B"), file = auditFile, append = TRUE))}
+
+      #Get the maximum length of the forward and reverse primers
+      fwdPrimeMaxLen<-as.numeric(max(nchar(fwdPrimerList)))
+      revPrimeMaxLen<-as.numeric(max(nchar(revPrimerList)))
+
+      if(fwdPrimeMaxLen == 0){
+        primerFileCheck = FALSE
+      }else if(is.na(revPrimeMaxLen) & bidirectional==TRUE){
+        primerFileCheck = FALSE
+      }else{
+        primerFileCheck = TRUE
+      }
+
+    }else{
+
+      primerFileCheck = FALSE
+
+    }
+
+    #Audit line
+    if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1C")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1C"), file = auditFile, append = TRUE))}
 
     #Set up the Dada forward and reverse length trim to remove poor quality nucleotides
     truncLenValue = c(truncLenValueF, truncLenValueR)
@@ -218,25 +259,20 @@ dada_implement <- function(runFolderLoc = NULL,
     #unknown nucleotides so it is set to 0
     maxNVal=0
 
-    if(fwdPrimeMaxLen == 0){
-      primerFileCheck = FALSE
-    }else if(is.na(revPrimeMaxLen) & bidirectional==TRUE){
-      primerFileCheck = FALSE
-    }else{
-      primerFileCheck = TRUE
-    }
-
     if(is.null(runFolderLoc)){
       print("A target directory containing folders with runs and in these run folders the fastq files is necessary to run the program")
       print("These MiSeq runs need to be for a single set of primers. If another set of primers is desired then this script will need to be run multiple times.")
       print(paste0("Current file folder location: ", runFolderLoc))
-    } else if(isFALSE(primerFileCheck) && (fwdTrimLen < 1 || revTrimLen < 1)){
-      print("Primer sequences or primer end trimming lengths are required to run the program.")
-      print(paste0("Please verify the current values included as arguments or in the Primer File: "))
-      print(paste0("primerFile: ", primerFile))
-      print(paste0("fwdTrimLen: ", fwdTrimLen))
-      print(paste0("revTrimLen: ", revTrimLen))
     } else{
+
+      if(isFALSE(primerFileCheck) && (fwdTrimLen < 1 || revTrimLen < 1)){
+        print("Primer sequences or primer end trimming lengths were not submitted or there was no data in the file.")
+        print("The program will run but will only use quality trimming.")
+        print(paste0("If this is incorrect please halt this process correct your settings or files and resubmit! "))
+        print(paste0("primerFile: ", primerFile))
+        print(paste0("fwdTrimLen: ", fwdTrimLen))
+        print(paste0("revTrimLen: ", revTrimLen))
+      }
 
       #Audit line
       if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
@@ -278,10 +314,11 @@ dada_implement <- function(runFolderLoc = NULL,
         filteredFolder <-paste0(workLoc, "/", dateStamp, dirName,"_B_Filt")
         dir.create(filteredFolder)
 
-        #Create a subfolder for filtered data files
-        filteredSubFolder <-paste0(filteredFolder, "/Primer_Trim")
-        dir.create(filteredSubFolder)
-
+        if(primerFileCheck){
+          #Create a subfolder for primer trimmed files
+          filteredSubFolder <-paste0(filteredFolder, "/Primer_Trim")
+          dir.create(filteredSubFolder)
+        }
         #Create a subfolder for output files
         outFolder <- paste0(workLoc, "/", dateStamp, dirName,"_D_Output")
         dir.create(outFolder)
@@ -314,10 +351,12 @@ dada_implement <- function(runFolderLoc = NULL,
         suppressWarnings(write(paste0("Minimum read length for the Dada2 filterandtrim() function (truncLenValue): ", truncLenValue), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0("Forward and reverse trim length values used in the Dada2 filterandtrim() function: Forward (fwdTrimLen) = ", fwdTrimLen, "; Reverse (revTrimLen) = ", revTrimLen), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0("File used containing the forward and reverse trim sequences data: ", primerFile), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
-        suppressWarnings(write(paste0("Forward and reverse trim sequences used in the trim() function from the Insect package: \nForward - "), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
-        suppressWarnings(write(paste0(fwdPrimerList), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
-        suppressWarnings(write(paste0("Reverse - "), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
-        suppressWarnings(write(paste0(revPrimerList), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+        if(primerFileCheck){
+          suppressWarnings(write(paste0("Forward and reverse trim sequences used in the trim() function from the Insect package: \nForward - "), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+          suppressWarnings(write(paste0(fwdPrimerList), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+          suppressWarnings(write(paste0("Reverse - "), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+          suppressWarnings(write(paste0(revPrimerList), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+        }
         suppressWarnings(write(paste0("Minimum read length for the final results (minFinalSeqLen): ", minFinalSeqLen), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0("********************************************************************************"), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
         suppressWarnings(write(paste0(""), file = paste0(outFolder,"/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
@@ -393,69 +432,76 @@ dada_implement <- function(runFolderLoc = NULL,
 
         ########################### PATTERN TRIMMING SECTION ############################################
 
-        #Message quality trimming - Print to screen and log file
-        print(paste0("Begin pattern based trimming at time...", Sys.time()))
-        suppressWarnings(write(paste0("Begin pattern based trimming at time...", Sys.time()), file = paste0(outFolder, "/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
+        if(primerFileCheck){
 
-        if(bidirectional==TRUE | (bidirectional==TRUE & unidirectional == TRUE)){
+          #Message quality trimming - Print to screen and log file
+          print(paste0("Begin pattern based trimming at time...", Sys.time()))
+          suppressWarnings(write(paste0("Begin pattern based trimming at time...", Sys.time()), file = paste0(outFolder, "/", dateStamp, dirName, "_dadaSummary.txt"), append = TRUE))
 
-          #Audit line
-          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11"), file = auditFile, append = TRUE))}
+          if(bidirectional==TRUE | (bidirectional==TRUE & unidirectional == TRUE)){
 
-          #For loop for each file in the forward direction in the submitted set
-          for (listCounter in 1:length(fwdFile$fileNamesNoDir)){
-            #Read in the fastqfile in to a ShortreadQ format file
-            readInFile<-ShortRead::readFastq(fwdFile[listCounter,1])
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11"), file = auditFile, append = TRUE))}
 
-            for(i in 1:length(primerFileData[,1])){
-              #Pattern trim the reads
-              readInFile <- ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[i,1]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch	 = maxPrimeMis)
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11A")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 11A"), file = auditFile, append = TRUE))}
+
+            #For loop for each file in the forward direction in the submitted set
+            for (listCounter in 1:length(fwdFile$fileNamesNoDir)){
+              #Read in the fastqfile in to a ShortreadQ format file
+              readInFile<-ShortRead::readFastq(fwdFile[listCounter,1])
+
+              for(fwdPrimerFileCounter in 1:length(primerFileData[,1])){
+                #Pattern trim the reads
+                readInFile <- ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[fwdPrimerFileCounter,1]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch	 = maxPrimeMis)
+              }
+              #Write files into a folder in the A_folder
+              ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", fwdFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
             }
-            #Write files into a folder in the A_folder
-            ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", fwdFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
+
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12"), file = auditFile, append = TRUE))}
+
+            #For loop for each file in the reverse direction in the submitted set
+            for (listCounter in 1:length(revFile$fileNamesNoDir)){
+              #Read in the fastqfile in to a ShortreadQ format file
+              readInFile<-readFastq(revFile[listCounter,1])
+
+              for(revPrimerFileCounter in 1:length(primerFileData[,1])){
+                #Pattern trim the reads
+                readInFile<-ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[revPrimerFileCounter,2]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch = maxPrimeMis)
+              }
+              #Write files into a folder in the A_folder
+              ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", revFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
+            }
+
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 13")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 13"), file = auditFile, append = TRUE))}
+
+          }else{
+
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 14")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 14"), file = auditFile, append = TRUE))}
+
+            #For loop for each file in the forward direction in the submitted set
+            for (listCounter in 1:length(fwdFile$fileNamesNoDir)){
+              #Read in the fastqfile in to a ShortreadQ format file
+              readInFile<-readFastq(fwdFile[listCounter,1])
+
+              for(fwdPrimerFileCounter in 1:length(primerFileData[,1])){
+                #Pattern trim the reads
+                readInFile <- ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[fwdPrimerFileCounter,1]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch	 = maxPrimeMis)
+              }
+              #Write files into a folder in the A_folder
+              ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", fwdFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
+            }
+
+            #Audit line
+            if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 15")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 15"), file = auditFile, append = TRUE))}
+
           }
 
-          #Audit line
-          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 12"), file = auditFile, append = TRUE))}
-
-          #For loop for each file in the reverse direction in the submitted set
-          for (listCounter in 1:length(revFile$fileNamesNoDir)){
-            #Read in the fastqfile in to a ShortreadQ format file
-            readInFile<-readFastq(revFile[listCounter,1])
-
-            for(i in 1:length(primerFileData[,1])){
-              #Pattern trim the reads
-              readInFile<-ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[i,2]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch = maxPrimeMis)
-            }
-            #Write files into a folder in the A_folder
-            ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", revFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
-          }
-
-          #Audit line
-          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 13")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 13"), file = auditFile, append = TRUE))}
-
-        }else{
-
-          #Audit line
-          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 14")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 14"), file = auditFile, append = TRUE))}
-
-          #For loop for each file in the forward direction in the submitted set
-          for (listCounter in 1:length(fwdFile$fileNamesNoDir)){
-            #Read in the fastqfile in to a ShortreadQ format file
-            readInFile<-readFastq(fwdFile[listCounter,1])
-
-            for(i in 1:length(primerFileData[,1])){
-              #Pattern trim the reads
-              readInFile <- ShortRead::trimLRPatterns(Lpattern = as.character(primerFileData[i,1]), Rpattern = "", subject = readInFile, max.Lmismatch = maxPrimeMis, max.Rmismatch	 = maxPrimeMis)
-            }
-            #Write files into a folder in the A_folder
-            ShortRead::writeFastq(readInFile, paste0(filteredSubFolder, "/", fwdFile[listCounter,3], "_primeTrim.fastq.gz"), compress=TRUE)
-          }
-
-          #Audit line
-          if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 15")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 15"), file = auditFile, append = TRUE))}
-
-        }
+        }#End of check if primerFileCheck
 
         ########################### QUALITY TRIMMING SECTION ############################################
 
@@ -468,9 +514,19 @@ dada_implement <- function(runFolderLoc = NULL,
           #Audit line
           if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 16")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 16"), file = auditFile, append = TRUE))}
 
-          #Variable names for input prime trimmed files
-          inputFwdFilt <- paste0(filteredSubFolder, "/", fwdFile[,3], "_primeTrim.fastq.gz")
-          inputRevFilt <- paste0(filteredSubFolder, "/", revFile[,3], "_primeTrim.fastq.gz")
+          if(primerFileCheck){
+
+            #Variable names for input prime trimmed files
+            inputFwdFilt <- paste0(filteredSubFolder, "/", fwdFile[,3], "_primeTrim.fastq.gz")
+            inputRevFilt <- paste0(filteredSubFolder, "/", revFile[,3], "_primeTrim.fastq.gz")
+
+          }else{
+
+            #Variable names for input prime trimmed files
+            inputFwdFilt <- fwdFile[,1]
+            inputRevFilt <- revFile[,1]
+
+          }
 
           #Variable names for filtered & trimmed fastq files
           fwdFilt <- paste0(filteredFolder, "/", fwdFile[,4], "_fwdFilt.fastq.gz")
@@ -588,8 +644,17 @@ dada_implement <- function(runFolderLoc = NULL,
           #Audit line
           if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 22")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 22"), file = auditFile, append = TRUE))}
 
-          #Variable names for input prime trimmed files
-          inputFwdFilt <- paste0(filteredSubFolder, "/", fwdFile[,3], "_primeTrim.fastq.gz")
+          if(primerFileCheck){
+
+            #Variable names for input prime trimmed files
+            inputFwdFilt <- paste0(filteredSubFolder, "/", fwdFile[,3], "_primeTrim.fastq.gz")
+
+          }else{
+
+            #Variable names for input prime trimmed files
+            inputFwdFilt <- fwdFile[,1]
+
+          }
 
           #Variable names for filtered & trimmed fastq files
           fwdFilt <- paste0(filteredFolder, "/", fwdFile[,4], "_fwdFilt.fastq.gz")
@@ -1173,8 +1238,12 @@ dada_implement <- function(runFolderLoc = NULL,
         #Add in the initial quality and filtered quality numbers for reporting
         track<-rbind.fill(as.data.frame(filterOut[1,,drop=FALSE], check.names=FALSE),as.data.frame(fwdInputTempPlotValuesOut, check.names=FALSE))
 
+trackGlobalA<<-track
+
         #Row names vector
         rowNamesTemp <- c("inputReads", gsub("_primeTrim","",rownames(fwdInputTempPlotValuesOut)))
+
+rowNamesTempGlobal<<-rowNamesTemp
 
         if(bidirectional==TRUE){
 

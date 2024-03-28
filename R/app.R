@@ -379,7 +379,7 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Select a file in the folder with the NCBI database you would like to use."),
              shiny::br(),
-             shinyFiles::shinyFilesButton("BLASTDatabasePath", "Database file",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
+             shinyFiles::shinyFilesButton("BLASTDatabasePath", "Database File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
              shiny::column(5,shiny::textOutput("BLASTDatabasePathDisplay")),

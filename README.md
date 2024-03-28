@@ -23,6 +23,9 @@ Before using these files and working through this tutorial please install the [D
     * [Establish a local NCBI prepared sequence database](#establish-a-local-ncbi-prepared-sequence-database)
     * [Create a custom sequence database to BLAST against](#create-a-custom-sequence-database-to-blast-against)
     * [Create a local NCBI taxonomy database to assign taxonomic identifications to BLAST results](#create-a-local-ncbi-taxonomy-database-to-assign-taxonomic-identifications-to-blast-results)
+  *[R Packages Dependencies](#r-packages-dependencies)
+    *[Bioconductor ShortRead and Dada2 packages](#bioconductor-shortread-and-dada2-packages)
+    * [CRAN](#cran)
 - [Function Descriptions](#function-descriptions)
 - [Naming Convention Rules](#naming-convention-rules)
 - [Citation](#citation)
@@ -107,9 +110,10 @@ prepareDatabase('accessionTaxa.sql', getAccessions = FALSE)
 ```
 Note: Along with the accessionTaxa.sql two other files nodes.dmp and names.dmp files are downloaded. These two files are not necessary for downstream analyses and can be deleted.
 
+([Back to Top](#table-of-contents))
 ## R Packages Dependencies
 
-### Bioconductor - ShortRead and Dada2 packages
+### Bioconductor ShortRead and Dada2 packages
 
 The [ShortRead](https://bioconductor.org/packages/release/bioc/html/ShortRead.html) package is required to run elements of the DBTC pipeline and can be obtained through Bioconductor.
 

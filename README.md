@@ -17,6 +17,12 @@ Before using these files and working through this tutorial please install the [D
 # Table of Contents  
 - [Installation](#installation)
 - [Package Dependencies](#package-dependencies)
+  * [External R Element Dependencies](#external-r-element-dependencies)
+    * [NCBI BLAST+ local program to run BLAST on local databases](#ncbi-blast+-local-program-to-run-blast-on-local-databases)
+    * [R package taxonomizr to establish a local NCBI taxonomy database](#r-package-taxonomizr-to-establish-a-local-ncbi-taxonomy-database)
+    * [Establish a local NCBI prepared sequence database](#establish-a-local-ncbi-prepared-sequence-database)
+    * [Create a custom sequence database to BLAST against](#create-a-custom-sequence-database-to-blast-against)
+    * [Create a local NCBI taxonomy database to assign taxonomic identifications to BLAST results](#create-a-local-ncbi-taxonomy-database-to-assign-taxonomic-identifications-to-blast-results)
 - [Function Descriptions](#function-descriptions)
 - [Naming Convention Rules](#naming-convention-rules)
 - [Citation](#citation)

@@ -382,14 +382,14 @@ The constructed database can then be used with the seq_BLAST() function.
 seq_BLAST() - Search [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files of unknown sequences against a BLAST formatted database.
 
 ### Input 
-Provide a location for the BLAST database you would like to use by selecting a file in the target directory (This can be a built database using the make_BLAST_DB() function or a preformatted [NCBI BLAST database](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). Then provide the location of the query sequence files by indicating a file in a directory that contains the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 200), and finally the number of cores to process the function (default = 1, Windows implementation can only use a single core and will default to this value when running on Windows).
+Provide a location for the BLAST database you would like to use by selecting a file in the target directory (This can be a built database using the make_BLAST_DB() function or a preformatted [NCBI BLAST database](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). Then provide the location of the query sequence files by indicating a file in a directory that contains the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the maximum depth of the BLAST returned results (default = 200), and finally the number of cores to process the function (default = 1, Windows implementation can only use a single core and will default to this value when running on Windows).
 
 ### Arguments
 - <strong>databasePath -</strong> The location of a file in a directory where the desired BLAST database is located.
 - <strong>querySeqPath -</strong> The local path for the directory containing all of the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files wishing to be BLASTed
 - <strong>blastnPath -</strong> The location of the NCBI blast+ blastn program (default = blastn).
 - <strong>minLen -</strong> The minimum length of the sequences that will be BLASTed (default = 100).
-- <strong>BLASTResults -</strong> The number of returned results, or the depth of the reported results, saved from the BLAST (default = 250).
+- <strong>BLASTResults -</strong> The maximum number of returned results, or the depth of the reported results, saved from the BLAST (default = 250).
 - <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 
 ### Output

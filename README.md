@@ -97,7 +97,7 @@ NCBI preformatted databases can be established through two methods.
 2. You can download your desired preformatted NCBI database manually with instructions at [BLAST FTP Site](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory) and a list of the available databases at [Index of /blast/db](https://ftp.ncbi.nlm.nih.gov/blast/db/). 
 
 ### Create a custom sequence database to BLAST against
-In addition to the NCBI resources, DBTC can also use custom databases. To establish these databases you will requre a fasta file with the desired records with MACER formatted headers. The MACER R package and instructions can be found at either of the two locations:
+In addition to the NCBI resources, DBTC can also use custom databases. To establish these databases you will requre a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the desired records with MACER formatted headers. The MACER R package and instructions can be found at either of the two locations:
 
 [MACER CRAN](https://cran.r-project.org/web/packages/MACER/index.html)
 
@@ -171,21 +171,21 @@ launchDBTCShiny()
 # Function Descriptions
 
 ## dada_implement()
-This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contains fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). A run is a group of results processed at the same time on the same machine representing the same molecular methods. All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of fasta files and amplicon sequencing variant (ASV) tables. 
+This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contains fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). A run is a group of results processed at the same time on the same machine representing the same molecular methods. All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files and amplicon sequencing variant (ASV) tables. 
     
 ## combine_dada_output()
-This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single ASV table with accompanying fasta file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all ASV tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
+This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single ASV table with accompanying [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all ASV tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
 
 ## make_BLAST_DB()
-This function takes a fasta file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) format and establishes a database upon which a BLAST search can be completed. There are also NCBI preformatted databases available where the make_BLAST_DB() function can then be skipped ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database. Note: The there are three main required elements for MACER formatted records which include a the Unique Identifier 
-- The MACER fasta header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
+This function takes a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) format and establishes a database upon which a BLAST search can be completed. There are also NCBI preformatted databases available where the make_BLAST_DB() function can then be skipped ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database. Note: The there are three main required elements for MACER formatted records which include a the Unique Identifier 
+- The MACER [Fasta](https://en.wikipedia.org/wiki/FASTA_format) header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
 
 
 ## seq_BLAST()
-This function takes fasta files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
+This function takes [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
 
 ## taxon_assign()
-This function takes a BLAST result file and associated fasta files (either on their own or with accompanying ASV files generated from the dada_implement function) and collapses the multiple BLAST results into as single result for each query sequence. When an ASV table is present the taxonomic results will be combined with the ASV table.
+This function takes a BLAST result file and associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files (either on their own or with accompanying ASV files generated from the dada_implement function) and collapses the multiple BLAST results into as single result for each query sequence. When an ASV table is present the taxonomic results will be combined with the ASV table.
 
 ## combine_assign_output()
 This function takes a file selection and then uses all 'taxaAssign' files in that directory and combines them into a single output 'taxaAssignCombined.tsv' file.
@@ -313,9 +313,9 @@ There are numerous files in the D_Output folder. These include:
 - dadaSummary.txt file which provides all of the information on the running of the dada_implement() function.
 - dadaSummaryTable.tsv contains a table with summary information for the processing of the samples in the run.
 - ErrorForward.pdf and ErrorReverse.pdf provide visualizations on the assessed sequencing error for the sequencing run.
-- MergeFwdRev.tsv is the ASV table with the data from the sequencing run and the MergeFwdRev.fas is a fasta file with the reads from the samples. The MergeFwdRev files include reads that were able to be merged, as well as reads that were not able to be merged.
+- MergeFwdRev.tsv is the ASV table with the data from the sequencing run and the MergeFwdRev.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples. The MergeFwdRev files include reads that were able to be merged, as well as reads that were not able to be merged.
   NOTE: The merged, forward, and reverse reads are obtained in parallel analyses and combined into a single file so MergeFwdRev files will represent triplicate molecular processing results. These files are present to see if there are reads that are not represented or poorly represented across merged and unidirectional results, perhaps indicating issues with one of the primers.
-- Merge.tsv is the ASV table with the read data able to be merged from the sequencing run. The companion Merge.fas is a fasta file with the reads from the samples in fasta format.
+- Merge.tsv is the ASV table with the read data able to be merged from the sequencing run. The companion Merge.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples in [Fasta](https://en.wikipedia.org/wiki/FASTA_format) format.
 - TotalTable.tsv is an ASV table with all of the merged, forward, and reverse results as well as the retained results for the merged reads removed due to being suspected chimeric combinations.
 
 ### Dependencies
@@ -339,7 +339,7 @@ Two or more files to be combined are required as input for this function. These 
 ### Output
 The output from this function includes three files.
   1. YYYY_MM_DD_HHMM_combinedDada.tsv - combined ASV table
-  2. YYYY_MM_DD_HHMM_combinedDada.fas - combined fasta file
+  2. YYYY_MM_DD_HHMM_combinedDada.fas - combined [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file
   3. YYYY_MM_DD_HHMM_combinedDada.tsv - Summary file from the combine_dada_output run
 
 ### Intrepretation
@@ -355,14 +355,14 @@ Outputted data files will come in the same ASV table format as the output dada_i
 make_BLAST_DB() - Create a local database to BLAST against.
 
 ### Input 
-This function takes a fasta file (in MACER format) and establishes a database upon which a BLAST search can be completed. The outcome of the function is a folder with an NCBI database.
-- The MACER fasta header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
+This function takes a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file (in MACER format) and establishes a database upon which a BLAST search can be completed. The outcome of the function is a folder with an NCBI database.
+- The MACER [Fasta](https://en.wikipedia.org/wiki/FASTA_format) header format - ```>UniqueID|OtherInformation|Genus|species|OtherInformation|Marker```
 - An example of the header format output from the MACER program is ```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
   
 ### Arguments
-- <strong>fileLoc -</strong> The location of a file in a directory where all fasta files will be used to construct a BLASTable database. Default = NULL makeblastdbPath The local path for the blast+ 
+- <strong>fileLoc -</strong> The location of a file in a directory where all [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files will be used to construct a BLASTable database. Default = NULL makeblastdbPath The local path for the blast+ 
 - <strong>makeblastdbPath -</strong> program taxaDBLoc The location of the NCBI taxonomic data base (accessionTaxa.sql see the main DBTCShiny page for details).
-- <strong>inputFormat -</strong> This will either be NCBI formatted fasta file (header example ```>uniqueID|NCBItaxaID|Genus|species```) or a MACER (header example ```>uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase```) formatted file.
+- <strong>inputFormat -</strong> This will either be NCBI formatted [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file (header example ```>uniqueID|NCBItaxaID|Genus|species```) or a MACER (header example ```>uniqueID|other_ID|Genus|species|Other_info|markerOrDatabase```) formatted file.
 - <strong>dbName -</strong> A short 6-8 alpha character name used when building a database.
 - <strong>minLen -</strong> The minimum sequence length used to construct the BLAST database.
 
@@ -379,21 +379,21 @@ The constructed database can then be used with the seq_BLAST() function.
 ***
 
 ## Sequence BLAST
-seq_BLAST() - Search fasta files of unknown sequences against a BLAST formatted database.
+seq_BLAST() - Search [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files of unknown sequences against a BLAST formatted database.
 
 ### Input 
-Provide a location for the BLAST database you would like to use by selecting a file in the target directory (This can be a built database using the make_BLAST_DB() function or a preformatted [NCBI BLAST database](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). Then provide the location of the query sequence files by indicating a file in a directory that contains the fasta files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 200), and finally the number of cores to process the function (default = 1, Windows implementation can only use a single core and will default to this value when running on Windows).
+Provide a location for the BLAST database you would like to use by selecting a file in the target directory (This can be a built database using the make_BLAST_DB() function or a preformatted [NCBI BLAST database](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). Then provide the location of the query sequence files by indicating a file in a directory that contains the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files. Provide the path for the blast+ blastn program. Finally, provide the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST returned results (default = 200), and finally the number of cores to process the function (default = 1, Windows implementation can only use a single core and will default to this value when running on Windows).
 
 ### Arguments
 - <strong>databasePath -</strong> The location of a file in a directory where the desired BLAST database is located.
-- <strong>querySeqPath -</strong> The local path for the directory containing all of the fasta files wishing to be BLASTed
+- <strong>querySeqPath -</strong> The local path for the directory containing all of the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files wishing to be BLASTed
 - <strong>blastnPath -</strong> The location of the NCBI blast+ blastn program (default = blastn).
 - <strong>minLen -</strong> The minimum length of the sequences that will be BLASTed (default = 100).
 - <strong>BLASTResults -</strong> The number of returned results, or the depth of the reported results, saved from the BLAST (default = 250).
 - <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 
 ### Output
-Two files are produced from this function, a BLAST run file and a BLAST results file for each of the fasta files in the target directory.
+Two files are produced from this function, a BLAST run file and a BLAST results file for each of the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files in the target directory.
 
 ### Intrepretation
 The BLAST run file contains the command used to run the BLAST search. The BLAST results file includes all results in a tab delimited .tsv file format with the columns qseqid, sseqid, staxid, qcovs, pident, ssciname, scomname, qstart, qend, sstart, send, evalue.
@@ -408,11 +408,11 @@ The BLAST run file contains the command used to run the BLAST search. The BLAST 
 taxon_assign() - Using BLAST results to construct a table with taxonomic assignments for each unique sequence.
 
 ### Input 
-This function requires a BLAST output file and an associated fasta file. In addition, if present an ASV file will also be used to combine the taxonomic results when present. The BLAST results are reduced to a single result for each read. 
+This function requires a BLAST output file and an associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. In addition, if present an ASV file will also be used to combine the taxonomic results when present. The BLAST results are reduced to a single result for each read. 
 
 ### Arguments
-- <strong>fileLoc -</strong> The location of a file in a directory where all of the paired fasta and BLAST (and potentially ASV) files are located.
-- <strong>taxaDBLoc -</strong> The location of the NCBI taxonomic data base (accessionTaxa.sql, see the main DBTCShiny page for details). The local path for the directory containing all of the fasta files wishing to be BLASTed.
+- <strong>fileLoc -</strong> The location of a file in a directory where all of the paired [Fasta](https://en.wikipedia.org/wiki/FASTA_format) and BLAST (and potentially ASV) files are located.
+- <strong>taxaDBLoc -</strong> The location of the NCBI taxonomic data base (accessionTaxa.sql, see the main DBTCShiny page for details). The local path for the directory containing all of the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files wishing to be BLASTed.
 - <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 - <strong>coverage -</strong> The percent coverage used for taxonomic assignment for the above threshold results (Default coverage = 95).
 - <strong>ident -</strong> The percent identity used for the taxonomic assignment for above threshold results (Default ident = 95).

@@ -12,7 +12,7 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
 
 Before using these files and working through this tutorial please install the [DBTCShiny](https://github.com/rgyoung6/DBTCShiny) package.
 
-**NOTE:** While the DBTCShiny package has been built for the analysis of high-thoughput sequencing results, the BLAST and Condense functions as well as the Mapping function can be utilized with single specimen sanger sequencing data.
+**NOTE:** While the DBTCShiny package has been built for the analysis of high-thoughput sequencing results, the BLAST and Condense functions as well as the Mapping function can be utilized with single specimen Sanger sequencing data.
 
 # Table of Contents  
 - [Installation](#installation)

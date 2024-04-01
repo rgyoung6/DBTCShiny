@@ -345,7 +345,7 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Please select the location of the NCBI BLAST programs makeblastdb. If no file location is selected then the program will try to run in the local directory with the default 'makeblastdb'."),
              shiny::br(),
-             shinyFiles::shinyFilesButton("makeblastdbPath", "Make BLAST Location",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
+             shinyFiles::shinyFilesButton("makeblastdbPath", "makeblastdb Location",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
              shiny::column(5,shiny::textOutput("makeblastdbPathDisplay")),
@@ -389,7 +389,7 @@ dbtcTools <- function() {
            shiny::fluidRow(
              shiny::strong("Select the blastn command. If no file location is selected then the program will try to run in the local directory with the default 'blastn'."),
              shiny::br(),
-             shinyFiles::shinyFilesButton("blastnPath", "Blastn",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
+             shinyFiles::shinyFilesButton("blastnPath", "blastn Location",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
              shiny::br(),
              shiny::br(),
              shiny::column(5,shiny::textOutput("blastnPathDisplay")),

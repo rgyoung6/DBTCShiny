@@ -432,7 +432,7 @@ dbtcTools <- function() {
                                          and sequence records will still be
                                          processed."),
                            shiny::br(),
-                           shinyFiles::shinyFilesButton("taxaAssignFileLoc", "Select a File in the Location of BLAST and Dada ASV Table",title = "BLAST and Fasta File(s):",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
+                           shinyFiles::shinyFilesButton("taxaAssignFileLoc", "Select a file in the location of BLAST and Fasta file",title = "BLAST and Fasta File(s):",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("taxaAssignFileLocDisplay")),

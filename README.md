@@ -423,7 +423,7 @@ This function requires a BLAST output file and an associated [Fasta](https://en.
 
 ### Output
 A single taxonomic assignment file is created contains the string 'taxaAssign_YYYY_MM_DD_HHMM'.
-
+<a id="taxon-assignment-intrepretation"></a>
 ### Intrepretation
 The number of returned BLAST results is dictated by the seq_BLAST() BLASTResults argument. The taxon_assign() function takes into account all returned BLAST results for each read. At each taxonomic level assignmenta have quality metrics in parentheses after the name. These values ("Num_Rec", "Coverage", "Identity", "Max_eVal") represent the number of records with this taxonomic placement, the minimum coverage and identity, and the maximum eValue for the reported taxa.
 

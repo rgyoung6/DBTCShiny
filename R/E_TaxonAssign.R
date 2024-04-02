@@ -52,7 +52,7 @@
 #' the preponderance of the data. So if the threshold is set to 0.95, results
 #' will be flagged if the taxa directly below the assigned taxa has fewer than
 #' 0.95 percent of the records causing the upward taxonomic placement (Default
-#' ident = 0.95).
+#' propThres = 0.95).
 #' @param coverReportThresh The percent coverage threshold used for reporting
 #' flags below this threshold (Default coverReportThresh = 95).
 #' @param identReportThresh The percent identity threshold used for reporting

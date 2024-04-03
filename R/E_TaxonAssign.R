@@ -476,7 +476,11 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                 #if the rank is species then there isn't anything lower to do. Add dash to the proportional columns
                 if(condensedOut[1,"Final_Rank"] != "species"){
                   propResults <-condensedOut[1,which(colnames(condensedOut)== condensedOut[1,"Final_Rank"])+1, drop=FALSE]
-                  if(length(propResults)>1){
+#                  if(length(propResults)>1){
+
+propResultsGlobal<<-propResults
+
+                  if(nrow(propResults)>1){
                     if (max(as.numeric(propResults)/sum(as.numeric(propResults))) > propThres){
                       condensedOut[1,"Result_Code"] <- paste0("TBAT(",propThres,")")
                     }else{condensedOut[1,"Result_Code"] <- "-"}

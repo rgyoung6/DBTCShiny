@@ -455,7 +455,7 @@ dbtcTools <- function() {
                            shiny::br(),
                            shiny::numericInput("coverage", "The percent coverage used for taxonomic assignment for the above threshold results (Default coverage = 95)", value = 95, min = 0, max = 100),
                            shiny::numericInput("ident", "The percent identity used for the taxonomic assignment for above threshold results (Default ident = 95)", value = 95, min = 0, max = 100),
-                           shiny::numericInput("propThres", "The proportional threshold flags the final result based on the preponderance of the data. So if the threshold is set to 0.95, results will be flagged if the taxa direclty below the assigned taxa has fewer than 0.95% of the records causing the upward taxonomic placement (Default ident = 0.95).", value = 0.95, min = 0, max = 1)
+                           shiny::numericInput("propThres", "The proportional threshold flags the final result based on the preponderance of the data. So if the threshold is set to 0.95, results will be flagged if the taxa direclty below the assigned taxa has fewer than 0.95% of the records causing the upward taxonomic placement (Default propThres = 0.95).", value = 0.95, min = 0, max = 1)
                          )
          ),shiny::column(width = 4,
                          shiny::wellPanel(

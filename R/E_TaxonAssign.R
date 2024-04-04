@@ -106,7 +106,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
   start_wd <- getwd()
   on.exit(setwd(start_wd))
 
-  #load in the files list
   if (is.null(fileLoc)){
     print(paste0("Select a file in the file folder with the BLAST output file(s), associated fas file, and associated Dada ASV output files (if present)."))
     fileLoc <- file.choose()
@@ -120,7 +119,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
   #Audit line
   if(auditScript>0){
-    print(paste0("This is auditScript 3 - ",auditScript))
     auditFile <- paste0(dirname(fileLoc),"/", format(Sys.time(), "%Y_%m_%d_%H%M"), "_audit.txt")
     write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"), file = auditFile, append = FALSE)
     print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 1"))
@@ -340,8 +338,12 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                   taxaTotal <- merge(taxaTotal, taxaEval, by = taxaRank[taxaRankCount])
 
                   #add the number of records, query coverage, percent identity, and e values on to the taxa specific dataset
-                  taxaTotal <- cbind(taxaTotal, paste0("(",round(taxaTotal$Num_records,2),",",round(taxaTotal$taxaQuery,2),",",round(taxaTotal$taxaPerIdent,2),",",format(taxaTotal$taxaEval, digits = 2),")"))
-                  #adding the values in brackets back onto the species in a dataframe for merging below
+                  taxaTotal <- as.data.frame(cbind(taxaTotal, paste0("(",round(taxaTotal$Num_records,2),",",round(taxaTotal$taxaQuery,2),",",round(taxaTotal$taxaPerIdent,2),",",format(taxaTotal$taxaEval, digits = 2),")")))
+
+                  # Remove all white spaces from the column
+                  taxaTotal[,ncol(taxaTotal)]<- gsub("\\s+", "", taxaTotal[,ncol(taxaTotal)])
+
+                  #adding the values in brackets back onto the taxa in a dataframe for merging below
                   taxaTotal <- taxaTotal[,c(1, ncol(taxaTotal))]
                   condenseWork <- paste0(taxaTotal[,1],taxaTotal[,2])
 
@@ -398,7 +400,11 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                   taxaTotal <- merge(taxaTotal, taxaEval, by = taxaRank[taxaRankCount])
 
                   #add the number of records, query coverage, percent identity, and e values on to the taxa specific dataset
-                  taxaTotal <- cbind(taxaTotal, paste0("(",round(taxaTotal$Num_records,2),",", round(taxaTotal$taxaQuery,2),",", round(taxaTotal$taxaPerIdent,2),",", format(taxaTotal$taxaEval, digits = 2),")"))
+                  taxaTotal <- as.data.frame(cbind(taxaTotal, paste0("(",round(taxaTotal$Num_records,2),",", round(taxaTotal$taxaQuery,2),",", round(taxaTotal$taxaPerIdent,2),",", format(taxaTotal$taxaEval, digits = 2),")")))
+
+                  # Remove all white spaces from the column
+                  taxaTotal[,ncol(taxaTotal)]<- gsub("\\s+", "", taxaTotal[,ncol(taxaTotal)])
+
                   #adding the values in brackets back onto the species in a dataframe for merging below
                   taxaTotal <- taxaTotal[,c(1,ncol(taxaTotal))]
                   condenseWork <- paste0(taxaTotal[,1],taxaTotal[,2])
@@ -469,19 +475,39 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                 }
               }
 
+
               #Get the final taxonomic rank and use the uniqueTaxaAboveFilter dataframe to evaluate the number of different values in the rank right below.
               #If one of the returned values has greater than 95% of the returned results update the final result to be this value
               # TBAT: Taxa Below Assigned Taxa
               if(!is.na(condensedOut[1,"Final_Rank"])){
+
                 #if the rank is species then there isn't anything lower to do. Add dash to the proportional columns
                 if(condensedOut[1,"Final_Rank"] != "species"){
-                  propResults <-condensedOut[1,which(colnames(condensedOut)== condensedOut[1,"Final_Rank"])+1, drop=FALSE]
-#                  if(length(propResults)>1){
+                  #Get the results for the rank right below the final rank
+#                  propResults <-condensedOut[1,which(colnames(condensedOut) == condensedOut[1,"Final_Rank"])+1, drop=FALSE]
+                  propResults <-condensedOut[1,which(colnames(condensedOut) == condensedOut[1,"Final_Rank"])+1]
 
-propResultsGlobal<<-propResults
+                  # Split the string into separate elements
+                  propResults <- unlist(strsplit(unlist(propResults), ", "))
 
-                  if(nrow(propResults)>1){
+                  # Define a function to remove substring until the first occurrence of "(" and the "(" itself,
+                  # and then remove all characters after the first comma ","
+                  remove_prefix <- function(string) {
+                    sub("^[^(]*\\(([^,]*).*", "\\1", string)
+                  }
+
+                  # Apply the function to each element of the list
+                  propResults <- unlist(lapply(propResults, remove_prefix))
+                  if(length(propResults)>1){
                     if (max(as.numeric(propResults)/sum(as.numeric(propResults))) > propThres){
+
+                      #Add in code here to flag and replace or just to flag.
+                      #Perhaps have a check value to indicate that for all records over the 
+                      #Thresholds as shown in the 'Final_Rabk_Taxa_Thres' column
+                      #That have a TBAT flag then automatically place the assignment
+                      #To the rank below at the most occurance taxa
+                      
+
                       condensedOut[1,"Result_Code"] <- paste0("TBAT(",propThres,")")
                     }else{condensedOut[1,"Result_Code"] <- "-"}
                   }else{condensedOut[1,"Result_Code"] <- "-"}

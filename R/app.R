@@ -506,7 +506,7 @@ dbtcTools <- function() {
                                          are retained the name of the files should be
                                          'markerName' followed by '_taxaAssign_YYYY_MM_DD_HHMM.tsv'"),
                            shiny::br(),
-                           shinyFiles::shinyFilesButton("reduceTaxaFileLoc", "Taxa Assign File Location(s)",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
+                           shinyFiles::shinyFilesButton("reduceTaxaFileLoc", "Taxa Assign File Location",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
                            shiny::br(),
                            shiny::br(),
                            shiny::column(5,shiny::textOutput("reduceTaxaFileLocDisplay")),

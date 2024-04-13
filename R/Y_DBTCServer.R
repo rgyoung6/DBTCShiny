@@ -8,6 +8,9 @@ shinyAppServer <- function(input, output, session) {
 
   ############## Initialize variables ############################################
 
+  #Flag to stopr the message about the data loaded not appearing the first time
+  dataFlag <- reactiveValues(data=0)
+
   #dada implement reactive values
   primerFile <- reactiveValues(data = NA)
   dadaLocation <- reactiveValues(data = NA)
@@ -114,12 +117,12 @@ shinyAppServer <- function(input, output, session) {
 
       #Change leaflet map tiles
       leaflet::addProviderTiles(providers$Esri.WorldStreetMap)
-
   })
 
   ################## mappingDashboard Click observe event #######################
-  shiny::observe({
-    if (input$tab_being_displayed == "mappingDashboard"){
+
+  shiny::observeEvent(input$map_filter_table_tabbox, {
+    if (input$map_filter_table_tabbox == "Mapping"){
       if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
         shiny::showModal(shiny::modalDialog(
           title = "Mapping Dashboard - No Data Loaded - 1",
@@ -130,22 +133,33 @@ shinyAppServer <- function(input, output, session) {
           title = "Mapping Dashboard - No Data Loaded - 2",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
+
       }else if (!is.data.frame(mergedTable$data) && !is.data.frame(workMergedTable$data)){
         shiny::showModal(shiny::modalDialog(
-          title = "Mapping Dashboard - No Data Loaded - 4",
+          title = "Mapping Dashboard - No Data Loaded - 3",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
       }else if (length(mergedTable$data)==0 && length(workMergedTable$data)==0 ){
         shiny::showModal(shiny::modalDialog(
-          title = "Mapping Dashboard - No Data Loaded - 3",
+          title = "Mapping Dashboard - No Data Loaded - 4",
           "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
         ))
       }else{
         #Resetting the data mapping points for the first time
         setMappingDataPoints()
       }
+    }else if(input$map_filter_table_tabbox == "Data Filtering"){
+      if(is.data.frame(workMergedTable$data)){
+        setFilterOptions()
+      }
+    }else if(input$map_filter_table_tabbox == "Data Table"){
+      if(is.data.frame(workMergedTable$data)){
+        setDataTable()
+      }
     }
-  })
+  },ignoreInit = TRUE)
+
+
 
   ################## Dada Submit Function #####################################
   #Connect this to the shinyChooseButton
@@ -1013,6 +1027,20 @@ shinyAppServer <- function(input, output, session) {
     }
   })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   ################## GPS/Grouping Import File Function Buttons ###################
 
   #Connect this to the shinyChooseButton
@@ -1076,6 +1104,28 @@ shinyAppServer <- function(input, output, session) {
     markerColumns <- NULL
     firstLoadFlag$data = 0
 
+    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min NA):"), value = NULL, min = NULL, max = NULL)
+    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max NA):"),value = NULL, min = NULL, max = NULL)
+    shinyWidgets::updatePickerInput(session, "finalRankInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "classFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = NULL, selected = NULL)
+    updateRadioButtons(session, "SFATButton", selected = "Yes")
+    updateRadioButtons(session, "SANFButton", selected = "Yes")
+    updateRadioButtons(session, "BIRTButton", selected = "Yes")
+    updateRadioButtons(session, "BCRTButton", selected = "Yes")
+    updateRadioButtons(session, "TBATButton", selected = "Yes")
+    shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "runFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "labFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = NULL, selected = NULL)
+    shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = NULL, selected = NULL)
+    shiny::updateSliderInput(session = session, inputId = "dateInput", min = NULL, max = NULL, value=NULL,step = 1)
+
     shiny::showModal(shiny::modalDialog(
       title = "Cleared Data",
       "The data selection has been cleared from this instance!"
@@ -1102,6 +1152,7 @@ shinyAppServer <- function(input, output, session) {
 
             #get the directory of interest
             fileLoc <- dirname(provenanceDataFileDisplayString$data)
+
             #Set the working directory
             setwd(fileLoc)
 
@@ -1110,9 +1161,9 @@ shinyAppServer <- function(input, output, session) {
             # Get the local paths
             files[,2] <- list.files(path = fileLoc, pattern = "*[.]*")
             #Get all files with the '_taxaReduced' string
-            files <- files[grepl("_taxaReduced_.*", files[,2]),]
+            files <- files[grepl("_taxaReduced.*", files[,2]),]
             # Get the names of the files
-            files[,3] <- gsub("_taxaReduced_.*","",files[,2])
+            files[,3] <- gsub("_taxaReduced.*","",files[,2])
 
             # Define a custom function to read each file with check.names = FALSE
             read_file <- function(file_path) {
@@ -1131,12 +1182,16 @@ shinyAppServer <- function(input, output, session) {
               # Rename the first column to ID
               names(ASVFileTableTemp)[1] <- "ID"
 
+              #Get the sample names
+              resultsIndex<-which(names(ASVFileTableTemp) == "Results")
+              sampleNames<-column_names_after_results <- names(ASVFileTableTemp)[(resultsIndex + 1):ncol(ASVFileTableTemp)]
+
               # Reshape the data to long format
               ASVFileTableTemp <- reshape(ASVFileTableTemp,
                                           idvar = c("ID"),
-                                          varying = provenanceDataFileTable$data$Sample,
+                                          varying = sampleNames,
                                           v.names = "Abundance",
-                                          times = provenanceDataFileTable$data$Sample,
+                                          times = sampleNames,
                                           direction = "long")
 
               #Remove the cluncky row names
@@ -1197,12 +1252,10 @@ shinyAppServer <- function(input, output, session) {
 
             #Merge the flattened file with the GPS file.
             mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
+            workMergedTable$data <- mergedTable$data
 
             #Remove the processing files modal
             removeModal()
-
-            #Setting up the data mapping points for the first time
-            setMappingDataPoints()
 
           },
           error = function(e){
@@ -1237,6 +1290,8 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$updateFilterMappingButton, {
 
+print("In the update filtering options button!")
+
     if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 1",
@@ -1253,7 +1308,7 @@ shinyAppServer <- function(input, output, session) {
     }else{
 
       shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
-
+print("Here 1")
       #This section is getting the data after applying the filters
       workMergedTable$data <- mergedTable$data
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance >= input$abundanceLow,,drop=FALSE]
@@ -1266,7 +1321,7 @@ shinyAppServer <- function(input, output, session) {
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$family %in% input$familyFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$genus %in% input$genusFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$species %in% input$speciesFilterInput,,drop=FALSE]
-
+print("Here 2")
       #Filter the dataset based on the radio button selections
       if(input$SFATButton == "No"){
         workMergedTable$data <- workMergedTable$data[!grepl("SFAT", workMergedTable$data$Result_Code), ]
@@ -1283,6 +1338,7 @@ shinyAppServer <- function(input, output, session) {
       if(input$TBATButton == "No"){
         workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
       }
+print("Here 3")
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Run %in% input$runFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Lab %in% input$labFilterInput,,drop=FALSE]
@@ -1290,18 +1346,127 @@ shinyAppServer <- function(input, output, session) {
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Marker %in% input$markerFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
+print("Here 4")
+      if (nrow(workMergedTable$data)<0){
+print("Here 5")
+        shiny::showModal(shiny::modalDialog(
+          title = "Update Filtering - No Data - 3",
+          "The data have been filtered out. Reset the filters and apply one at a time to ensure data remain for mapping."
+        ))
 
-      #This section is keeping the selected elements to re apply after updating the filters
-      if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
-        AVal<-input$abundanceLow
       }else{
-        AVal <-min(workMergedTable$data$Abundance)
+print("Here 6")
+        setFilterOptions()
+
+        removeModal()
+
       }
 
-      if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
-        BVal<-input$abundanceHigh
+print("Here 7")
+
+    }
+
+  })
+
+  ############### Reset Filtering Button ###########################################
+
+  shiny::observeEvent(input$resetFilterMappingButton, {
+
+    shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
+
+    workMergedTable$data <- mergedTable$data
+    setFilterOptions()
+    removeModal()
+
+  })
+
+  ####  Create a global function for the initial setting and resetting of the map #####
+  #####################################################################################
+  setMappingDataPoints <- function() {
+
+    leaflet::leafletProxy("mymap", data = workMergedTable$data) %>%
+      clearMarkers() %>%
+      clearMarkerClusters() %>%
+      clearPopups() %>%
+      #Adding labels to markers on map
+      addCircleMarkers(lng = ~North,
+                       lat = ~West,
+                       color = ~palette_map(workMergedTable$data$AbundanceCategory),
+                       options = leafletOptions(zoomDelta = 0), # Disable zooming
+                       clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
+                       popup= paste("<strong><h5>", workMergedTable$data$Final_Rank,":", workMergedTable$data$Final_Taxa, "</strong>",
+                                    "<br><h6>Sample:", workMergedTable$data$Sample,
+                                    "<br><h6>Marker:", paste0(workMergedTable$data$Marker,", Reads:", workMergedTable$data$Abundance),
+                                    "<br><h6>Date:", workMergedTable$data$Date,
+                                    "<br><h6>Run:", workMergedTable$data$Run,
+                                    "<br><h6>Type:", workMergedTable$data$Type,
+                                    "<br><h6>Lab:", workMergedTable$data$Lab,
+                                    "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West)
+  )}
+
+  #Create a function to update the data table page when selected
+  ######################################################################
+  setDataTable <- function() {
+
+    #Set up the table for visualization
+    dataTableOutputData<-workMergedTable$data[, !names(workMergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
+
+    #Set the dataTable output
+    output$dataTable <- DT::renderDT({
+      DT::datatable(
+        dataTableOutputData,
+        filter = "top",  # Show filter boxes on top of columns
+        options = list(
+          pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
+        )
+      )
+    })
+
+  }
+
+  #Create a function to update the filtering page
+  ######################################################################
+  setFilterOptions <- function() {
+
+    if(identical(workMergedTable$data, mergedTable$data)) {
+
+print("In the identical section")
+
+      AVal <- min(workMergedTable$data$Abundance)
+      BVal <- max(workMergedTable$data$Abundance)
+      CVal <- workMergedTable$data$Final_Rank
+      DVal <- workMergedTable$data$superkingdom
+      EVal <- workMergedTable$data$phylum
+      FVal <- workMergedTable$data$class
+      GVal <- workMergedTable$data$order
+      HVal <- workMergedTable$data$family
+      IVal <- workMergedTable$data$genus
+      JVal <- workMergedTable$data$species
+      updateRadioButtons(session, "SFATButton", selected = "Yes")
+      updateRadioButtons(session, "SANFButton", selected = "Yes")
+      updateRadioButtons(session, "BIRTButton", selected = "Yes")
+      updateRadioButtons(session, "BCRTButton", selected = "Yes")
+      updateRadioButtons(session, "TBATButton", selected = "Yes")
+      KVal <- workMergedTable$data$Sample
+      LVal <- workMergedTable$data$Run
+      MVal <- workMergedTable$data$Lab
+      NVal <- workMergedTable$data$Type
+      OVal <- workMergedTable$data$Marker
+      PVal <- min(workMergedTable$data$Date)
+      QVal <- max(workMergedTable$data$Date)
+
+    }else {
+      #This section is keeping the selected elements to re apply after updating the filters
+
+      if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
+        AVal <- input$abundanceLow
       }else{
-        BVal <-max(workMergedTable$data$Abundance)
+        AVal <- min(workMergedTable$data$Abundance)
+      }
+      if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
+        BVal <- input$abundanceHigh
+      }else{
+        BVal <- max(workMergedTable$data$Abundance)
       }
       CVal <- input$finalRankInput
       DVal <- input$kingdomFilterInput
@@ -1316,190 +1481,37 @@ shinyAppServer <- function(input, output, session) {
       MVal <- input$labFilterInput
       NVal <- input$typeFilterInput
       OVal <- input$markerFilterInput
-      PVal <- input$dateInput[1]
-      QVal <- input$dateInput[2]
 
-      shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
-      shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
-      shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
-      shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
-      shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = EVal)
-      shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = FVal)
-      shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = GVal)
-      shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = HVal)
-      shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = IVal)
-      shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = JVal)
-      shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
-      shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
-      shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)
-      shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = NVal)
-      shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
-      shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
+      if (input$dateInput[1] >= min(workMergedTable$data$Date)){
+        PVal <- input$dateInput[1]
+      }else{
+        PVal <- min(workMergedTable$data$Date)
+      }
 
-      leaflet::leafletProxy("mymap", data = workMergedTable$data) %>%
-        clearMarkers() %>%
-        clearMarkerClusters() %>%
-        clearPopups() %>%
-        #Adding labels to markers on map
-        addCircleMarkers(lng = ~North,
-                         lat = ~West,
-                         color = ~palette_map(workMergedTable$data$AbundanceCategory),
-                         clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
-                         popup= paste("<strong><h5>", workMergedTable$data$Final_Rank,":", workMergedTable$data$Final_Taxa, "</strong>",
-                                      "<br><h6>Sample:", workMergedTable$data$Sample,
-                                      "<br><h6>Marker:", paste0(workMergedTable$data$Marker,", Reads:", workMergedTable$data$Abundance),
-                                      "<br><h6>Date:", workMergedTable$data$Date,
-                                      "<br><h6>Run:", workMergedTable$data$Run,
-                                      "<br><h6>Type:", workMergedTable$data$Type,
-                                      "<br><h6>Lab:", workMergedTable$data$Lab,
-                                      "<h6>Coord(Lat, Lon):", workMergedTable$data$North,",", workMergedTable$data$West))
-
-      #Set up the table for visualization
-      dataTableOutputData<-workMergedTable$data[, !names(workMergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
-
-      #Set the dataTable output
-      output$dataTable <- DT::renderDT({
-        DT::datatable(
-          dataTableOutputData,
-          filter = "top",  # Show filter boxes on top of columns
-          options = list(
-            pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
-          )
-        )
-      })
-
-      removeModal()
-
+      if (input$dateInput[2] <= max(workMergedTable$data$Date)){
+        QVal <- input$dateInput[2]
+      }else{
+        QVal <- max(workMergedTable$data$Date)
+      }
     }
 
-  })
+    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+    shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
+    shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
+    shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = EVal)
+    shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = FVal)
+    shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = GVal)
+    shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = HVal)
+    shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = IVal)
+    shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = JVal)
 
-  ############### Reset Filtering Button ###########################################
+    shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
+    shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
+    shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)
+    shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = NVal)
+    shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
+    shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
 
-  shiny::observeEvent(input$resetFilterMappingButton, {
-
-    shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
-
-    #Resetting the data mapping points for the first time
-    setMappingDataPoints()
-
-    removeModal()
-
-  })
-
-  ####  Create a global function for the initial setting and resetting of the map #####
-
-  setMappingDataPoints <- function() {
-
-    #Dropdown menu for Final_Rank
-    shinyWidgets::updatePickerInput(session, inputId = "finalRankInput",
-                                    choices = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Final_Rank), na.last = TRUE))
-
-    #Dropdown menu for superkingdom
-    shinyWidgets::updatePickerInput(session, inputId = "kingdomFilterInput",
-                                    choices = sort(unique(mergedTable$data$superkingdom), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$superkingdom), na.last = TRUE))
-    #Dropdown menu for phylum
-    shinyWidgets::updatePickerInput(session, inputId = "phylumFilterInput",
-                                    choices = sort(unique(mergedTable$data$phylum), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$phylum), na.last = TRUE))
-    #Dropdown menu for class
-    shinyWidgets::updatePickerInput(session, inputId = "classFilterInput",
-                                    choices = sort(unique(mergedTable$data$class), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$class), na.last = TRUE))
-    #Dropdown menu for order
-    shinyWidgets::updatePickerInput(session, inputId = "orderFilterInput",
-                                    choices = sort(unique(mergedTable$data$order), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$order), na.last = TRUE))
-    #Dropdown menu for family
-    shinyWidgets::updatePickerInput(session, inputId = "familyFilterInput",
-                                    choices = sort(unique(mergedTable$data$family), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$family), na.last = TRUE))
-    #Dropdown menu for genus
-    shinyWidgets::updatePickerInput(session, inputId = "genusFilterInput",
-                                    choices = sort(unique(mergedTable$data$genus), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$genus), na.last = TRUE))
-    #Dropdown menu for species
-    shinyWidgets::updatePickerInput(session, inputId = "speciesFilterInput",
-                                    choices = sort(unique(mergedTable$data$species), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$species), na.last = TRUE))
-
-    #################### update the filters based on submitted Provenance Data ###########
-
-    #Dropdown menu for Sample
-    shinyWidgets::updatePickerInput(session, inputId = "sampleFilterInput",
-                                    choices = sort(unique(mergedTable$data$Sample), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Sample), na.last = TRUE))
-    #Dropdown menu for Run
-    shinyWidgets::updatePickerInput(session, inputId = "runFilterInput",
-                                    choices = sort(unique(mergedTable$data$Run), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Run), na.last = TRUE))
-    #Dropdown menu for Lab
-    shinyWidgets::updatePickerInput(session, inputId = "labFilterInput",
-                                    choices = sort(unique(mergedTable$data$Lab), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Lab), na.last = TRUE))
-    #Dropdown menu for Type
-    shinyWidgets::updatePickerInput(session, inputId = "typeFilterInput",
-                                    choices = sort(unique(mergedTable$data$Type), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Type), na.last = TRUE))
-    #Dropdown menu for Region
-    shinyWidgets::updatePickerInput(session,inputId = "markerFilterInput",
-                                    choices = sort(unique(mergedTable$data$Marker), na.last = TRUE),
-                                    selected = sort(unique(mergedTable$data$Marker), na.last = TRUE))
-
-    shiny::updateSliderInput(session = session, inputId = "dateInput",
-                             min = as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                             max = as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                             value=c(as.Date(min(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d"),
-                                     as.Date(max(as.Date(mergedTable$data$Date, "%Y-%m-%d")[!is.na(as.Date(mergedTable$data$Date, "%Y-%m-%d"))]),"%Y-%m-%d")),step = 1)
-
-    #############################################
-
-    #Abundance input values
-    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(mergedTable$data$Abundance),"):"), value = min(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
-    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Lower Value (max ", max(mergedTable$data$Abundance),"):"),value = max(mergedTable$data$Abundance), min = min(mergedTable$data$Abundance), max = max(mergedTable$data$Abundance))
-
-    #Radio Buttons Reset
-    shiny::updateRadioButtons(session, "SFATButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "SANFButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "BIRTButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "BCRTButton", choices = c("Yes", "No"), selected = "Yes")
-    shiny::updateRadioButtons(session, "TBATButton", choices = c("Yes", "No"), selected = "Yes")
-
-    ########################################### MAP #################################################
-
-    leaflet::leafletProxy("mymap", data = mergedTable$data) %>%
-      clearMarkers() %>%
-      clearMarkerClusters() %>%
-      clearPopups() %>%
-      #Adding labels to markers on map
-      addCircleMarkers(lng = ~North,
-                       lat = ~West,
-                       color = ~palette_map(mergedTable$data$AbundanceCategory),
-                       clusterOptions = markerClusterOptions(spiderfyDistanceMultiplier=1.5),
-                       popup= paste("<strong><h5>", mergedTable$data$Final_Rank,":",mergedTable$data$Final_Taxa, "</strong>",
-                                    "<br><h6>Sample:", mergedTable$data$Sample,
-                                    "<br><h6>Marker:", paste0(mergedTable$data$Marker,", Reads:", mergedTable$data$Abundance),
-                                    "<br><h6>Date:", mergedTable$data$Date,
-                                    "<br><h6>Run:", mergedTable$data$Run,
-                                    "<br><h6>Type:", mergedTable$data$Type,
-                                    "<br><h6>Lab:", mergedTable$data$Lab,
-                                    "<h6>Coord(Lat, Lon):", mergedTable$data$West,",", mergedTable$data$North))
-    ############################# TABLE ####################################################
-
-    #Set up the table for visualization
-    dataTableOutputData<-mergedTable$data[, !names(mergedTable$data) %in% c("ID", "Top_BLAST", "Final_Common_Names", "RepSequence", "AbundanceCategory")]
-
-    #Reset the data frame in the dataTable output
-    output$dataTable <- DT::renderDT({
-      DT::datatable(
-        dataTableOutputData,
-        filter = "top",  # Show filter boxes on top of columns
-        options = list(
-          pageLength = 50,scrollX = TRUE, scrollY = TRUE  # Display 50 rows per page
-        )
-      )
-    })
-  } # End of the update mapping points function
+  }
 } # End of Server

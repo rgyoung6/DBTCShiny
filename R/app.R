@@ -682,7 +682,8 @@ dbtcTools <- function() {
               shiny::radioButtons("BCRTButton", "Include final taxa below nucleotide coverage reporting threshold (BCRT):", c("Yes", "No")),
               shiny::br(),
               #Data file upload
-              shiny::fluidRow(shiny::column(6,shiny::actionButton("updateFilterMappingButton", "Update Filtering Options", icon = shiny::icon("play"))),
+              shiny::fluidRow(
+                shiny::column(6,shiny::actionButton("updateFilterMappingButton", "Update Filtering Options", icon = shiny::icon("play"))),
                 shiny::column(6,shiny::actionButton("resetFilterMappingButton", "Reset Filtering Options", icon = shiny::icon("refresh")))
               ),
             ),

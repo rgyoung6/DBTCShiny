@@ -82,6 +82,11 @@ shinyAppServer <- function(input, output, session) {
   #Mapping
   ASVFileDisplayString<-reactiveValues(data = NA)
   provenanceDataFileDisplayString<-reactiveValues(data = NA)
+  filteValues<-reactiveValues(AVal = NA, BVal = NA, CVal = NA, DVal = NA,
+                              EVal = NA, FVal = NA, GVal = NA,HVal = NA,
+                              IVal = NA, JVal = NA, KVal = NA, LVal = NA,
+                              MVal = NA, NVal = NA, OVal = NA, PVal = NA,
+                              QVal = NA)
 
   # Get the path where all of the folders containing the fastq files are located
   volumes = shinyFiles::getVolumes()
@@ -150,7 +155,7 @@ shinyAppServer <- function(input, output, session) {
       }
     }else if(input$map_filter_table_tabbox == "Data Filtering"){
       if(is.data.frame(workMergedTable$data)){
-        setFilterOptions()
+        filterOptionsUpdate()
       }
     }else if(input$map_filter_table_tabbox == "Data Table"){
       if(is.data.frame(workMergedTable$data)){
@@ -1254,6 +1259,9 @@ shinyAppServer <- function(input, output, session) {
             mergedTable$data <- merge(ASVFileTable$data, provenanceDataFileTable$data, by = "Sample")
             workMergedTable$data <- mergedTable$data
 
+            #Initialize the data filters on the filter page
+            setFilterOptions()
+
             #Remove the processing files modal
             removeModal()
 
@@ -1290,8 +1298,6 @@ shinyAppServer <- function(input, output, session) {
 
   shiny::observeEvent(input$updateFilterMappingButton, {
 
-print("In the update filtering options button!")
-
     if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
       shiny::showModal(shiny::modalDialog(
         title = "Update Filtering - No Data Loaded - 1",
@@ -1307,62 +1313,17 @@ print("In the update filtering options button!")
 
     }else{
 
-      shiny::showModal(shiny::modalDialog("Updating, please standby...",  footer=NULL))
-print("Here 1")
-      #This section is getting the data after applying the filters
-      workMergedTable$data <- mergedTable$data
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance >= input$abundanceLow,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance <= input$abundanceHigh,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Final_Rank %in% input$finalRankInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$superkingdom %in% input$kingdomFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$phylum %in% input$phylumFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$class %in% input$classFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$order %in% input$orderFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$family %in% input$familyFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$genus %in% input$genusFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$species %in% input$speciesFilterInput,,drop=FALSE]
-print("Here 2")
-      #Filter the dataset based on the radio button selections
-      if(input$SFATButton == "No"){
-        workMergedTable$data <- workMergedTable$data[!grepl("SFAT", workMergedTable$data$Result_Code), ]
-      }
-      if(input$SANFButton == "No"){
-        workMergedTable$data <- workMergedTable$data[!grepl("SANF", workMergedTable$data$Result_Code), ]
-      }
-      if(input$BIRTButton == "No"){
-        workMergedTable$data <- workMergedTable$data[!grepl("BIRT", workMergedTable$data$Result_Code), ]
-      }
-      if(input$BCRTButton == "No"){
-        workMergedTable$data <- workMergedTable$data[!grepl("BCRT", workMergedTable$data$Result_Code), ]
-      }
-      if(input$TBATButton == "No"){
-        workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
-      }
-print("Here 3")
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Run %in% input$runFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Lab %in% input$labFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Type %in% input$typeFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Marker %in% input$markerFilterInput,,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
-      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
-print("Here 4")
       if (nrow(workMergedTable$data)<0){
-print("Here 5")
         shiny::showModal(shiny::modalDialog(
           title = "Update Filtering - No Data - 3",
           "The data have been filtered out. Reset the filters and apply one at a time to ensure data remain for mapping."
         ))
 
       }else{
-print("Here 6")
-        setFilterOptions()
 
-        removeModal()
+        filterOptionsUpdate()
 
       }
-
-print("Here 7")
 
     }
 
@@ -1424,94 +1385,150 @@ print("Here 7")
 
   }
 
-  #Create a function to update the filtering page
+  #Create a function to set the filtering page
   ######################################################################
   setFilterOptions <- function() {
 
-    if(identical(workMergedTable$data, mergedTable$data)) {
+    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = min(workMergedTable$data$Abundance), min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = max(workMergedTable$data$Abundance), min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+    shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = sort(unique(workMergedTable$data$phylum), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = sort(unique(workMergedTable$data$class), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = sort(unique(workMergedTable$data$order), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = sort(unique(workMergedTable$data$family), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = sort(unique(workMergedTable$data$genus), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = sort(unique(workMergedTable$data$species), na.last = TRUE))
 
-print("In the identical section")
+    updateRadioButtons(session, "SFATButton", selected = "Yes")
+    updateRadioButtons(session, "SANFButton", selected = "Yes")
+    updateRadioButtons(session, "BIRTButton", selected = "Yes")
+    updateRadioButtons(session, "BCRTButton", selected = "Yes")
+    updateRadioButtons(session, "TBATButton", selected = "Yes")
 
-      AVal <- min(workMergedTable$data$Abundance)
-      BVal <- max(workMergedTable$data$Abundance)
-      CVal <- workMergedTable$data$Final_Rank
-      DVal <- workMergedTable$data$superkingdom
-      EVal <- workMergedTable$data$phylum
-      FVal <- workMergedTable$data$class
-      GVal <- workMergedTable$data$order
-      HVal <- workMergedTable$data$family
-      IVal <- workMergedTable$data$genus
-      JVal <- workMergedTable$data$species
-      updateRadioButtons(session, "SFATButton", selected = "Yes")
-      updateRadioButtons(session, "SANFButton", selected = "Yes")
-      updateRadioButtons(session, "BIRTButton", selected = "Yes")
-      updateRadioButtons(session, "BCRTButton", selected = "Yes")
-      updateRadioButtons(session, "TBATButton", selected = "Yes")
-      KVal <- workMergedTable$data$Sample
-      LVal <- workMergedTable$data$Run
-      MVal <- workMergedTable$data$Lab
-      NVal <- workMergedTable$data$Type
-      OVal <- workMergedTable$data$Marker
-      PVal <- min(workMergedTable$data$Date)
-      QVal <- max(workMergedTable$data$Date)
-
-    }else {
-      #This section is keeping the selected elements to re apply after updating the filters
-
-      if (input$abundanceLow >= min(workMergedTable$data$Abundance)){
-        AVal <- input$abundanceLow
-      }else{
-        AVal <- min(workMergedTable$data$Abundance)
-      }
-      if (input$abundanceHigh <= max(workMergedTable$data$Abundance)){
-        BVal <- input$abundanceHigh
-      }else{
-        BVal <- max(workMergedTable$data$Abundance)
-      }
-      CVal <- input$finalRankInput
-      DVal <- input$kingdomFilterInput
-      EVal <- input$phylumFilterInput
-      FVal <- input$classFilterInput
-      GVal <- input$orderFilterInput
-      HVal <- input$familyFilterInput
-      IVal <- input$genusFilterInput
-      JVal <- input$speciesFilterInput
-      KVal <- input$sampleFilterInput
-      LVal <- input$runFilterInput
-      MVal <- input$labFilterInput
-      NVal <- input$typeFilterInput
-      OVal <- input$markerFilterInput
-
-      if (input$dateInput[1] >= min(workMergedTable$data$Date)){
-        PVal <- input$dateInput[1]
-      }else{
-        PVal <- min(workMergedTable$data$Date)
-      }
-
-      if (input$dateInput[2] <= max(workMergedTable$data$Date)){
-        QVal <- input$dateInput[2]
-      }else{
-        QVal <- max(workMergedTable$data$Date)
-      }
-    }
-
-    shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
-    shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
-    shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
-    shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
-    shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = EVal)
-    shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = FVal)
-    shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = GVal)
-    shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = HVal)
-    shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = IVal)
-    shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = JVal)
-
-    shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
-    shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
-    shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)
-    shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = NVal)
-    shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
-    shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
+    shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = sort(unique(workMergedTable$data$Sample), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = sort(unique(workMergedTable$data$Run), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = sort(unique(workMergedTable$data$Lab), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = sort(unique(workMergedTable$data$Type), na.last = TRUE))
+    shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = sort(unique(workMergedTable$data$Marker), na.last = TRUE))
+    shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(min(unique(workMergedTable$data$Date)),"%Y-%m-%d"), max = as.Date(max(unique(workMergedTable$data$Date)),"%Y-%m-%d"), value=c(as.Date(min(unique(workMergedTable$data$Date)),"%Y-%m-%d"),as.Date(max(unique(workMergedTable$data$Date)),"%Y-%m-%d")),step = 1)
 
   }
+
+
+  #Create a function to update the filtering page
+  ######################################################################
+  filterOptionsUpdate <- function() {
+
+    if(!is.data.frame(ASVFileTable$data) && !is.data.frame(provenanceDataFileTable$data)){
+      shiny::showModal(shiny::modalDialog(
+        title = "Update Filtering - No Data Loaded - 1",
+        "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+      ))
+
+    }else if (length(mergedTable$data)==0){
+
+      shiny::showModal(shiny::modalDialog(
+        title = "Update Filtering - No Data Loaded - 2",
+        "There are no data loaded in this instance of DBTCShine. Please go to the Data Import tab to upload data."
+      ))
+
+    }else{
+
+      #This section is getting the data after applying the filters
+      workMergedTable$data <- mergedTable$data
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance >= input$abundanceLow,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Abundance <= input$abundanceHigh,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Final_Rank %in% input$finalRankInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$superkingdom %in% input$kingdomFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$phylum %in% input$phylumFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$class %in% input$classFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$order %in% input$orderFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$family %in% input$familyFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$genus %in% input$genusFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$species %in% input$speciesFilterInput,,drop=FALSE]
+
+      #Filter the dataset based on the radio button selections
+      if(input$SFATButton == "No"){
+        workMergedTable$data <- workMergedTable$data[!grepl("SFAT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$SANFButton == "No"){
+        workMergedTable$data <- workMergedTable$data[!grepl("SANF", workMergedTable$data$Result_Code), ]
+      }
+      if(input$BIRTButton == "No"){
+        workMergedTable$data <- workMergedTable$data[!grepl("BIRT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$BCRTButton == "No"){
+        workMergedTable$data <- workMergedTable$data[!grepl("BCRT", workMergedTable$data$Result_Code), ]
+      }
+      if(input$TBATButton == "No"){
+        workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
+      }
+
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Run %in% input$runFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Lab %in% input$labFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Type %in% input$typeFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Marker %in% input$markerFilterInput,,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date >= input$dateInput[1],,drop=FALSE]
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Date <= input$dateInput[2],,drop=FALSE]
+
+      if (nrow(workMergedTable$data)<1){
+        workMergedTable$data <- mergedTable$data
+        setFilterOptions()
+        shiny::showModal(shiny::modalDialog(
+          title = "Update Filtering - No Data - 3",
+          "All data have been filtered out with the selected filters. The data has been reset, please try again by applying one filter at a time."
+        ))
+
+      }else{
+
+        AVal <- input$abundanceLow
+        BVal <- input$abundanceHigh
+        CVal <- input$finalRankInput
+        DVal <- input$kingdomFilterInput
+        EVal <- input$phylumFilterInput
+        FVal <- input$classFilterInput
+        GVal <- input$orderFilterInput
+        HVal <- input$familyFilterInput
+        IVal <- input$genusFilterInput
+        JVal <- input$speciesFilterInput
+        KVal <- input$sampleFilterInput
+        LVal <- input$runFilterInput
+        MVal <- input$labFilterInput
+        NVal <- input$typeFilterInput
+        OVal <- input$markerFilterInput
+        SFATVal <- input$SFATButton
+        SANFVal <- input$SANFButton
+        BIRTVal <- input$BIRTButton
+        BCRTVal <- input$BCRTButton
+        TBATVal <- input$TBATButton
+        PVal <- input$dateInput[1]
+        QVal <- input$dateInput[2]
+
+        shiny::updateNumericInput(session, "abundanceLow", label = paste0("Enter a Lower Value (min ", min(workMergedTable$data$Abundance),"):"), value = AVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+        shiny::updateNumericInput(session, "abundanceHigh", label = paste0("Enter a Higher Value (max ", max(workMergedTable$data$Abundance),"):"),value = BVal, min = min(workMergedTable$data$Abundance), max = max(workMergedTable$data$Abundance))
+        shinyWidgets::updatePickerInput(session, "finalRankInput", choices = sort(unique(workMergedTable$data$Final_Rank), na.last = TRUE), selected = CVal)
+        shinyWidgets::updatePickerInput(session, "kingdomFilterInput", choices = sort(unique(workMergedTable$data$superkingdom), na.last = TRUE), selected = DVal)
+        shinyWidgets::updatePickerInput(session, "phylumFilterInput", choices = sort(unique(workMergedTable$data$phylum), na.last = TRUE), selected = EVal)
+        shinyWidgets::updatePickerInput(session, "classFilterInput", choices = sort(unique(workMergedTable$data$class), na.last = TRUE), selected = FVal)
+        shinyWidgets::updatePickerInput(session, "orderFilterInput", choices = sort(unique(workMergedTable$data$order), na.last = TRUE), selected = GVal)
+        shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = sort(unique(workMergedTable$data$family), na.last = TRUE), selected = HVal)
+        shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = IVal)
+        shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = JVal)
+        shiny::updateRadioButtons(session, "SFATButton", selected = SFATVal)
+        shiny::updateRadioButtons(session, "SANFButton", selected = SANFVal)
+        shiny::updateRadioButtons(session, "BIRTButton", selected = BIRTVal)
+        shiny::updateRadioButtons(session, "BCRTButton", selected = BCRTVal)
+        shiny::updateRadioButtons(session, "TBATButton", selected = TBATVal)
+        shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
+        shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
+        shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)
+        shinyWidgets::updatePickerInput(session, "typeFilterInput", choices = sort(unique(workMergedTable$data$Type), na.last = TRUE), selected = NVal)
+        shinyWidgets::updatePickerInput(session, "markerFilterInput", choices = sort(unique(workMergedTable$data$Marker), na.last = TRUE), selected = OVal)
+        shiny::updateSliderInput(session = session, inputId = "dateInput", min = as.Date(PVal,"%Y-%m-%d"), max = as.Date(QVal,"%Y-%m-%d"), value=c(as.Date(PVal,"%Y-%m-%d"),as.Date(QVal,"%Y-%m-%d")),step = 1)
+      }
+    }
+  }
+
 } # End of Server

@@ -1,7 +1,6 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Combine Taxa Assignment for Same ASV Using Different Databases
@@ -24,21 +23,22 @@
 #' }
 #'
 #' @param fileLoc The location of a file in a directory where all of the 'taxaAssign'
-#' files are located.
-#' @param numCores The number of cores used to run the function (default = 1,
-#' Windows systems can only use a single core).
+#' files are located (Default NULL).
+#' @param numCores The number of cores used to run the function (Default 1,
+#' Windows systems can only use a single core)
 #'
 #' @returns
-#' This function produces a '2023_08_03_0913_taxaAssignCombined.tsv' and
-#' a '2023_08_03_0913_taxaAssignCombined.txt' file in the selected target
+#' This function produces a 'YYYY_MM_DD_HHMM_taxaAssignCombined.tsv' and
+#' a 'YYYY_MM_DD_HHMM_taxaAssignCombined.txt' file in the selected target
 #' directory.
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -325,7 +325,3 @@ combine_assign_output <- function(fileLoc = NULL,   numCores = 1){
     } #End of the if/else there are more than 2 files
   }# End of the if/else confirming file location
 }# End of function
-
-
-
-

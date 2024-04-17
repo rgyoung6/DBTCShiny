@@ -1,11 +1,6 @@
-library(dada2)
-library(ggplot2)
-library(plyr)
-
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Dada Implement
@@ -60,67 +55,65 @@ library(plyr)
 #' minFinalSeqLen = 100)
 #' }
 #'
-#' @param runFolderLoc Select a directory that contains the run folders with the
-#' fastq files.
-#' @param primerFile Select a file with the primers for this analysis.
-#' @param fwdIdent Forward identifier naming substring.
-#' @param revIdent Reverse identifier naming substring.
+#' @param runFolderLoc Select a file in the one of the run folders with the
+#' fastq files of interest (Default NULL).
+#' @param primerFile Select a file with the primers for this analysis (Default NULL).
+#' @param fwdIdent Forward identifier naming string (Default '_R1_001').
+#' @param revIdent Reverse identifier naming string (Default '_R2_001').
 #' @param bidirectional Selection to process paired forward and reverse sequence
 #' for analysis (Default TRUE).
 #' @param unidirectional Selection to process files independently (Default FALSE).
 #' @param printQualityPdf Selection to process save image files showing quality metrics (Default TRUE).
 #' @param maxPrimeMis Maximum number of mismatches allowed when pattern matching
 #' trimming the primers from the ends of the reads for the ShortRead trimLRPatterns()
-#' function (Default maxPrimeMis = 2).
+#' function (Default 2).
 #' @param fwdTrimLen Select a forward trim length for the Dada filterAndTrim()
-#' function (Default fwdTrimLen = 0).
+#' function (Default 0).
 #' @param revTrimLen Select a reverse trim length for the Dada filterAndTrim()
-#' function (Default revTrimLen = 0).
+#' function (Default 0).
 #' @param maxEEVal Maximum number of expected errors allowed in a read for the
-#' Dada filterAndTrim() function (Default maxEEVal = 2).
+#' Dada filterAndTrim() function (Default 2).
 #' @param truncQValue Truncation value use to trim ends of reads, nucleotides
 #' with quality values less than this value will be used to trim the remainder
-#' of the read for the Dada filterAndTrim() function (Default truncQValue = 2).
+#' of the reads for the Dada filterAndTrim() function (Default 2).
 #' @param truncLenValueF Dada forward length trim value for the Dada filterAndTrim()
 #' function. This function is set to 0 when the pattern matching trim function is
-#' enabled (Default truncLenValueF = 0).
+#' enabled (Default 0).
 #' @param truncLenValueR Dada reverse length trim value for the Dada filterAndTrim()
 #' function. This function is set to 0 when the pattern matching trim function is
-#' enabled (Default truncLenValueR = 0).
+#' enabled (Default 0).
 #' @param error Percent of fastq files used to assess error rates for the Dada
-#' learnErrors() function (Default error = 0.1).
+#' learnErrors() function (Default 0.1).
 #' @param nbases The total number of bases used to assess errors for the Dada
-#' learnErrors() function (Default nbases = 1e80) NOTE: this value is set very
-#' high to get all nucleotides in the error persent file subset. If the error
+#' learnErrors() function (Default 1e80) NOTE: this value is set very
+#' high to get all nucleotides in the error present file subset. If the error
 #' is to be assessed using total reads and not specific fastq files then set
 #' the error to 1 and set this value to the desired number of reads.
 #' @param maxMismatchValue Maximum number of mismatches allowed when merging
-#' two reads for the Dada mergePairs() function (Default maxMismatchValue = 2).
+#' two reads for the Dada mergePairs() function (Default 2).
 #' @param minOverlapValue Minimum number of overlapping nucleotides for the
-#' forward and reverse reads for the Dada mergePairs() function (Default
-#' minOverlapValue = 12).
+#' forward and reverse reads for the Dada mergePairs() function (Default 12).
 #' @param trimOverhang Trim merged reads past the start of the complimentary
-#' primer regions for the Dada mergePairs() function (Default trimOverhang = FALSE).
-#' @param minFinalSeqLen The minimum final desired length of the read (Default
-#' minFinalSeqLen = 100).
+#' primer regions for the Dada mergePairs() function (Default FALSE).
+#' @param minFinalSeqLen The minimum final desired length of the read (Default 100).
 #'
 #' @returns
 #' The output from this function includes four folders.
-#' A_Qual - Contains quality pdf files for the input fastq files.
+#' A_Qual - Contains quality pdf files for the input fastq files (if printQualityPdf set to TRUE).
 #' B_Filt - Contains dada filtered fastq files and a folder with the end trimmed
 #' fastq files before quality filtering.
-#' C_FiltQual - Contains quality pdf files for the filtered fastq files.
+#' C_FiltQual - Contains quality pdf files for the filtered fastq files (if printQualityPdf set to TRUE).
 #' D_Output - This folder contains output files including and analysis summary,
-#' an analysis summary table of processing values, foward and reverse error assessments,
+#' an analysis summary table of processing values, forward and reverse error assessments,
 #' and finally the output ASV and fasta files of obtained sequences.                                                                                                   -TotalTable.tsv
-#'
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number

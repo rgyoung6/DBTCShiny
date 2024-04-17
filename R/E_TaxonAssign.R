@@ -1,17 +1,11 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Assign Taxa using BLAST Results
 #'
 #' @author Robert G. Young
-#' This function takes a BLAST result file and associated fasta files (either on
-#' their own or with accompanying ASV files generated from the dada_implement
-#' function) and collapses the multiple BLAST results into as single result for
-#' each query sequence. When an ASV table is present the taxonomic results will
-#' be combined with the ASV table.
 #'
 #' @description
 #' This function takes a BLAST result file and associated fasta files (either on
@@ -22,7 +16,7 @@
 #'
 #' @details
 #' This function requires a BLAST output file and an associated fasta file. In
-#' addition, if present an ASV file will also be used to combine the
+#' addition, if present an ASV file will also be used and combined with the
 #' taxonomic results when present. The BLAST results are reduced to a single
 #' result for each read. At each taxonomic level there may be one or more
 #' taxonomic assignments. Each assignment has quality metrics in parentheses after
@@ -38,38 +32,36 @@
 #' }
 #'
 #' @param fileLoc The location of a file in a directory where all of the paired
-#' fasta and BLAST (and potentially ASV) files are located.
-#' @param taxaDBLoc The location of the NCBI taxonomic data base (accessionTaxa.sql,
-#'  see the main DBTCShiny page for details). The local path for the directory
-#'  containing all of the fasta files wishing to be BLASTed.
-#' @param numCores The number of cores used to run the function (default = 1,
-#' Windows systems can only use a single core).
+#' fasta and BLAST (and potentially ASV) files are located (Default NULL).
+#' @param taxaDBLoc The location of the NCBI taxonomic data base (Default NULL;
+#' for accessionTaxa.sql see the main DBTC page for details).
+#' @param numCores The number of cores used to run the function (Default 1,
+#' Windows systems can only use a single core)
 #' @param coverage The percent coverage used for taxonomic assignment for the
-#' above threshold results (Default coverage = 95).
+#' above threshold results (Default 95).
 #' @param ident The percent identity used for the taxonomic assignment for above
-#' threshold results (Default ident = 95).
+#' threshold results (Default 95).
 #' @param propThres The proportional threshold flags the final result based on
 #' the preponderance of the data. So if the threshold is set to 0.95, results
 #' will be flagged if the taxa directly below the assigned taxa has fewer than
-#' 0.95 percent of the records causing the upward taxonomic placement (Default
-#' propThres = 0.95).
+#' 0.95 percent of the records causing the upward taxonomic placement (Default 0.95).
 #' @param coverReportThresh The percent coverage threshold used for reporting
-#' flags below this threshold (Default coverReportThresh = 95).
+#' flags below this threshold (Default 95).
 #' @param identReportThresh The percent identity threshold used for reporting
-#' flags below this threshold (Default identReportThresh = 95).
+#' flags below this threshold (Default 95).
 #' @param includeAllDada When paired Dada ASV tables are present, when set to
-#' FALSE, this will exclude records without taxonomic assignment (Default
-#' includeAllDada = TRUE).
+#' FALSE, this will exclude records without taxonomic assignment (Default TRUE).
 #'
 #' @returns
 #' This function produces a taxa_reduced file for each submitted BLAST-fasta submission.
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -166,7 +158,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
 
     #Remove the rows with FALSE in the fasExists column
     filesList <- filesList[filesList$fasExists, ]
-
 
     if(nrow(filesList)>0){
 
@@ -484,7 +475,6 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                 #if the rank is species then there isn't anything lower to do. Add dash to the proportional columns
                 if(condensedOut[1,"Final_Rank"] != "species"){
                   #Get the results for the rank right below the final rank
-#                  propResults <-condensedOut[1,which(colnames(condensedOut) == condensedOut[1,"Final_Rank"])+1, drop=FALSE]
                   propResults <-condensedOut[1,which(colnames(condensedOut) == condensedOut[1,"Final_Rank"])+1]
 
                   # Split the string into separate elements
@@ -502,11 +492,11 @@ taxon_assign<- function(fileLoc = NULL, taxaDBLoc = NULL, numCores = 1, coverage
                     if (max(as.numeric(propResults)/sum(as.numeric(propResults))) > propThres){
 
                       #Add in code here to flag and replace or just to flag.
-                      #Perhaps have a check value to indicate that for all records over the 
+                      #Perhaps have a check value to indicate that for all records over the
                       #Thresholds as shown in the 'Final_Rabk_Taxa_Thres' column
                       #That have a TBAT flag then automatically place the assignment
                       #To the rank below at the most occurance taxa
-                      
+
 
                       condensedOut[1,"Result_Code"] <- paste0("TBAT(",propThres,")")
                     }else{condensedOut[1,"Result_Code"] <- "-"}

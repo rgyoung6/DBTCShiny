@@ -1,7 +1,6 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Make a BLAST Database
@@ -9,15 +8,14 @@
 #' @author Robert G. Young
 #'
 #' @description
-#' This function takes a fasta file (in MACER format or NCBI format) and
+#' This function takes a fasta file (in MACER format) and
 #' establishes a database upon which a BLAST search can be completed.
 #'
 #' @details
-#' The user inputs the location of a file in a directory that contains properly formatted
-#' fasta files which can be used to construct a dataset that can BLASTED. The
-#' NCBI blast+ program, makeblastdb and the NCBI taxonomic database are required to
-#' run this script (see the main page of the DBTCShiny for instructions on how to
-#' obtain these resources).
+#' The user inputs the location of a file in a directory that contains a properly formatted
+#' fasta file which can be used to construct a BLASTable database. The
+#' NCBI blast+ program, makeblastdb and the NCBI taxonomic database (accessionTaxa.sql) are required to
+#' run this script (see readme instructions for details).
 #'
 #' @examples
 #' \dontrun{
@@ -27,12 +25,12 @@
 #' }
 #'
 #' @param fileLoc The location of a file in a directory where all fasta files
-#' will be used to construct a BLASTable database. Default = NULL
-#' @param makeblastdbPath The local path for the blast+ makeblastdbPath program
-#' @param taxaDBLoc The location of the NCBI taxonomic data base (accessionTaxa.sql
-#' see the main DBTCShiny page for details).
-#' @param dbName A short 6-8 alpha character name used when building a database.
-#' @param minLen The minimum sequence length used to construct the BLAST database.
+#' will be used to construct a BLASTable database (Default NULL).
+#' @param makeblastdbPath The local path for the blast+ makeblastdbPath program (Default 'makeblastdb').
+#' @param taxaDBLoc The location of the NCBI taxonomic data base (Default NULL; for accessionTaxa.sql
+#' see the main DBTC page for details).
+#' @param dbName A short 6-8 alpha character name used when building a database (Default NULL).
+#' @param minLen The minimum sequence length used to construct the BLAST database (Default 100).
 #'
 #' @returns
 #' The output from this function includes a folder with the BLAST database named
@@ -40,10 +38,11 @@
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -237,45 +236,8 @@ make_BLAST_DB <- function(fileLoc = NULL, makeblastdbPath = "makeblastdb", taxaD
           write("\n", file = blastCommandFile, append = TRUE)
           write(BLASTMakeDBCmdString, file = blastCommandFile, append = TRUE)
 
-
-
-
-
-       #  tryCatch(
-       #    expr = {
-       #    #Change the permissions of the file
-       #    Sys.chmod(blastCommandFile, mode = "0777")
-       #   },
-       #   error = function(e){
-       #     print("Error - Insufficent User Permissions")
-       #   },
-       #   warning = function(w){
-       #     print("Warning - Insufficent User Permissions")
-       #   }
-       # )
-
-
-
-
-
-          tryCatch(
-            expr = {
-              #Run the BLAST command in a system command
-              system(paste0("bash '", blastCommandFile, "'"))
-            },
-            error = function(e){
-              print("Error - Insufficent User Permissions")
-            },
-            warning = function(w){
-              print("Warning - Insufficent User Permissions")
-            }
-          )
-
-
-
-
-          # #Run the BLAST command in a system command
-          # system(paste0("bash '", blastCommandFile, "'"))
+          #Run the BLAST command in a system command
+          system(paste0("bash '", blastCommandFile, "'"))
 
         }#Closing off the checking platform if
 

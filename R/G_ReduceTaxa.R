@@ -1,7 +1,6 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Reduce Taxa Assignment
@@ -11,13 +10,13 @@
 #' @description
 #' This function takes a file selection and then uses all 'taxaAssign' and/or
 #' 'taxaAssignCombine' files in that directory and reduces all ASV with the same
-#' taxonomic assignment into a single result and places these results in a
+#' taxonomic assignment into a single taxonomic result and places these results in a
 #' 'taxaReduced' file for each of the target files in the directory.
 #'
 #' @details
 #' This function requires a file in a directory where all 'taxaAssign'
 #' and/or 'taxaAssignCombine' files in that directory will be combined. All records
-#' with the same taxonomic result will be combined. The BLAST values in parentheses
+#' with the same dicument with the same taxonomic result will be combined. The values in parentheses
 #' ("Num_Rec", "Coverage", "Identity", "Max_eVal") are combine by the mean number of records,
 #' the minimum coverage and identity, and the maximum eValue.
 #'
@@ -28,9 +27,9 @@
 #' }
 #'
 #' @param fileLoc The location of a file in a directory where all of the 'taxaAssign'
-#' and/or 'taxaAssignCombine' files are located.
-#' @param numCores The number of cores used to run the function (default = 1,
-#' Windows systems can only use a single core).
+#' and/or 'taxaAssignCombine' files are located (Default NULL).
+#' @param numCores The number of cores used to run the function (Default 1,
+#' Windows systems can only use a single core)
 #'
 #' @returns
 #' This function produces a 'taxa_reduced' file for every 'taxaAssign' or
@@ -38,10 +37,11 @@
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -191,11 +191,6 @@ reduce_taxa<- function(fileLoc = NULL,   numCores = 1){
 
       #Get all results in the Result_Code column and place into a vector
       result_code_list <- unique(unlist(strsplit(uniqueTotalResults$Result_Code, split = ", ")))
-#        result_code_list <- gsub(" ","",result_code_list)
-#        result_code_list <- sort(unique(unlist(strsplit(result_code_list, split = ","))))
-#        result_code_list<- paste(result_code_list, collapse=",")
-#        result_code_list <- gsub("-,","",result_code_list)
-#        uniqueTotalResultsTemp["Result_Code"] <- result_code_list
 
       #order the Result_Code vector so that all of the output are in the same format
       result_code_list <- sort(result_code_list, decreasing = TRUE)

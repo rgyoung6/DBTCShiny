@@ -1,7 +1,6 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title BLAST Query File Against Local Database
@@ -10,7 +9,7 @@
 #'
 #' @description
 #' This function takes fasta files as input along with a user selected NCBI
-#' formatted library to BLAST sequences against. The outcome of the function are
+#' formatted database to BLAST sequences against. The outcome of the function are
 #' two files, a BLAST run file and a single file containing all of the BLAST
 #' results in tab delimited format (Note: there are no headers but the columns
 #' are, query sequence ID, search sequence ID, search taxonomic ID, query to
@@ -20,29 +19,29 @@
 #' @details
 #' The user input provides a location for the BLAST database you would like to
 #' use by selecting a file in the target directory. Then provide the location
-#' of the query sequence files by indicating a file in a directory that contains
-#' the fasta files. Provide the path for the blast+ blastn program. Finally, provide
-#' the minimum query sequence length to BLAST (Default = 100), the depth of the BLAST
-#' returned results (default = 250), and finally the number of cores to process
-#' the function (default = 1, Windows implementation will only accept this value
+#' of the query sequence file(s) by indicating a file in a directory that contains
+#' the fasta file(s) of interest. Provide the path for the blast+ blastn program. Finally, provide
+#' the minimum query sequence length to BLAST (Default 100), the depth of the BLAST
+#' returned results (default 200), and finally the number of cores to process
+#' the function (Default 1, Windows implementation will only accept this value
 #' as 1).
 #'
 #' @examples
 #' \dontrun{
 #' seq_BLAST()
-#' seq_BLAST(databasePath = NULL, querySeqPath=NULL,  blastnPath="blastn",
-#' minLen = 100, BLASTResults=200, numCores=1)
+#' seq_BLAST(databasePath = NULL, querySeqPath = NULL,  blastnPath = "blastn",
+#' minLen = 100, BLASTResults = 200, numCores = 1)
 #' }
 #'
 #' @param databasePath The location of a file in a directory where the desired
-#' BLAST database is located.
-#' @param querySeqPath The local path for the directory containing all of the
-#' fasta files wishing to be BLASTed
-#' @param blastnPath The location of the NCBI blast+ blastn program (default = blastn).
-#' @param minLen The minimum length of the sequences that will be BLASTed (default = 100).
+#' BLAST database is located (Default NULL).
+#' @param querySeqPath The location of a file in a directory containing all of the
+#' fasta files wishing to be BLASTed (Default NULL)
+#' @param blastnPath The location of the NCBI blast+ blastn program (Default 'blastn').
+#' @param minLen The minimum length of the sequences that will be BLASTed (Default 100).
 #' @param BLASTResults The number of returned results, or the depth of the reported
-#' results, saved from the BLAST (default = 250).
-#' @param numCores The number of cores used to run the function (default = 1,
+#' results, saved from the BLAST (Default 200).
+#' @param numCores The number of cores used to run the function (Default 1,
 #' Windows systems can only use a single core).
 #'
 #' @returns
@@ -51,10 +50,11 @@
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -252,7 +252,6 @@ seq_BLAST <- function(databasePath = NULL, querySeqPath=NULL,  blastnPath="blast
 
               #Build the BLAST command
               BLASTCmdString<- paste0("\"",blastnPath, "\" -db \"", dirname(databasePath), "/", databaseName, "\" -query \"", temp_file, "\" -max_target_seqs ", BLASTResults, " -outfmt \"6 qseqid sseqid staxid qcovs pident ssciname scomname qstart qend sstart send evalue\" -num_threads ", numCores, " -out \"", querySeqPath,"/", fileNames[filesInFolder], "_BLAST_", databaseName,"_",dateStamp, ".tsv\"")
-#              BLASTCmdString<- paste0(blastnPath, " -db ", querySeqPath, "/",databaseName, " -query ", temp_file, " -max_target_seqs ", BLASTResults, " -outfmt \"6 qseqid sseqid staxid qcovs pident ssciname scomname qstart qend sstart send evalue\" -num_threads ", numCores, " -out ", querySeqPath,"/", fileNames[filesInFolder], "_BLAST_", databaseName,"_",dateStamp, ".tsv")
               #Build the file to run based on the operating system
               if (.Platform$OS.type == "windows"){
 

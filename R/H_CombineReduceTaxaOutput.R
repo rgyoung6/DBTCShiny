@@ -1,7 +1,6 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
+# Written by Rob Young at the University of Guelph in Ontario Canada, April, 2024
 # ******************************************************************************
-#Roxygen2 Documentation:
-
+# Roxygen2 Documentation:
 #' @export
 #'
 #' @title Combine Reduce Taxa Files for the Same Biological Samples using Different Markers
@@ -28,9 +27,10 @@
 #' }
 #'
 #' @param fileLoc The location of a file in a directory where all of the 'taxa_assign'
-#' and/or 'combined_taxa_assign' files are located.
-#' @param presenceAbsence This setting is a TRUE or FASLE value that insdicates
+#' and/or 'combined_taxa_assign' files are located (Default NULL).
+#' @param presenceAbsence This setting is a TRUE or FASLE value that indicates
 #' if the results will include read counts or be reduced to 0/1 presence absence values
+#' (Default TRUE)
 #'
 #' @returns
 #' This function produces a single 'YYYY_MM_DD_HHMM_CombineTaxaReduced' file and
@@ -38,10 +38,11 @@
 #'
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
-#' Young, R. G., Hanner, R. H. (Submitted October 2023). Title Here. Biodiversity Data Journal.
+#' Young, R. G., Hanner, R. H. (Submitted October 2023). Dada-BLAST-Taxon Assign-Condense
+#' Shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' When running DBTCShiny functions the paths for the files selected cannot have
+#' When running DBTC functions the paths for the files selected cannot have
 #' whitespace! File folder locations should be as short as possible (close to
 #' the root directory) as some functions do not process long naming conventions.
 #' Also, special characters should be avoided (including question mark, number
@@ -147,7 +148,6 @@ combine_reduced_output <- function(fileLoc = NULL, presenceAbsence = TRUE){
 
       #Audit line
       if(auditScript>0){print(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2")); suppressWarnings(write(paste0(format(Sys.time(), "%Y_%m_%d %H:%M:%S"), " - Audit: 2"), file = auditFile, append = TRUE))}
-
 
       for(records in 1:nrow(files)){
 

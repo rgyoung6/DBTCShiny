@@ -65,6 +65,9 @@
 #' @importFrom DT datatable
 #' @importFrom DT DTOutput
 
+#' @importFrom stats reshape
+#' @importFrom utils read.delim
+#' @importFrom utils read.table
 
 #################### Dash Board Body ########################################
 dashBoardBodyComponent <- function() {

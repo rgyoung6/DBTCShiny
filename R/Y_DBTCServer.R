@@ -1119,11 +1119,11 @@ shinyAppServer <- function(input, output, session) {
     shinyWidgets::updatePickerInput(session, "familyFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = NULL, selected = NULL)
-    updateRadioButtons(session, "SFATButton", selected = "Yes")
-    updateRadioButtons(session, "SANFButton", selected = "Yes")
-    updateRadioButtons(session, "BIRTButton", selected = "Yes")
-    updateRadioButtons(session, "BCRTButton", selected = "Yes")
-    updateRadioButtons(session, "TBATButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "SFATButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "SANFButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "BIRTButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "BCRTButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "TBATButton", selected = "Yes")
     shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "runFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "labFilterInput", choices = NULL, selected = NULL)
@@ -1153,7 +1153,7 @@ shinyAppServer <- function(input, output, session) {
             shiny::showModal(shiny::modalDialog("Loading the data files, please wait...",  footer=NULL))
 
             #Load in the associated GPS and other provenance data
-            provenanceDataFileTable$data<-read.table(provenanceDataFileDisplayString$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
+            provenanceDataFileTable$data<-utils::read.table(provenanceDataFileDisplayString$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
 
             #get the directory of interest
             fileLoc <- dirname(provenanceDataFileDisplayString$data)
@@ -1172,7 +1172,7 @@ shinyAppServer <- function(input, output, session) {
 
             # Define a custom function to read each file with check.names = FALSE
             read_file <- function(file_path) {
-              read.delim(file_path, check.names = FALSE)
+              utils::read.delim(file_path, check.names = FALSE)
             }
 
             # Read all files and store data frames in a list
@@ -1192,7 +1192,7 @@ shinyAppServer <- function(input, output, session) {
               sampleNames<-column_names_after_results <- names(ASVFileTableTemp)[(resultsIndex + 1):ncol(ASVFileTableTemp)]
 
               # Reshape the data to long format
-              ASVFileTableTemp <- reshape(ASVFileTableTemp,
+              ASVFileTableTemp <- stats::reshape(ASVFileTableTemp,
                                           idvar = c("ID"),
                                           varying = sampleNames,
                                           v.names = "Abundance",
@@ -1400,11 +1400,11 @@ shinyAppServer <- function(input, output, session) {
     shinyWidgets::updatePickerInput(session, "genusFilterInput", choices = sort(unique(workMergedTable$data$genus), na.last = TRUE), selected = sort(unique(workMergedTable$data$genus), na.last = TRUE))
     shinyWidgets::updatePickerInput(session, "speciesFilterInput", choices = sort(unique(workMergedTable$data$species), na.last = TRUE), selected = sort(unique(workMergedTable$data$species), na.last = TRUE))
 
-    updateRadioButtons(session, "SFATButton", selected = "Yes")
-    updateRadioButtons(session, "SANFButton", selected = "Yes")
-    updateRadioButtons(session, "BIRTButton", selected = "Yes")
-    updateRadioButtons(session, "BCRTButton", selected = "Yes")
-    updateRadioButtons(session, "TBATButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "SFATButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "SANFButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "BIRTButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "BCRTButton", selected = "Yes")
+    shiny::updateRadioButtons(session, "TBATButton", selected = "Yes")
 
     shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = sort(unique(workMergedTable$data$Sample), na.last = TRUE))
     shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = sort(unique(workMergedTable$data$Run), na.last = TRUE))

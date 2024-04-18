@@ -25,7 +25,9 @@ Imports:
   shinydashboard,
   shinyFiles,
   shinyjs,
-  shinyWidgets
+  shinyWidgets, 
+  stats,
+  utils
 Language: en-GB
 LazyData: true
 RoxygenNote: 7.3.1

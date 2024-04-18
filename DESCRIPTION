@@ -15,24 +15,17 @@ Encoding: UTF-8
 URL: <https://github.com/rgyoung6/DBTCShiny>
 Depends: 
 Imports:
-  ggplot2,
+  DBTC,
+  DT,
   leaflet,
   leaflet.extras,
-  shiny,
-  shinydashboard,
-  shinyjs,
-  shinyWidgets,
-  stats,
-  utils,
-  shinycssloaders,
-  shinyFiles,
-  dada2,
-  plyr,
-  ShortRead,
-  taxonomizr,
-  pbapply,
   magrittr,
-  DT
+  shiny,
+  shinycssloaders,
+  shinydashboard,
+  shinyFiles,
+  shinyjs,
+  shinyWidgets
 Language: en-GB
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1

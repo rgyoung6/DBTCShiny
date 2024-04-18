@@ -283,7 +283,7 @@ shinyAppServer <- function(input, output, session) {
 
           ))
 
-          dada_implement(runFolderLoc = runFolderLoc,
+          DBTC::dada_implement(runFolderLoc = runFolderLoc,
                          primerFile = primerFile,
                          fwdIdent = fwdIdent,
                          revIdent = revIdent,
@@ -382,7 +382,7 @@ shinyAppServer <- function(input, output, session) {
           ))
 
           #Run the Dada combine function here.
-          combine_dada_output(fileLoc = fileLoc, minLen = minLen)
+          DBTC::combine_dada_output(fileLoc = fileLoc, minLen = minLen)
 
           removeModal()
           shiny::showModal(shiny::modalDialog(
@@ -522,7 +522,7 @@ shinyAppServer <- function(input, output, session) {
 
           ))
           #Run the function
-          make_BLAST_DB(fileLoc = fileLoc,
+          DBTC::make_BLAST_DB(fileLoc = fileLoc,
                         makeblastdbPath = makeblastdbPath,
                         taxaDBLoc = taxaDBLoc,
                         dbName = dbName,
@@ -655,7 +655,7 @@ shinyAppServer <- function(input, output, session) {
           ))
 
           #Run the function
-          seq_BLAST(databasePath = databasePath,
+          DBTC::seq_BLAST(databasePath = databasePath,
                     blastnPath = blastnPath,
                     querySeqPath = querySeqPath,
                     minLen = minLen,
@@ -765,7 +765,7 @@ shinyAppServer <- function(input, output, session) {
 
           ))
           #Run the function
-          taxon_assign(fileLoc = fileLoc,
+          DBTC::taxon_assign(fileLoc = fileLoc,
                        taxaDBLoc = taxaDBLoc,
                        numCores = numCores,
                        coverage = coverage,
@@ -848,7 +848,7 @@ shinyAppServer <- function(input, output, session) {
 
           ))
           #Run the function
-          combine_assign_output(fileLoc = fileLoc,
+          DBTC::combine_assign_output(fileLoc = fileLoc,
                                 numCores = numCores)
           removeModal()
           shiny::showModal(shiny::modalDialog(
@@ -924,7 +924,7 @@ shinyAppServer <- function(input, output, session) {
           ))
 
           #Run the function
-          reduce_taxa(fileLoc = fileLoc,
+          DBTC::reduce_taxa(fileLoc = fileLoc,
                       numCores = numCores)
 
           removeModal()
@@ -1001,7 +1001,7 @@ shinyAppServer <- function(input, output, session) {
           ))
 
           #Run the function
-          combine_reduced_output(fileLoc = fileLoc, presenceAbsence = presenceAbsence)
+          DBTC::combine_reduced_output(fileLoc = fileLoc, presenceAbsence = presenceAbsence)
 
           removeModal()
           shiny::showModal(shiny::modalDialog(

@@ -191,7 +191,7 @@ Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequenc
 
 |superkingdom|phylum|class|order|family|genus|species|Top_BLAST|Final_Common_Names|Final_Rank|Final_Taxa|Result_Code|RepSequence|Number_ASV|Average_ASV_Length|Number_Occurrences|Average_ASV_Per_Sample|Median_ASV_Per_Sample|Results|
 |:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-|Eukaryota(51.1,97,95.2,1e-76)|Chordata(51.1,97,95.2,1e-76)|Mammalia(51.1,97,95.2,1e-76)|Rodentia(51.1,97,95.2,1e-76)|Cricetidae(51.1,97,95.2,1e-76)|Microtus(51.1,97,95.2,1e-76)|Microtus pennsylvanicus(51.1,97,95.2,1e-76)|Microtus pennsylvanicus(100,97.143,6.96e-94)|meadow vole|species|Microtus pennsylvanicus(51.1,97,95.2,1e-76)|SFAT|AGCT|20|196.25|31|374.2580645	108|Merged|
+|Eukaryota(51.1,97,95.2,1e-76)|Chordata(51.1,97,95.2,1e-76)|Mammalia(51.1,97,95.2,1e-76)|Rodentia(51.1,97,95.2,1e-76)|Cricetidae(51.1,97,95.2,1e-76)|Microtus(51.1,97,95.2,1e-76)|Microtus pennsylvanicus(51.1,97,95.2,1e-76)|Microtus pennsylvanicus(100,97.143,6.96e-94)|meadow vole|species|Microtus pennsylvanicus(51.1,97,95.2,1e-76)|SFAT|AGCT|20|196.25|31|374.2580645|108|Merged|
 
 
 ## Data Filtering

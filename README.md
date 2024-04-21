@@ -186,7 +186,7 @@ Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequenc
 |:------------|:------------|:------------|:------------|:------------|:------------|:------------|:------------|
 |NationalPark2024|A001|Run1A|GuelphHanner|Sample|YYYY-MM-DD|43.5327|-80.2262|
 
-**ASV Data Information Headers (These will be followed by columns of sample read data)**
+**ASV Data Information Headers (These will be followed by columns of sample read data, in the below example there is a single sample 'A001')**
 
 |superkingdom|phylum|class|order|family|genus|species|Top_BLAST|Final_Common_Names|Final_Rank|Final_Taxa|Result_Code|RepSequence|Number_ASV|Average_ASV_Length|Number_Occurrences|Average_ASV_Per_Sample|Median_ASV_Per_Sample|Results|A001|
 |:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|

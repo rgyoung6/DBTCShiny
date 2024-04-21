@@ -183,7 +183,7 @@ Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequenc
 
 |Campaign|Sample|Run|Lab|Type|Date|West|North| 
 |:------------|:------------|:------------|:------------|:------------|:------------|:------------|:------------|
-|NationalPark2024|A001|Run1A|GuelphHanner|Sample|YYYY-MM-DD|49.00|-91.00|
+|NationalPark2024|A001|Run1A|GuelphHanner|Sample|YYYY-MM-DD|43.5327|-80.2262|
 
 ## Data Filtering
 Filtering options to selectively view different data on the map.

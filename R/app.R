@@ -111,20 +111,27 @@ welcomePage <- function() {
                             shiny::p("Dada-BLAST-Taxon Assign-Condense (DBTC) is an R shiny implementation of a Dada2 based Metabarcode analysis pipeline. This implementation includes: ", style = "font-size:24px;"),
                             shiny::tags$div(
                               shiny::tags$ul(
-                                shiny::tags$li("Fastq file processing using Dada in R"),
-                                shiny::tags$li("BLAST amplicon sequence varients (ASV) using NCBI BLAST locally against a local NCBI or custom library"),
-                                shiny::tags$li("Assign taxa to the unique reads using NCBI taxon database through taxa names and/or taxaID's"),
-                                shiny::tags$li("Condense the resulting ASV taxonomic assignments to unique taxa with the ability to combine multiple datasets into a single final results table"),
+                                shiny::tags$li(shiny::a("Fastq", href = "https://en.wikipedia.org/wiki/FASTQ_format", target="_blank")," file processing using Dada in R"),
+                                shiny::tags$li("Using the Basic Local Alignment Search Tool (",shiny::a("BLAST", href = "https://en.wikipedia.org/wiki/BLAST_(biotechnology)", target="_blank"),") amplicon sequence variants ", shiny::a("ASV", href = "https://en.wikipedia.org/wiki/Amplicon_sequence_variant", target="_blank"), " can be searched against local NCBI or custom sequence databases"),
+                                shiny::tags$li("Assign taxa to the unique reads using NCBI taxon database (obtain the database using ",shiny::a("taxonomizr website", href = "https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html", target="_blank")),
+                                shiny::tags$li("Condense the resulting ", shiny::a("ASV", href = "https://en.wikipedia.org/wiki/Amplicon_sequence_variant", target="_blank"), " taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence sequence databases for the same reads, or results from the same samples for different molecular regions) into a combined results table"),
+                                shiny::br(),
+                                shiny::p("NOTE: While the DBTCShiny package has been built for the analysis of high-throughput sequencing results, the BLAST and taxonomic assignment, taxonomic condense can be utilized with single specimen Sanger sequencing data."),
                               )
                             )
                           )),
                           shiny::fluidRow(shinydashboard::box(
-                            title = shiny::p("Required External R Elements", style = "font-size:24px;"),
+                            title = shiny::p("DBTCShiny Components", style = "font-size:24px;"),
                             status = "primary",
                             solidHeader = TRUE,
                             collapsible = TRUE,
                             collapsed = TRUE,
                             width = 12,
+                            shiny::br(),
+                            shiny::h4("R Packages"),
+                            shiny::p(shiny::a("DBTC", href = "https://github.com/rgyoung6/DBTC", target="_blank")),
+                            shiny::p(shiny::a("DBTCShiny", href = "https://github.com/rgyoung6/DBTCShiny", target="_blank")),
+                            shiny::br(),
                             shiny::h4("Required elements outside of R"),
                             shiny::p("NCBI ", shiny::a("BLAST+", href = "https://blast.ncbi.nlm.nih.gov/doc/blast-help/downloadblastdata.html#blast-executables", target="_blank"), " local program to run BLAST on local databases"),
                             shiny::tags$div(
@@ -157,54 +164,6 @@ welcomePage <- function() {
                                 shiny::tags$li(shiny::a("MACER GitHub", href = "https://github.com/rgyoung6/MACER"), " (will have the most recent version)")
                               )
                             )
-                          )),
-                          shiny::fluidRow(shinydashboard::box(
-                            title = shiny::p("R dependencies: Each of the listed packages is required to run the components of the DBTC pipeline.", style = "font-size:24px;"),
-                            status = "primary",
-                            solidHeader = TRUE,
-                            collapsible = TRUE,
-                            collapsed = TRUE,
-                            width = 12,
-                            shiny::h4("Bioconductor"),
-                            shiny::p(shiny::a("ShortRead", href = "https://bioconductor.org/packages/release/bioc/html/ShortRead.html"),": The ShortRead package is required to run elements of the DBTC pipeline and can be obtained through Bioconductor. Please follow the instructions on the ShortRead page."),
-                            shiny::br(),
-                            shiny::h4("GitHub"),
-                            shiny::p(shiny::a("dada2", href = "https://benjjneb.github.io/dada2/"),": The dada package is main package to process the raw fastq fules and can be obtained from GitHub. Please follow the instructions on the dada2 page."),
-                            shiny::br(),
-                            shiny::h4("CRAN"),
-                            shiny::p("Each of below CRAN packages and their dependencies are required for the DBTCShiny package."),
-                            shiny::tags$div(
-                              shiny::tags$ul(
-                                shiny::tags$li(shiny::a("DT", href = "https://cran.r-project.org/web/packages/DT/index.html")),
-                                shiny::tags$li(shiny::a("ggplot2", href = "https://cran.r-project.org/web/packages/ggplot2/index.html")),
-                                shiny::tags$li(shiny::a("leaflet", href = "https://cran.r-project.org/web/packages/leaflet/index.html")),
-                                shiny::tags$li(shiny::a("leaflet.extras", href = "https://cran.r-project.org/web/packages/leaflet.extras/index.html")),
-                                shiny::tags$li(shiny::a("magrittr", href = "https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html")),
-                                shiny::tags$li(shiny::a("pbapply", href = "https://cran.rstudio.com/web/packages/pbapply/index.html")),
-                                shiny::tags$li(shiny::a("plyr", href = "https://cran.r-project.org/web/packages/plyr/index.html")),
-                                shiny::tags$li(shiny::a("shiny", href = "https://cran.r-project.org/web/packages/shiny/index.html")),
-                                shiny::tags$li(shiny::a("shinycssloaders", href = "https://cran.r-project.org/web/packages/shinycssloaders/index.html")),
-                                shiny::tags$li(shiny::a("shinydashboard", href = "https://cran.r-project.org/web/packages/shinydashboard/index.html")),
-                                shiny::tags$li(shiny::a("shinyFiles", href = "https://cran.r-project.org/web/packages/shinyFiles/index.html")),
-                                shiny::tags$li(shiny::a("shinyjs", href = "https://cran.r-project.org/web/packages/shinyjs/index.html")),
-                                shiny::tags$li(shiny::a("shinyWidgets", href = "https://cran.r-project.org/web/packages/shinyWidgets/index.html")),
-                                shiny::tags$li(shiny::a("stats", href = "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html")),
-                                shiny::tags$li(shiny::a("taxonomizr", href = "https://cran.r-project.org/web/packages/taxonomizr/index.html")),
-                                shiny::tags$li(shiny::a("utils", href = "https://cran.r-project.org/web/packages/R.utils/index.html"))
-                              )
-                            ),
-                            shiny::br(),
-                            shiny::h4("Commands to install dependencies..."),
-                            shiny::br(),
-                            shiny::p("if (!require('BiocManager', quietly = TRUE))"),
-                            shiny::p("    install.packages('BiocManager')"),
-                            shiny::p("BiocManager::install('ShortRead')"),
-                            shiny::br(),
-                            shiny::p("if (!requireNamespace('BiocManager', quietly = TRUE))"),
-                            shiny::p("    install.packages('BiocManager')"),
-                            shiny::p("BiocManager::install('dada2', version = '3.16')"),
-                            shiny::br(),
-                            shiny::p("install.packages(c('DT','ggplot2','leaflet','leaflet.extras','magrittr','pbapply','plyr','shiny','shinycssloaders','shinydashboard','shinyFiles','shinyjs','shinyWidgets','stats','taxonomizr','utils'))")
                           )),
                           shiny::fluidRow(shinydashboard::box(
                             title = shiny::p("Contact", style = "font-size:24px;"),
@@ -614,6 +573,12 @@ dbtcTools <- function() {
         shiny::column(width = 6,
           shiny::p(shiny::tags$b(shiny::tags$u("2. Provenance Data Filtering", style = "font-size:14px;"))),
           shiny::wellPanel(
+            #Dropdown menu for Sample
+            shinyWidgets::pickerInput(inputId = "campaignInput","Campaign",
+              choices = "NA",
+              selected = "NA",
+              options = list('actions-box' = TRUE),
+              multiple = TRUE),
             #Dropdown menu for Sample
             shinyWidgets::pickerInput(inputId = "sampleFilterInput","Sample",
               choices = "NA",

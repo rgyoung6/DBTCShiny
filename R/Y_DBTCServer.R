@@ -84,7 +84,7 @@ shinyAppServer <- function(input, output, session) {
   provenanceDataFileDisplayString<-reactiveValues(data = NA)
   filteValues<-reactiveValues(AVal = NA, BVal = NA, CVal = NA, DVal = NA,
                               EVal = NA, FVal = NA, GVal = NA,HVal = NA,
-                              IVal = NA, JVal = NA, KVal = NA, LVal = NA,
+                              IVal = NA, JVal = NA, CamVal = NA, KVal = NA, LVal = NA,
                               MVal = NA, NVal = NA, OVal = NA, PVal = NA,
                               QVal = NA)
 
@@ -1124,6 +1124,7 @@ shinyAppServer <- function(input, output, session) {
     shiny::updateRadioButtons(session, "BIRTButton", selected = "Yes")
     shiny::updateRadioButtons(session, "BCRTButton", selected = "Yes")
     shiny::updateRadioButtons(session, "TBATButton", selected = "Yes")
+    shinyWidgets::updatePickerInput(session, "campaignInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "runFilterInput", choices = NULL, selected = NULL)
     shinyWidgets::updatePickerInput(session, "labFilterInput", choices = NULL, selected = NULL)
@@ -1406,6 +1407,7 @@ shinyAppServer <- function(input, output, session) {
     shiny::updateRadioButtons(session, "BCRTButton", selected = "Yes")
     shiny::updateRadioButtons(session, "TBATButton", selected = "Yes")
 
+    shinyWidgets::updatePickerInput(session, "campaignInput", choices = sort(unique(workMergedTable$data$Campaign), na.last = TRUE), selected = sort(unique(workMergedTable$data$Campaign), na.last = TRUE))
     shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = sort(unique(workMergedTable$data$Sample), na.last = TRUE))
     shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = sort(unique(workMergedTable$data$Run), na.last = TRUE))
     shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = sort(unique(workMergedTable$data$Lab), na.last = TRUE))
@@ -1465,6 +1467,7 @@ shinyAppServer <- function(input, output, session) {
         workMergedTable$data <- workMergedTable$data[!grepl("TBAT", workMergedTable$data$Result_Code), ]
       }
 
+      workMergedTable$data <- workMergedTable$data[workMergedTable$data$Campaign %in% input$campaignInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Sample %in% input$sampleFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Run %in% input$runFilterInput,,drop=FALSE]
       workMergedTable$data <- workMergedTable$data[workMergedTable$data$Lab %in% input$labFilterInput,,drop=FALSE]
@@ -1493,6 +1496,7 @@ shinyAppServer <- function(input, output, session) {
         HVal <- input$familyFilterInput
         IVal <- input$genusFilterInput
         JVal <- input$speciesFilterInput
+        CamVal <- input$campaignInput
         KVal <- input$sampleFilterInput
         LVal <- input$runFilterInput
         MVal <- input$labFilterInput
@@ -1521,6 +1525,7 @@ shinyAppServer <- function(input, output, session) {
         shiny::updateRadioButtons(session, "BIRTButton", selected = BIRTVal)
         shiny::updateRadioButtons(session, "BCRTButton", selected = BCRTVal)
         shiny::updateRadioButtons(session, "TBATButton", selected = TBATVal)
+        shinyWidgets::updatePickerInput(session, "campaignInput", choices = sort(unique(workMergedTable$data$Campaign), na.last = TRUE), selected = CamVal)
         shinyWidgets::updatePickerInput(session, "sampleFilterInput", choices = sort(unique(workMergedTable$data$Sample), na.last = TRUE), selected = KVal)
         shinyWidgets::updatePickerInput(session, "runFilterInput", choices = sort(unique(workMergedTable$data$Run), na.last = TRUE), selected = LVal)
         shinyWidgets::updatePickerInput(session, "labFilterInput", choices = sort(unique(workMergedTable$data$Lab), na.last = TRUE), selected = MVal)

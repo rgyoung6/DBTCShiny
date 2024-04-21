@@ -8,7 +8,7 @@ This repository contains the DBTCShiny package located at [rgyoung6/DBTCShiny](h
   - [Fastq](https://en.wikipedia.org/wiki/FASTQ_format) file processing using Dada in R
   - Using the Basic Local Alignment Search Tool ([BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology))) amplicon sequence variants ([ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) can be searched against local NCBI or custom libraries
   - Assign taxa to the unique reads using NCBI taxon database through taxa names and/or taxaID's
-  - Condense the resulting ASV taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence libraries for the same reads, or results from the same samples for different molecular regions) into a combined results table
+  - Condense the resulting [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence libraries for the same reads, or results from the same samples for different molecular regions) into a combined results table
 
 Before using these files and working through this tutorial please install the [DBTCShiny](https://github.com/rgyoung6/DBTCShiny) package.
 
@@ -171,10 +171,10 @@ launchDBTCShiny()
 # Function Descriptions
 
 ## dada_implement()
-This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contains fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). A run is a group of results processed at the same time on the same machine representing the same molecular methods. All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files and amplicon sequencing variant (ASV) tables. 
+This function requires a main directory containing a folder(s) representing sequencing runs which in-turn contains fastq files (the location of one of the fastq files in one of the sequencing run folders is used as an input argument). A run is a group of results processed at the same time on the same machine representing the same molecular methods. All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files and amplicon sequencing variant ([ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) tables. 
     
 ## combine_dada_output()
-This function uses DBTC Dada ASV output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single ASV table with accompanying [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all ASV tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
+This function uses DBTC Dada [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) output files (YYYY_MM_DD_HH_MM_UserInputRunName_Merge, YYYY_MM_DD_HH_MM_UserInputRunName_MergeFwdRev, and/or YYYY_MM_DD_HH_MM_UserInputRunName_TotalTable) and combines them into a single [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table with accompanying [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. This function also produces a file containing the processing information for the function. The main input argument for this function is the location of a file in a folder containing all [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) tables wanting to be combined. Output files are generated with the naming convention YYYY_MM_DD_HH_MM_combinedDada.
 
 ## make_BLAST_DB()
 This function takes a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with headers in the [MACER](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443542/) format and establishes a database upon which a BLAST search can be completed. There are also NCBI preformatted databases available where the make_BLAST_DB() function can then be skipped ([NCBI BLAST databases](https://www.ncbi.nlm.nih.gov/books/NBK62345/#blast_ftp_site.The_blastdb_subdirectory)). The outcome of the function is a folder with a BLASTable NCBI formatted sequence database. Note: The there are three main required elements for MACER formatted records which include a the Unique Identifier 
@@ -185,13 +185,13 @@ This function takes a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file w
 This function takes [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files as input along with a user selected NCBI formatted database to BLAST sequences against. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.
 
 ## taxon_assign()
-This function takes a BLAST result file and associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files (either on their own or with accompanying ASV files generated from the dada_implement function) and collapses the multiple BLAST results into as single result for each query sequence. When an ASV table is present the taxonomic results will be combined with the ASV table.
+This function takes a BLAST result file and associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files (either on their own or with accompanying [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) files generated from the dada_implement function) and collapses the multiple BLAST results into as single result for each query sequence. When an [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table is present the taxonomic results will be combined with the [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table.
 
 ## combine_assign_output()
 This function takes a file selection and then uses all 'taxaAssign' files in that directory and combines them into a single output 'taxaAssignCombined.tsv' file.
 
 ## reduce_taxa()
-This function takes a file selection and then uses all 'taxaAssign' and/or 'taxaAssignCombine' files in that directory and reduces all ASV with the same taxonomic assignment into a single result and places these results in a 'taxaReduced' file for each of the target files in the directory.
+This function takes a file selection and then uses all 'taxaAssign' and/or 'taxaAssignCombine' files in that directory and reduces all [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) with the same taxonomic assignment into a single result and places these results in a 'taxaReduced' file for each of the target files in the directory.
 
 ## combine_reduced_output()
 This function takes a file selection and then uses all 'taxaReduced' files in that directory and combines them into a single 'CombineTaxaReduced' taxa table file with presence absence results.
@@ -313,10 +313,10 @@ There are numerous files in the D_Output folder. These include:
 - dadaSummary.txt file which provides all of the information on the running of the dada_implement() function.
 - dadaSummaryTable.tsv contains a table with summary information for the processing of the samples in the run.
 - ErrorForward.pdf and ErrorReverse.pdf provide visualizations on the assessed sequencing error for the sequencing run.
-- MergeFwdRev.tsv is the ASV table with the data from the sequencing run and the MergeFwdRev.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples. The MergeFwdRev files include reads that were able to be merged, as well as reads that were not able to be merged.
+- MergeFwdRev.tsv is the [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table with the data from the sequencing run and the MergeFwdRev.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples. The MergeFwdRev files include reads that were able to be merged, as well as reads that were not able to be merged.
   NOTE: The merged, forward, and reverse reads are obtained in parallel analyses and combined into a single file so MergeFwdRev files will represent triplicate molecular processing results. These files are present to see if there are reads that are not represented or poorly represented across merged and unidirectional results, perhaps indicating issues with one of the primers.
-- Merge.tsv is the ASV table with the read data able to be merged from the sequencing run. The companion Merge.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples in [Fasta](https://en.wikipedia.org/wiki/FASTA_format) format.
-- TotalTable.tsv is an ASV table with all of the merged, forward, and reverse results as well as the retained results for the merged reads removed due to being suspected chimeric combinations.
+- Merge.tsv is the [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table with the read data able to be merged from the sequencing run. The companion Merge.fas is a [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file with the reads from the samples in [Fasta](https://en.wikipedia.org/wiki/FASTA_format) format.
+- TotalTable.tsv is an [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table with all of the merged, forward, and reverse results as well as the retained results for the merged reads removed due to being suspected chimeric combinations.
 
 ### Dependencies
 - dada2
@@ -327,10 +327,10 @@ There are numerous files in the D_Output folder. These include:
 ***
 
 ## Combine Dada Output
-combine_dada_output() - Combine Dada2 ASV tables (YYYY_MM_DD_HHMM_FileName_MergeFwdRev.tsv OR YYYY_MM_DD_HHMM_FileName_Merge.tsv) into a single ASV output file.
+combine_dada_output() - Combine Dada2 [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) tables (YYYY_MM_DD_HHMM_FileName_MergeFwdRev.tsv OR YYYY_MM_DD_HHMM_FileName_Merge.tsv) into a single [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) output file.
 
 ### Input 
-Two or more files to be combined are required as input for this function. These files need to be ASV files as outputted from the dada_inplement() and can include Merge, MergeFwdRev, or TotalTable.tsv files.
+Two or more files to be combined are required as input for this function. These files need to be [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) files as outputted from the dada_inplement() and can include Merge, MergeFwdRev, or TotalTable.tsv files.
 
 ### Arguments
 - <strong> fileLoc -</strong> Select a file in the file folder with dada results you would like to combine (YYYY_MM_DD_HHMM_FileName_MergeFwdRev.tsv OR YYYY_MM_DD_HHMM_FileName_Merge.tsv OR 2023_10_16_1511_Run1_TotalTable.tsv files.
@@ -338,12 +338,12 @@ Two or more files to be combined are required as input for this function. These 
 
 ### Output
 The output from this function includes three files.
-  1. YYYY_MM_DD_HHMM_combinedDada.tsv - combined ASV table
+  1. YYYY_MM_DD_HHMM_combinedDada.tsv - combined [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table
   2. YYYY_MM_DD_HHMM_combinedDada.fas - combined [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file
   3. YYYY_MM_DD_HHMM_combinedDada.tsv - Summary file from the combine_dada_output run
 
 ### Intrepretation
-Outputted data files will come in the same ASV table format as the output dada_implement() ASV files. 
+Outputted data files will come in the same [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) table format as the output dada_implement() [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) files. 
 
 ### Dependencies
 - Base R
@@ -408,10 +408,10 @@ The BLAST run file contains the command used to run the BLAST search. The BLAST 
 taxon_assign() - Using BLAST results to construct a table with taxonomic assignments for each unique sequence.
 
 ### Input 
-This function requires a BLAST output file and an associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. In addition, if present an ASV file will also be used to combine the taxonomic results when present. The BLAST results are reduced to a single result for each read. 
+This function requires a BLAST output file and an associated [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file. In addition, if present an [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) file will also be used to combine the taxonomic results when present. The BLAST results are reduced to a single result for each read. 
 
 ### Arguments
-- <strong>fileLoc -</strong> The location of a file in a directory where all of the paired [Fasta](https://en.wikipedia.org/wiki/FASTA_format) and BLAST (and potentially ASV) files are located.
+- <strong>fileLoc -</strong> The location of a file in a directory where all of the paired [Fasta](https://en.wikipedia.org/wiki/FASTA_format) and BLAST (and potentially [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) files are located.
 - <strong>taxaDBLoc -</strong> The location of the NCBI taxonomic data base (accessionTaxa.sql, see the main DBTCShiny page for details). The local path for the directory containing all of the [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files wishing to be BLASTed.
 - <strong>numCores -</strong> The number of cores used to run the function (default = 1, Windows systems can only use a single core).
 - <strong>coverage -</strong> The percent coverage used for taxonomic assignment for the above threshold results (Default coverage = 95).
@@ -419,7 +419,7 @@ This function requires a BLAST output file and an associated [Fasta](https://en.
 - <strong>propThres -</strong> The proportional threshold flags the final result based on the preponderance of the data. So if the threshold is set to 0.95, results will be flagged if the taxa directly below the assigned taxa has fewer than 0.95 percent of the records causing the upward taxonomic placement (Default ident = 0.95).
 - <strong>coverReportThresh -</strong> The percent coverage threshold used for reporting flags below this threshold (Default coverReportThresh = 95).
 - <strong>identReportThresh -</strong> The percent identity threshold used for reporting flags below this threshold (Default identReportThresh = 95).
-- <strong>includeAllDada  -</strong> When paired Dada ASV tables are present, when set to FALSE, this will exclude records without taxonomic assignment (Default includeAllDada = TRUE).
+- <strong>includeAllDada  -</strong> When paired Dada [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) tables are present, when set to FALSE, this will exclude records without taxonomic assignment (Default includeAllDada = TRUE).
 
 ### Output
 A single taxonomic assignment file is created contains the string 'taxaAssign_YYYY_MM_DD_HHMM'.
@@ -429,7 +429,7 @@ The number of returned BLAST results is dictated by the seq_BLAST() BLASTResults
 
 Column headers for the resulting taxonomic assignments include...
 
-uniqueID, superkingdom, phylum, class, order, family, genus, species, Top_BLAST, Lowest_Single_Ran, Lowest_Single_Taxa, Lowest_Single_Rank_Above_Thres, Lowest_Single_Taxa_Above_Thres, Final_Common_Names, Final_Rank, Final_Taxa, Final_Rank_Taxa_Thres, Result_Code, Sequence, Length, Results, Followed by columns of samples containing ASV values
+uniqueID, superkingdom, phylum, class, order, family, genus, species, Top_BLAST, Lowest_Single_Ran, Lowest_Single_Taxa, Lowest_Single_Rank_Above_Thres, Lowest_Single_Taxa_Above_Thres, Final_Common_Names, Final_Rank, Final_Taxa, Final_Rank_Taxa_Thres, Result_Code, Sequence, Length, Results, Followed by columns of samples containing [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) values
 
 There are three columns that deserve special explaination. 
 
@@ -456,7 +456,7 @@ Note: Records with BIRT, BCRT, and TBAT flags should be highly scruntized. SANF 
 combine_assign_output() - Using results from the taxon_assign() function, combine all files with the string 'taxaAssign_YYYY_MM_DD_HHMM' in to a single .tsv file.
 
 ### Input 
-Select a file in a folder with the taxa assigned files you would like to combine (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv'). NOTE: all '_taxaAssign_' files in the folder location should originate from the same dada output file but have outputs from different BLAST sequence libraries and therefore contain the same ASVs.
+Select a file in a folder with the taxa assigned files you would like to combine (extension '_taxaAssign_YYYY_MM_DD_HHMM.tsv'). NOTE: all '_taxaAssign_' files in the folder location should originate from the same dada output file but have outputs from different BLAST sequence libraries and therefore contain the same [ASV's](https://en.wikipedia.org/wiki/Amplicon_sequence_variant).
 
 ### Arguments
 - <strong>fileLoc -</strong> The location of a file in a directory where all of the 'taxaAssign' files are located.
@@ -532,7 +532,7 @@ There is no specific unique intrepretation for this file.
 The interactive map where loaded data can be viewed.
 
 ## Data Import
-Data import buttons to load ASV data files generated by the DBTCShiny pipeline along with provenance data to visualize on the map.
+Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) data files generated by the DBTCShiny pipeline along with provenance data to visualize on the map.
 
 ## Data Filtering
 Filtering options to selectively view different data on the map.

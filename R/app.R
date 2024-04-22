@@ -181,12 +181,12 @@ welcomePage <- function() {
 dbtcTools <- function() {
   shinydashboard::tabItem(tabName = "dbtcTools",shiny::h1(shiny::strong("DBTC Tools")),
     shinydashboard::tabBox(id = "DBTC_Tools_Box",width = 12,
-       shiny::tabPanel("Dada",shiny::div(style = 'overflow-y:scroll;height:400px;',
+       shiny::tabPanel("dada_implement()",shiny::div(style = 'overflow-y:scroll;height:400px;',
              shiny::column(width = 4,
                            shiny::p(shiny::tags$b(shiny::tags$u("1. General Information", style = "font-size:14px;"))),
                            shiny::wellPanel(
                              shiny::fluidRow(
-                               shiny::strong("Select a fastq file in one of the run folders in the directory of interest (NOTE: all run folders with fastq data in the parent directory will be processed by DBTC. If this is not what you want please rearrange your folder structure)."),
+                               shiny::strong("Select a fastq file in one of the run folders in the directory of interest (NOTE: all run folders with fastq data in the parent directory will be processed by DBTC. If this is not what you want please rearrange your folder structure. See ", shiny::a("DBTC dada_implement()", href = "https://github.com/rgyoung6/DBTC/blob/main/README.md#input")," for details)."),
                                shiny::br(),
                                #Data file upload
                                shinyFiles::shinyFilesButton("dadaDirectory", "Fastq File",title = "Fastq File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
@@ -196,7 +196,7 @@ dbtcTools <- function() {
                              ),
                              shiny::br(),
                              shiny::fluidRow(
-                               shiny::strong("Select a file with the primers for this analysis."),
+                               shiny::strong("Select a file with the primers for this analysis (See ", shiny::a("DBTC dada_implement()", href = "https://github.com/rgyoung6/DBTC/blob/main/README.md#input")," for details)."),
                                shiny::br(),
                                #Data file upload
                                shinyFiles::shinyFilesButton("primerFile", "Primer File",title = "Primer File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL),
@@ -254,7 +254,7 @@ dbtcTools <- function() {
              )#Closing out the shiny columns
           )#Closing out the div style
        ),#Tab panel
-       shiny::tabPanel("Dada Combine",
+       shiny::tabPanel("combine_dada_output()",
            shiny::wellPanel(
              shiny::fluidRow(
                shiny::strong("Select a file in the file folder with dada results
@@ -275,7 +275,7 @@ dbtcTools <- function() {
              shiny::actionButton("dadaCombine","Dada Combine Submit", icon = shiny::icon("play-circle"))
            )
        ),
-       shiny::tabPanel("Make BLAST DB",
+       shiny::tabPanel("make_BLAST_DB()",
          shiny::wellPanel(
            shiny::p(shiny::tags$b(shiny::tags$u("Create a BLAST data base using fasta files (formatted correctly).", style = "font-size:16px;"))),
 
@@ -319,7 +319,7 @@ dbtcTools <- function() {
          )
 
        ),
-       shiny::tabPanel("BLAST Sequences",
+       shiny::tabPanel("seq_BLAST()",
          shiny::wellPanel(
            shiny::p(shiny::tags$b(shiny::tags$u("BLAST a fasta file against an established library.", style = "font-size:16px;"))),
 
@@ -365,7 +365,7 @@ dbtcTools <- function() {
          )
 
        ),#Tab panel
-       shiny::tabPanel("Taxon Assign",shiny::div(style = 'overflow-y:scroll;height:500px;',
+       shiny::tabPanel("taxon_assign()",shiny::div(style = 'overflow-y:scroll;height:500px;',
          shiny::column(width = 4,
                        shiny::wellPanel(
                          #Data file upload
@@ -415,7 +415,7 @@ dbtcTools <- function() {
                          )
          ))
        ),#Tab panel
-       shiny::tabPanel("Combine Taxa Assign",
+       shiny::tabPanel("combine_assign_output()",
                        shiny::wellPanel(
                          #Combine Taxa Assign file in the target location
                          shiny::fluidRow(
@@ -441,7 +441,7 @@ dbtcTools <- function() {
                          shiny::actionButton("combineTaxa","Combine Taxa Assign", icon = shiny::icon("play-circle"))
                        )
        ),#Tab panel
-       shiny::tabPanel("Reduce Taxa Assign",
+       shiny::tabPanel("reduce_taxa()",
                        shiny::wellPanel(
                          #Combine Taxa Assign file in the target location
                          shiny::fluidRow(
@@ -465,7 +465,7 @@ dbtcTools <- function() {
                          shiny::actionButton("reduceTaxa","Reduce Taxa Assign", icon = shiny::icon("play-circle"))
                        )
        ),#Tab panel
-       shiny::tabPanel("Combine Reduced Taxon Assign",
+       shiny::tabPanel("combine_reduced_output()",
                        shiny::wellPanel(
                          #Combine Taxa Assign file in the target location
                          shiny::fluidRow(
@@ -502,7 +502,7 @@ dbtcTools <- function() {
       shiny::tabPanel("Data Import",
           shinydashboard::box( width = 12,title = "Filter Options",status = "warning",solidHeader = TRUE,collapsible = T,
           shiny::column(width = 10,
-            shiny::p("Select a file of interest in the Reduced Taxa Assign output format ('..._taxaAssign_YYYY_MM_DD_HHMM.tsv') as input to view the data on the map. Note: Multiple files can be individually uploaded and will be stored and visible when moving to the Mapping Dashboard"),
+            shiny::p("Select a file of interest in the Reduced Taxa Assign output format ('..._taxaReduced_YYYY_MM_DD_HHMM.tsv' or 'YYYY_MM_DD_HHMM_CombineTaxaReduced.tsv') as input to view the data on the map."),
             shiny::br(),
             shiny::fluidRow(
               shiny::column(width = 2, shinyFiles::shinyFilesButton("ASVFile", "ASV Data File",title = "Select File:",icon = shiny::icon("magnifying-glass"), multiple = FALSE, buttonType = "default", class = NULL)),

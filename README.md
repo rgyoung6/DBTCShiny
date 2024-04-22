@@ -15,7 +15,7 @@ This package contains the DBTCShiny functions located at [rgyoung6/DBTCShiny](ht
 # Table of Contents  
 - [Installation](#installation)
 - [Package Dependencies](#package-dependencies)
-- [DBTC Function Descriptions](#dbtc-function-descriptions)
+- [DBTCShiny Function Descriptions](#dbtcshiny-function-descriptions)
 - [Naming Convention Rules](#naming-convention-rules)
 - [DBTC Package Function Details](#dbtc-package-function-details)
 - [Mapping Dashboard](#mapping-dashboard)

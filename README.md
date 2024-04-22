@@ -20,7 +20,7 @@ This package contains the DBTCShiny functions located at [rgyoung6/DBTCShiny](ht
 - [DBTC Package Function Details](#dbtc-package-function-details)
 - [Mapping Dashboard](#mapping-dashboard)
   * [Mapping](#mapping)
-  * [Import GPS and grouping data](#import-gps-and-grouping-data)
+  * [Data Import](#data-import)
   * [Data Filtering](#data-filtering)
   * [Data Table](#data-table) 
 - [Citation](#citation)

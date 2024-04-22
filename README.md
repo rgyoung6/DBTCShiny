@@ -224,6 +224,6 @@ A tabular display of the data loaded and filtered which is also being visualized
 ***
 
 # Citation
-Young RG, et al., Hanner RH (2023) A Scalable, Open Source, Cross Platform, MetaBarcode Analysis Method using Dada2 and BLAST. Biodiversity Data Journal (In progress)
+Young RG, et al., Hanner RH (2024) A Scalable, Open Source, Cross Platform, MetaBarcode Analysis Method using Dada2 and BLAST. Biodiversity Data Journal (In progress)
 
 ([Back to Top](#table-of-contents))

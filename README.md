@@ -3,14 +3,14 @@ DBTCShiny is an R shiny implementation of the [DBTC](https://github.com/rgyoung6
 
 # Description
 
-This package contains the DBTCShiny functions located at [rgyoung6/DBTCShiny](https://github.com/rgyoung6/DBTCShiny) . The Dada-BLAST-Taxon Assign-Condense Shiny package contains the foundational [DBTC](https://github.com/rgyoung6/DBTC) functions (able to be run through the command line) which have been wrapped in a Shiny application for easy user interface. The DBTC functions have four main outcomes...
+This package contains the DBTCShiny functions located at [rgyoung6/DBTCShiny](https://github.com/rgyoung6/DBTCShiny) . The Dada-BLAST-Taxon Assign-Condense Shiny package contains the foundational [DBTC](https://github.com/rgyoung6/DBTC) functions (able to be run through the command line) which have been wrapped in a Shiny application for easy user interface. The [DBTC](https://github.com/rgyoung6/DBTC) functions have four main outcomes...
 
   - [Fastq](https://en.wikipedia.org/wiki/FASTQ_format) file processing using Dada in R
   - Using the Basic Local Alignment Search Tool ([BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology))), amplicon sequence variants ([ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) can be searched against local NCBI or custom sequence databases
   - Assign taxa to the unique reads using NCBI taxon database (obtain the database using [taxonomizr website](https://cran.r-project.org/web/packages/taxonomizr/vignettes/usage.html))
   - Condense the resulting ASV taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence databases for the same reads, or results from the same samples for different molecular regions) into a combined results table
 
-**NOTE:** While the DBTC package has been built for the analysis of high-throughput sequencing results, the BLAST and taxonomic assignment, taxonomic condense can be utilized with single specimen Sanger sequencing data.
+**NOTE:** While the [DBTC](https://github.com/rgyoung6/DBTC) package has been built for the analysis of high-throughput sequencing results, the BLAST and taxonomic assignment, taxonomic condense can be utilized with single specimen Sanger sequencing data.
 
 # Table of Contents  
 - [Installation](#installation)
@@ -101,7 +101,7 @@ launchDBTCShiny()
 
 ***
 
-# DBTC Function Descriptions
+# [DBTC](https://github.com/rgyoung6/DBTC) Function Descriptions
 
 ## [dada_implement()](https://github.com/rgyoung6/DBTC/tree/main?tab=readme-ov-file#dada-implement)
 This function requires a main directory containing folder(s) representing sequencing runs which in-turn contains [Fastq](https://en.wikipedia.org/wiki/FASTQ_format) files (the location of one of the [Fastq](https://en.wikipedia.org/wiki/FASTQ_format) files in one of the sequencing run folders is used as an input argument). <a id="runs"></a> **A run is a group of results processed at the same time on the same machine representing the same molecular methods.** All sequencing folders in the main directory need to represent data from sequencing runs that have used the same primers and protocols. Output from this function includes all processing files and final main output files in the form of [Fasta](https://en.wikipedia.org/wiki/FASTA_format) files and amplicon sequencing variant ([ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) tables. 
@@ -138,12 +138,12 @@ This function takes a file selection and then uses all '_taxaReduced_YYYY_MM_DD_
 
 WARNING - NO WHITESPACE!
 
-When running DBTC functions the paths for the files selected cannot have white space! File folder locations should be as short as possible (close to the [root](https://en.wikipedia.org/wiki/Root_directory) directory) as some functions do not process long naming conventions. 
+When running [DBTC](https://github.com/rgyoung6/DBTC) functions the paths for the files selected cannot have white space! File folder locations should be as short as possible (close to the [root](https://en.wikipedia.org/wiki/Root_directory) directory) as some functions do not process long naming conventions. 
 
-Also, when using DBTC functions naming conventions need to carefully considered. Special characters should be avoided (including question mark, number sign, exclamation mark). It is recommended that dashes be used for separations in naming conventions while retaining underscores for use as information delimiters (this is how DBTC functions use underscore).  
+Also, when using [DBTC](https://github.com/rgyoung6/DBTC) functions naming conventions need to carefully considered. Special characters should be avoided (including question mark, number sign, exclamation mark). It is recommended that dashes be used for separations in naming conventions while retaining underscores for use as information delimiters (this is how [DBTC](https://github.com/rgyoung6/DBTC) functions use underscore).  
 
-There are several key character strings used in the DBTC pipeline, the presence of these strings in file or folder names will cause errors when running DBTC functions. 
-The following strings are those used in DBTC and should not be used in file or folder naming:
+There are several key character strings used in the [DBTC](https://github.com/rgyoung6/DBTC) pipeline, the presence of these strings in file or folder names will cause errors when running [DBTC](https://github.com/rgyoung6/DBTC) functions. 
+The following strings are those used in [DBTC](https://github.com/rgyoung6/DBTC) and should not be used in file or folder naming:
   - _BLAST
   - _taxaAssign
   - _taxaCombined
@@ -153,7 +153,13 @@ The following strings are those used in DBTC and should not be used in file or f
 
 ***
 
-# DBTC Package Function Details
+# DBTCShiny Function Details
+
+DBTCShiny uses buttons to select files necessary when running analyses. These buttons will bring up a dialog window (referred to as an 'Open' dialog in Mac OS or an 'Open File' dialog in Windows and a 'File Picker' dialog in Linux and referred to as a 'select file dialog window').
+
+In addition to buttons which bring up select file dialog windows there are fillable fields and option buttons. 
+
+All of these input elements are used to submit user variables and function options to [DBTC](https://github.com/rgyoung6/DBTC) functions via the DBTCShiny graphical user interface.
 
 For package function details please see the [DBTC](https://github.com/rgyoung6/DBTC) descriptions and documentation.
 - [dada_implement()](https://github.com/rgyoung6/DBTC/tree/main?tab=readme-ov-file#dada-implement)
@@ -165,20 +171,23 @@ For package function details please see the [DBTC](https://github.com/rgyoung6/D
 - [reduce_taxa()](https://github.com/rgyoung6/DBTC/tree/main?tab=readme-ov-file#reduce-taxa)
 - [combine_reduced_output()](https://github.com/rgyoung6/DBTC/tree/main?tab=readme-ov-file#combine-reduced-output)
 
+In addition to the implementation of [DBTC](https://github.com/rgyoung6/DBTC) core functions, DBTCShiny also provides an interactive mapping option for [DBTC](https://github.com/rgyoung6/DBTC) [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) files (see the next 'Mapping Dashboard' section below).
+
 ([Back to Top](#table-of-contents))
 
 ***
 
 # Mapping Dashboard
+DBTCShiny has interactive mapping functions. The following four sections provide information about the use of the mapping functions of DBTCShiny.
 
 ## Mapping
-The interactive map where loaded data can be viewed.
 
 ![image](https://github.com/rgyoung6/DBTCShiny/assets/60077841/0a645c6f-576c-4617-9960-e6b246e6b2f2)
 
 ## Data Import
-Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) data files generated by the DBTCShiny pipeline along with provenance data to visualize on the map.
+Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) data files generated by the DBTCShiny pipeline along with provenance data to visualize on the map (See below for an image of the graphical user interface and the formats of the files necessary for the mapping option).
 
+![image](https://github.com/rgyoung6/DBTCShiny/assets/60077841/872c6676-1737-4669-bca9-23bd6b42e181)
 
 **Provenance Data**
 
@@ -194,10 +203,16 @@ Data import buttons to load [ASV](https://en.wikipedia.org/wiki/Amplicon_sequenc
 
 
 ## Data Filtering
-Filtering options to selectively view different data on the map.
+
+The 'Data Filtering' tab provides options to filter out the visible data on the 'Mapping' tab and the data present in the 'Data Table' tab. 
+
+![image](https://github.com/rgyoung6/DBTCShiny/assets/60077841/b650afe7-fab7-41aa-a4dc-b10b89237750)
 
 ## Data Table
-A tabular display of the data loaded and filtered and appearing on the map. 
+
+A tabular display of the data loaded and filtered which is also being visualized on the map.
+
+![image](https://github.com/rgyoung6/DBTCShiny/assets/60077841/54925e44-ef86-46d2-8d56-af67e7374b37)
 
 ([Back to Top](#table-of-contents))
 

@@ -114,7 +114,7 @@ This function takes a [fasta](https://en.wikipedia.org/wiki/FASTA_format) file w
 
 The MACER [fasta](https://en.wikipedia.org/wiki/FASTA_format) header format
 
-```'>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker'```
+```>GenBankAccessionOrBOLDID|GenBankAccession|Genus|species|UniqueID|Marker```
 
 ## [seq_BLAST()](https://github.com/rgyoung6/DBTC/tree/main?tab=readme-ov-file#sequence-blast)
 [Fasta](https://en.wikipedia.org/wiki/FASTA_format) file(s) are used as input along with a user selected NCBI formatted database upon which query sequences will be searched using BLAST. The outcome of the function are two files, a BLAST run file and a single file containing all of the BLAST results in tab delimited format. There are no headers in the BLAST results file but the columns (in order left to right) are: query sequence ID, search sequence ID, search taxonomic ID, query to sequence coverage, percent identity, search scientific name, search common name, query start, query end, search start, search end, e-value.

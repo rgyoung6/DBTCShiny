@@ -146,9 +146,11 @@ Also, when using [DBTC](https://github.com/rgyoung6/DBTC) functions naming conve
 There are several key character strings used in the [DBTC](https://github.com/rgyoung6/DBTC) pipeline, the presence of these strings in file or folder names will cause errors when running [DBTC](https://github.com/rgyoung6/DBTC) functions. 
 The following strings are those used in [DBTC](https://github.com/rgyoung6/DBTC) and should not be used in file or folder naming:
   - _BLAST
+  - _combinedDada
   - _taxaAssign
-  - _taxaCombined
+  - _taxaAssignCombined
   - _taxaReduced
+  - _CombineTaxaReduced
 
 ([Back to Top](#table-of-contents))
 

@@ -2,12 +2,11 @@ Package: DBTCShiny
 Type: Package
 Title: Dada-BLAST-Taxon Assign-Condense Metabarcode Analysis Shiny Application
 Version: 0.1.0
-Author: c(person(given = "Robert G",
-             family = "Young",
+Authors@R: c(person("Robert G","Young",
              role = c("aut", "cre", "cph"),
              email = "rgyoung6@gmail.com",
              comment = c("ORCID" = "0000-0002-6731-2506"))
-          )
+             )
 Maintainer: Robert G Young <rgyoung6@gmail.com>
 Description: DBTCShiny is an R shiny implementation of the DBTC Metabarcode analysis pipeline.
 License: GPL-2 | GPL-3 + file LICENSE

@@ -57,34 +57,27 @@ library("DBTCShiny", lib.loc="HERE")
 There are several dependencies necessary for the DBTCShiny package. Most notable is the [DBTC](https://github.com/rgyoung6/DBTC) package. This package requires several bioconductor, CRAN and external packages, programs, and database resources. The installation guide for [DBTC](https://github.com/rgyoung6/DBTC) should be consulted before installing DBTCShiny.
 
 In addition to the [DBTC](https://github.com/rgyoung6/DBTC) dependencies, DBTCShiny has a number of CRAN dependencies. These are listed below...
-
 ```
-install.packages(c('ggplot2',
+install.packages(c('DBTC',
+                   'DT',
+                   'ggplot2',
                    'leaflet',
                    'leaflet.extras',
                    'magrittr',
-                   'pbapply',
-                   'plyr',
                    'shiny',
                    'shinycssloaders',
                    'shinydashboard',
-                   'shinyWidgets',
-                   'taxonomizr',
-                   'stats',
-                   'utils'))
-library(c('ggplot2',
-                   'leaflet',
-                   'leaflet.extras',
-                   'magrittr',
-                   'pbapply',
-                   'plyr',
-                   'shiny',
-                   'shinycssloaders',
-                   'shinydashboard',
-                   'shinyWidgets',
-                   'taxonomizr'
-                   'stats',
-                   'utils'))
+                   'shinyWidgets'))
+library(c('DBTC',
+         'DT',
+         'ggplot2',
+         'leaflet',
+         'leaflet.extras',
+         'magrittr',
+         'shiny',
+         'shinycssloaders',
+         'shinydashboard',
+         'shinyWidgets'))
 ```
 
 ([Back to Top](#table-of-contents))

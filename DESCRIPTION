@@ -8,8 +8,8 @@ Authors@R: c(person("Robert G","Young",
              comment = c("ORCID" = "0000-0002-6731-2506"))
              )
 Maintainer: Robert G Young <rgyoung6@gmail.com>
-Description: DBTCShiny is an R shiny implementation of the 'DBTC' Metabarcode analysis pipeline.
-License: GPL-2 | GPL-3 + file LICENSE
+Description: Metabarcoding analysis using the 'DBTC' package is implemented here using 'Shiny' in an interactive graphical user interface to conduct Metabarcode analyses and visualize and filter results.
+License: GPL-2 | GPL-3
 Encoding: UTF-8
 URL: <https://github.com/rgyoung6/DBTCShiny>
 Depends: 

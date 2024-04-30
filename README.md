@@ -7,7 +7,7 @@ This package contains the DBTCShiny functions located at [rgyoung6/DBTCShiny](ht
 
   - [Fastq](https://en.wikipedia.org/wiki/FASTQ_format) file processing using Dada in R
   - Using the Basic Local Alignment Search Tool ([BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology))), amplicon sequence variants ([ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant)) can be searched against local NCBI or custom sequence databases
-  - Assign taxa to the unique reads using NCBI taxon database (obtain the database using [taxonomizr website](https://cran.r-project.org/web/packages/taxonomizr/index.html))
+  - Assign taxa to the unique reads using NCBI taxon database (obtain the database using [taxonomizr website](https://CRAN.R-project.org/package=taxonomizr))
   - Condense the resulting [ASV](https://en.wikipedia.org/wiki/Amplicon_sequence_variant) taxonomic assignment tables to unique taxa with the ability to combine datasets (using different sequence databases for the same reads, or results from the same samples for different molecular regions) into a combined results table
 
 **NOTE:** While the [DBTC](https://github.com/rgyoung6/DBTC) package has been built for the analysis of high-throughput sequencing results, the BLAST and taxonomic assignment, taxonomic condense can be utilized with single specimen Sanger sequencing data.

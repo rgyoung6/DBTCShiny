@@ -1220,8 +1220,8 @@ shinyAppServer <- function(input, output, session, verbose) {
             provenanceDataFileTable$data<-utils::read.table(provenanceDataFileDisplayString$data, header = TRUE, check.names=FALSE, sep="\t", dec=".")
 
             #get the directory of interest
-            fileLoc <- dirname(provenanceDataFileDisplayString$data)
-
+#            fileLoc <- dirname(provenanceDataFileDisplayString$data)
+            fileLoc <- dirname(ASVFileDisplayString$data)
             #Set the working directory
             setwd(fileLoc)
 
@@ -1306,13 +1306,19 @@ shinyAppServer <- function(input, output, session, verbose) {
               )
 
 #              if (is.na(ASVFileTable$data)){
-              if (is.null(nrow(ASVFileTable))){
+              if (is.null(nrow(ASVFileTable$data))){
 
                 ASVFileTable$data <-ASVFileTableTemp
+
+                print("In the if")
+                ASVFileTableGlobalA <- ASVFileTable$data
 
               }else{
 
                 ASVFileTable$data <- rbind(ASVFileTable$data, ASVFileTableTemp)
+
+                print("In the else")
+                ASVFileTableGlobalB <- ASVFileTable$data
 
               }
 

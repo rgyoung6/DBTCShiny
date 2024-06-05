@@ -1,5 +1,5 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
-#********************************************Main program section***********************************************
+# Written by Rob Young at the University of Guelph in Ontario Canada, May, 2024
+# ********************************************Main program section*************
 #Roxygen2 Documentation:
 #' @export
 #'
@@ -11,13 +11,16 @@
 #' This function launches the DBTCShiny Application
 #'
 #' @details
-#' This function launches a DBTCShiny Application which allows a user to run the DBTC
+#' This function launches a DBTCShiny Application which allows a user to run the 'DBTC'
 #' functions and process high throughput sequencing data.
 #'
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' launchDBTCShiny()
 #' }
+#'
+#' @param verbose If set to TRUE then there will be output to the R console, if
+#' FALSE then this reporting data is suppressed (Default TRUE).
 #'
 #' @returns
 #' There are no values or files returned from this function
@@ -25,10 +28,10 @@
 #' @references
 #' <https://github.com/rgyoung6/DBTC>
 #' Young, R. G., Hanner, R. H. (Submitted October 2023). Metabarcoding analysis
-#' using Dada-BLAST-Taxon Assign-Condense Shiny Application (DBTCShiny). Biodiversity Data Journal.
+#' using Dada-BLAST-Taxon Assign-Condense shiny Application (DBTCShiny). Biodiversity Data Journal.
 #'
 #' @note
-#' This is a wrapper function which launches the DBTCShiny package as a shiny
+#' This is a wrapper function which launches the DBTCShiny package as a 'Shiny'
 #' application in the systems default browser program
 #'
 #' @seealso
@@ -41,8 +44,11 @@
 #' reduce_taxa()
 #' combine_reduced_output()
 
-
 # wrapper for shiny::shinyApp()
-launchDBTCShiny <- function() {
-  shiny::shinyApp(ui = shinyAppUI, server = shinyAppServer, options = list(launch.browser = TRUE))
+launchDBTCShiny <- function(verbose = TRUE) {
+
+  #Get the initial working directory
+  start_wd <- getwd()
+  on.exit(setwd(start_wd))
+  shiny::shinyApp(ui = shinyAppUI, server = function(input, output, session) {shinyAppServer(input, output, session,verbose)}, options = list(launch.browser = TRUE))
 }

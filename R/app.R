@@ -1,5 +1,5 @@
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
-# ******************************************************************************
+# Written by Rob Young at the University of Guelph in Ontario Canada, May, 2024
+# ********************************************Main program section*************
 # DBTC Package
 #' @import DBTC
 #'

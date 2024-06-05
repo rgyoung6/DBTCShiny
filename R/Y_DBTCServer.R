@@ -1,14 +1,14 @@
+# Written by Rob Young at the University of Guelph in Ontario Canada, May, 2024
+# ********************************************Main program section*************
 
-# Written by Rob Young at the University of Guelph in Ontario Canada, Sept, 2023
-#********************************************Main program section***********************************************
 ################# Server Function #############################################
 
 #server <- function(input, output, session) {
-shinyAppServer <- function(input, output, session) {
+shinyAppServer <- function(input, output, session, verbose) {
 
   ############## Initialize variables ############################################
 
-  #Flag to stopr the message about the data loaded not appearing the first time
+  #Flag to stop the message about the data loaded not appearing the first time
   dataFlag <- reactiveValues(data=0)
 
   #dada implement reactive values
@@ -183,12 +183,14 @@ shinyAppServer <- function(input, output, session) {
 
         },
         error = function(e){
-          print("Error - Dada Location Button choose file cancelled")
-
+          if(verbose){
+            print("Error - Dada Location Button choose file cancelled")
+          }
         },
         warning = function(w){
-          print("Warning - Dada Location Button choose file cancelled")
-
+          if(verbose){
+            print("Warning - Dada Location Button choose file cancelled")
+          }
         }
       )
     }
@@ -209,11 +211,14 @@ shinyAppServer <- function(input, output, session) {
 
         },
         error = function(e){
-          print("Error - Primer Location Button choose file cancelled")
-
+          if(verbose){
+            print("Error - Primer Location Button choose file cancelled")
+          }
         },
         warning = function(w){
-          print("Warning - Primer Location Button choose file cancelled")
+          if(verbose){
+            print("Warning - Primer Location Button choose file cancelled")
+          }
 
         }
       )
@@ -316,8 +321,9 @@ shinyAppServer <- function(input, output, session) {
             title = "Error",
             "Dada Implement - Please refer to the R consol for more information - 1"
           ))
-          print("Error - Dada Implement - 1")
-
+          if(verbose){
+            print("Error - Dada Implement - 1")
+          }
         },
         warning = function(w){
           removeModal()
@@ -325,15 +331,18 @@ shinyAppServer <- function(input, output, session) {
             title = "Warning",
             "Dada Implement - Please refer to the R consol for more information - 2"
           ))
-          print("Warning - Dada Implement - 2")
-
+          if(verbose){
+            print("Warning - Dada Implement - 2")
+          }
         })
     }else{
       shiny::showModal(shiny::modalDialog(
         title = "Missing Data",
         "Please select an appropriate fastq file location and try submitting again!"
       ))
-      print("Warning - Dada Implement primer file and dada location incorrect - 3")
+      if(verbose){
+        print("Warning - Dada Implement primer file and dada location incorrect - 3")
+      }
     }
   },ignoreInit = TRUE)
 
@@ -355,12 +364,14 @@ shinyAppServer <- function(input, output, session) {
           output$dadaCombineDisplay <- shiny::renderText({as.character(dadaCombineFileDisplayString$data)})
         },
         error = function(e){
-          print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-
+          if(verbose){
+            print("Error - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
+          }
         },
         warning = function(w){
-          print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
-
+          if(verbose){
+            print("Warning - Incorrect Dada Combine File(s) location or Dada Combine choose button cancelled.")
+          }
         }
       )
     }
@@ -430,11 +441,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         makeBlastDBFileLoc$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         makeBlastDBFileLoc$data <- NA
       }
     )
@@ -454,11 +469,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         makeblastdbPath$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         makeblastdbPath$data <- NA
       }
     )
@@ -478,11 +497,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         makeBlastTaxaDBLoc$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         makeBlastTaxaDBLoc$data <- NA
       }
     )
@@ -572,11 +595,15 @@ shinyAppServer <- function(input, output, session) {
         output$BLASTDatabasePathDisplay <- shiny::renderText({as.character(BLASTDatabasePathDisplayString$data)})
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         BLASTDatabasePath$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         BLASTDatabasePath$data <- NA
       }
     )
@@ -594,11 +621,15 @@ shinyAppServer <- function(input, output, session) {
         output$blastnPathDisplay <- shiny::renderText({as.character(blastnPathDisplayString$data)})
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         blastnPath$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         blastnPath$data <- NA
       }
     )
@@ -616,11 +647,15 @@ shinyAppServer <- function(input, output, session) {
         output$querySeqPathDisplay <- shiny::renderText({as.character(querySeqPathDisplayString$data)})
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         querySeqPath$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         querySeqPath$data <- NA
       }
     )
@@ -705,11 +740,15 @@ shinyAppServer <- function(input, output, session) {
         output$taxaAssignFileLocDisplay <- shiny::renderText({as.character(taxaAssignFileLocDisplayString$data)})
       },
       error = function(e){
-        print("Taxa Assign Error")
+        if(verbose){
+          print("Taxa Assign Error")
+        }
         taxaAssignFileLoc$data <- NA
       },
       warning = function(w){
-        print("Taxa Assign Warning")
+        if(verbose){
+          print("Taxa Assign Warning")
+        }
         taxaAssignFileLoc$data <- NA
       }
     )
@@ -729,11 +768,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         taxaAssignDBLoc$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         taxaAssignDBLoc$data <- NA
       }
     )
@@ -821,11 +864,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         combineTaxaFileLoc$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         combineTaxaFileLoc$data <- NA
       }
     )
@@ -895,11 +942,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         reduceTaxaFileLocDisplayString$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         reduceTaxaFileLocDisplayString$data <- NA
       }
     )
@@ -972,11 +1023,15 @@ shinyAppServer <- function(input, output, session) {
 
       },
       error = function(e){
-        print("Error")
+        if(verbose){
+          print("Error")
+        }
         combineReducedTaxaFileLocDisplayString$data <- NA
       },
       warning = function(w){
-        print("Warning")
+        if(verbose){
+          print("Warning")
+        }
         combineReducedTaxaFileLocDisplayString$data <- NA
       }
     )
@@ -1061,11 +1116,15 @@ shinyAppServer <- function(input, output, session) {
         output$ASVFileOut <- shiny::renderText({as.character(ASVFileDisplayString$data)})
       },
       error = function(e){
-        print("Error - Data Input Submit choose file cancelled - 1")
+        if(verbose){
+          print("Error - Data Input Submit choose file cancelled - 1")
+        }
         output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
       },
       warning = function(w){
-        print("Warning - Data Input Submit choose file cancelled - 2")
+        if(verbose){
+          print("Warning - Data Input Submit choose file cancelled - 2")
+        }
         output$ASVFileOut <- shiny::renderText({as.character("No data file selected")})
       }
     )
@@ -1085,11 +1144,15 @@ shinyAppServer <- function(input, output, session) {
         output$provenanceDataFileOut <- shiny::renderText({as.character(provenanceDataFileDisplayString$data)})
       },
       error = function(e){
-        print("Error - Data Input Submit choose file cancelled - 1")
+        if(verbose){
+          print("Error - Data Input Submit choose file cancelled - 1")
+        }
         output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
       },
       warning = function(w){
-        print("Warning - Data Input Submit choose file cancelled - 2")
+        if(verbose){
+          print("Warning - Data Input Submit choose file cancelled - 2")
+        }
         output$provenanceDataFileOut <- shiny::renderText({as.character("No data file selected")})
       }
     )
@@ -1242,7 +1305,8 @@ shinyAppServer <- function(input, output, session) {
                 include.lowest = TRUE
               )
 
-              if (is.na(ASVFileTable$data)){
+#              if (is.na(ASVFileTable$data)){
+              if (is.null(nrow(ASVFileTable))){
 
                 ASVFileTable$data <-ASVFileTableTemp
 

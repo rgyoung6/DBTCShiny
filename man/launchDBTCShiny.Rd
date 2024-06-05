@@ -4,7 +4,11 @@
 \alias{launchDBTCShiny}
 \title{Launch DBTCShiny}
 \usage{
-launchDBTCShiny()
+launchDBTCShiny(verbose = TRUE)
+}
+\arguments{
+\item{verbose}{If set to TRUE then there will be output to the R console, if
+FALSE then this reporting data is suppressed (Default TRUE).}
 }
 \value{
 There are no values or files returned from this function
@@ -13,15 +17,15 @@ There are no values or files returned from this function
 This function launches the DBTCShiny Application
 }
 \details{
-This function launches a DBTCShiny Application which allows a user to run the DBTC
+This function launches a DBTCShiny Application which allows a user to run the 'DBTC'
 functions and process high throughput sequencing data.
 }
 \note{
-This is a wrapper function which launches the DBTCShiny package as a shiny
+This is a wrapper function which launches the DBTCShiny package as a 'Shiny'
 application in the systems default browser program
 }
 \examples{
-\dontrun{
+if(interactive()){
 launchDBTCShiny()
 }
 
@@ -29,7 +33,7 @@ launchDBTCShiny()
 \references{
 <https://github.com/rgyoung6/DBTC>
 Young, R. G., Hanner, R. H. (Submitted October 2023). Metabarcoding analysis
-using Dada-BLAST-Taxon Assign-Condense Shiny Application (DBTCShiny). Biodiversity Data Journal.
+using Dada-BLAST-Taxon Assign-Condense shiny Application (DBTCShiny). Biodiversity Data Journal.
 }
 \seealso{
 dada_implement()

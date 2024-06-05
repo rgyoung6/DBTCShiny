@@ -1305,20 +1305,13 @@ shinyAppServer <- function(input, output, session, verbose) {
                 include.lowest = TRUE
               )
 
-#              if (is.na(ASVFileTable$data)){
               if (is.null(nrow(ASVFileTable$data))){
 
                 ASVFileTable$data <-ASVFileTableTemp
 
-                print("In the if")
-                ASVFileTableGlobalA <- ASVFileTable$data
-
               }else{
 
                 ASVFileTable$data <- rbind(ASVFileTable$data, ASVFileTableTemp)
-
-                print("In the else")
-                ASVFileTableGlobalB <- ASVFileTable$data
 
               }
 
